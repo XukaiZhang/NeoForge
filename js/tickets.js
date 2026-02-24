@@ -11,36 +11,36 @@ const emptyState  = document.getElementById('emptyState');
 
 let allTickets = [];
 
-// ── Submit new ticket ──────────────────────────────────────────────
+// ── Submit ─────────────────────────────────────────────────────────
 ticketForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
-    btn.textContent = 'Submitting…';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Submitting…';
 
     const payload = {
-        titulo:     document.getElementById('titulo').value.trim(),
+        titulo:      document.getElementById('titulo').value.trim(),
         descripcion: document.getElementById('descripcion').value.trim(),
-        depto:      document.getElementById('departamento').value,
-        prioridad:  document.getElementById('prioridad').value,
-        timestamp:  serverTimestamp(),
-        operator:   auth.currentUser?.email ?? 'unknown'
+        depto:       document.getElementById('departamento').value,
+        prioridad:   document.getElementById('prioridad').value,
+        timestamp:   serverTimestamp(),
+        operator:    auth.currentUser?.email ?? 'unknown'
     };
 
     try {
-        await addDoc(collection(db, "tickets"), payload);
+        await addDoc(collection(db, 'tickets'), payload);
         e.target.reset();
-    } catch (error) {
-        console.error("Ticket submission failed:", error);
-        alert("Failed to submit ticket. Please try again.");
+    } catch (err) {
+        console.error('Ticket submission failed:', err);
+        alert('Failed to submit ticket. Please try again.');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-send"></i> Submit Ticket';
     }
 });
 
-// ── Real-time listener ─────────────────────────────────────────────
-const q = query(collection(db, "tickets"), orderBy("timestamp", "desc"));
+// ── Real-time ──────────────────────────────────────────────────────
+const q = query(collection(db, 'tickets'), orderBy('timestamp', 'desc'));
 
 onSnapshot(q, (snapshot) => {
     allTickets = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -57,27 +57,25 @@ searchInput?.addEventListener('input', () => {
 function renderTickets(tickets) {
     if (!ticketsBody) return;
 
-    document.getElementById('ticketCount').textContent = tickets.length;
+    const countEl = document.getElementById('ticketCount');
+    if (countEl) countEl.textContent = tickets.length;
 
     if (tickets.length === 0) {
         ticketsBody.innerHTML = '';
         if (emptyState) emptyState.style.display = 'flex';
         return;
     }
-
     if (emptyState) emptyState.style.display = 'none';
 
     ticketsBody.innerHTML = tickets.map(t => `
         <tr class="fade-in">
+            <td><span class="ticket-id">#${t.id.slice(-6).toUpperCase()}</span></td>
             <td>
-                <span class="ticket-id">#${t.id.slice(-6).toUpperCase()}</span>
-            </td>
-            <td>
-                <div class="ticket-subject">${escHtml(t.titulo)}</div>
-                <div class="ticket-operator">${escHtml(t.operator)}</div>
+                <div class="ticket-subject">${esc(t.titulo)}</div>
+                <div class="ticket-operator">${esc(t.operator)}</div>
             </td>
             <td><span class="prio-tag prio-${t.prioridad}">${t.prioridad}</span></td>
-            <td><span class="dept-badge">${escHtml(t.depto)}</span></td>
+            <td><span class="dept-badge">${esc(t.depto)}</span></td>
             <td><span class="sla-active">Active</span></td>
             <td>
                 <button onclick="purgeTicket('${t.id}')" class="btn-purge">
@@ -90,42 +88,40 @@ function renderTickets(tickets) {
 
 // ── Counters ───────────────────────────────────────────────────────
 function updateCounters(tickets) {
-    const counts = { P0: 0, P1: 0, P2: 0, P3: 0 };
-    tickets.forEach(t => { if (counts[t.prioridad] !== undefined) counts[t.prioridad]++; });
+    const c = { P0: 0, P1: 0, P2: 0, P3: 0 };
+    tickets.forEach(t => { if (c[t.prioridad] !== undefined) c[t.prioridad]++; });
 
     ['P0','P1','P2','P3'].forEach(p => {
         const el = document.getElementById(`count${p}`);
-        if (el) el.textContent = counts[p];
+        if (el) el.textContent = c[p];
     });
 
-    const navCount = document.getElementById('navTicketCount');
-    if (navCount) navCount.textContent = tickets.length;
+    const nav = document.getElementById('navTicketCount');
+    if (nav) nav.textContent = tickets.length;
 }
 
 // ── Filter ─────────────────────────────────────────────────────────
-function filterTickets(tickets, query) {
-    if (!query.trim()) return tickets;
-    const q = query.toLowerCase();
+function filterTickets(tickets, q) {
+    if (!q.trim()) return tickets;
+    const s = q.toLowerCase();
     return tickets.filter(t =>
-        t.titulo?.toLowerCase().includes(q) ||
-        t.operator?.toLowerCase().includes(q) ||
-        t.id.slice(-6).toLowerCase().includes(q) ||
-        t.depto?.toLowerCase().includes(q)
+        t.titulo?.toLowerCase().includes(s) ||
+        t.operator?.toLowerCase().includes(s) ||
+        t.id.slice(-6).toLowerCase().includes(s) ||
+        t.depto?.toLowerCase().includes(s)
     );
 }
 
 // ── Delete ─────────────────────────────────────────────────────────
 window.purgeTicket = async (id) => {
-    if (!confirm("Are you sure you want to delete this ticket? This action cannot be undone.")) return;
+    if (!confirm('Delete this ticket permanently? This cannot be undone.')) return;
     try {
-        await deleteDoc(doc(db, "tickets", id));
+        await deleteDoc(doc(db, 'tickets', id));
     } catch (e) {
-        alert("Failed to delete ticket.");
+        alert('Failed to delete ticket.');
     }
 };
 
-// ── Utils ──────────────────────────────────────────────────────────
-function escHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s = '') {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }

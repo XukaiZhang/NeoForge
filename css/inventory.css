@@ -1,64 +1,120 @@
-/* ─── Inventory layout ──────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   INVENTORY
+   ═══════════════════════════════════════════════════════════════ */
+
 .register-panel {
     background: var(--bg-surface);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
-    margin: 24px 32px 0;
+    margin: 20px 28px 0;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .asset-form {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr auto;
-    gap: 16px;
-    align-items: flex-end;
-    padding: 20px 24px 24px;
+    gap: 14px;
+    align-items: end;
+    padding: 18px 22px 22px;
 }
 
-.asset-form .btn-submit {
+.submit-group .btn-submit {
     height: 42px;
-    white-space: nowrap;
-    padding: 0 20px;
 }
 
-.table-panel {
-    margin: 16px 32px 32px;
+.inventory-table-wrap {
+    padding: 16px 28px 28px;
 }
 
-/* ─── Asset type badges ─────────────────────────────────────────── */
-.type-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 3px 10px;
-    border-radius: 4px;
-    font-size: 0.72rem;
-    font-weight: 500;
-    border: 1px solid transparent;
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .asset-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .submit-group {
+        grid-column: 1 / -1;
+    }
+
+    .submit-group .btn-submit {
+        width: 100%;
+    }
 }
 
-.type-Workstation {
-    background: var(--blue-faint);
-    color: var(--blue);
-    border-color: rgba(59,130,246,0.2);
+@media (max-width: 768px) {
+    .register-panel {
+        margin: 16px 16px 0;
+    }
+
+    .inventory-table-wrap {
+        padding: 16px 16px 28px;
+    }
+
+    .asset-form {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .submit-group label { display: none; }
+}
+/* ═══════════════════════════════════════════════════════════════
+   INVENTORY
+   ═══════════════════════════════════════════════════════════════ */
+
+.register-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    margin: 20px 28px 0;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
-.type-Mobile {
-    background: var(--accent-faint);
-    color: var(--accent-light);
-    border-color: rgba(99,102,241,0.2);
+.asset-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
+    padding: 18px 22px 22px;
 }
 
-.type-Server {
-    background: var(--green-faint);
-    color: var(--green);
-    border-color: rgba(34,197,94,0.2);
+.submit-group .btn-submit {
+    height: 42px;
 }
 
-/* ─── Serial number ─────────────────────────────────────────────── */
-.serial-cell {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    letter-spacing: 0.04em;
+.inventory-table-wrap {
+    padding: 16px 28px 28px;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .asset-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .submit-group {
+        grid-column: 1 / -1;
+    }
+
+    .submit-group .btn-submit {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .register-panel {
+        margin: 16px 16px 0;
+    }
+
+    .inventory-table-wrap {
+        padding: 16px 16px 28px;
+    }
+
+    .asset-form {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .submit-group label { display: none; }
 }

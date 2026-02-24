@@ -1,19 +1,28 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeoForge — Tickets</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body class="viewport">
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Mobile hamburger -->
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+        <i class="bi bi-list"></i>
+    </button>
+
     <div class="layout-grid">
-        <!-- Sidebar -->
-        <aside class="sidebar">
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="logo-mark-sm">NF</div>
                 <span class="sidebar-brand">NeoForge</span>
@@ -38,28 +47,25 @@
 
             <div class="sidebar-bottom">
                 <div class="user-card">
-                    <div class="user-avatar">
-                        <i class="bi bi-person-fill"></i>
-                    </div>
+                    <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
                     <div class="user-info">
                         <div id="userEmail" class="user-name">—</div>
                         <div class="user-role">Administrator</div>
                     </div>
                 </div>
-                <button id="btnLogout" class="btn-logout" title="Sign out">
+                <button id="btnLogout" class="btn-logout">
                     <i class="bi bi-box-arrow-right"></i>
                     Sign out
                 </button>
             </div>
         </aside>
 
-        <!-- Main content -->
+        <!-- ── Content ── -->
         <main class="content-area">
-            <!-- Top bar -->
             <header class="topbar">
                 <div class="topbar-left">
                     <div class="page-breadcrumb">
-                        <span class="breadcrumb-root">Dashboard</span>
+                        <span>Dashboard</span>
                         <i class="bi bi-chevron-right"></i>
                         <span class="breadcrumb-current">Tickets</span>
                     </div>
@@ -73,7 +79,7 @@
                 </div>
             </header>
 
-            <!-- Stats row -->
+            <!-- Stats -->
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-icon critical"><i class="bi bi-exclamation-triangle-fill"></i></div>
@@ -107,7 +113,7 @@
 
             <!-- Content grid -->
             <div class="content-grid">
-                <!-- New ticket form -->
+                <!-- New ticket -->
                 <div class="form-panel">
                     <div class="panel-header">
                         <h3>New Incident Report</h3>
@@ -120,7 +126,7 @@
                         </div>
                         <div class="field-group">
                             <label>Description</label>
-                            <textarea id="descripcion" rows="5" placeholder="Provide detailed reproduction steps and context..." required></textarea>
+                            <textarea id="descripcion" rows="5" placeholder="Detailed steps, context, and expected behavior…" required></textarea>
                         </div>
                         <div class="field-row">
                             <div class="field-group">
@@ -153,21 +159,19 @@
                     <div class="table-topbar">
                         <div class="search-wrapper">
                             <i class="bi bi-search"></i>
-                            <input type="text" id="ticketSearch" placeholder="Search by ID, subject or operator...">
+                            <input type="text" id="ticketSearch" placeholder="Search by ID, subject, operator…">
                         </div>
-                        <div class="ticket-count">
-                            <span id="ticketCount">0</span> tickets
-                        </div>
+                        <div class="ticket-count"><span id="ticketCount">0</span> tickets</div>
                     </div>
                     <div class="table-scroll">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>Ticket ID</th>
+                                    <th>ID</th>
                                     <th>Subject</th>
                                     <th>Priority</th>
                                     <th>Department</th>
-                                    <th>SLA Status</th>
+                                    <th>SLA</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -175,13 +179,29 @@
                         </table>
                         <div class="table-empty" id="emptyState">
                             <i class="bi bi-inbox"></i>
-                            <p>No tickets found. Submit your first incident report.</p>
+                            <p>No tickets yet. Submit your first incident report.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
+
+    <script>
+        // Mobile sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const toggle  = document.getElementById('menuToggle');
+
+        toggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('visible');
+        });
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+        });
+    </script>
     <script type="module" src="js/tickets.js"></script>
 </body>
 </html>

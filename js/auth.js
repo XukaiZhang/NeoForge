@@ -8,10 +8,9 @@ import {
 
 // ── Session Guardian ───────────────────────────────────────────────
 onAuthStateChanged(auth, (user) => {
-    const isLogin = window.location.pathname.includes('login.html');
-    const loader  = document.getElementById('kernel-loader');
-
-    if (loader) loader.style.width = "100%";
+    const isLogin = window.location.pathname.includes('login.html') ||
+                    window.location.pathname === '/' ||
+                    window.location.pathname === '';
 
     if (!user && !isLogin) {
         window.location.href = 'login.html';
@@ -22,51 +21,73 @@ onAuthStateChanged(auth, (user) => {
         return;
     }
 
-    // Populate user email in topbar/sidebar
     if (user) {
         const emailEl = document.getElementById('userEmail');
         if (emailEl) emailEl.textContent = user.email;
     }
 });
 
-// ── Login Handler ──────────────────────────────────────────────────
+// ── Sign In ────────────────────────────────────────────────────────
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const emailInput    = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const msg           = document.getElementById('status-msg');
-    const btn           = e.target.querySelector('button[type="submit"]');
+    const email    = document.getElementById('loginEmail')?.value.trim();
+    const password = document.getElementById('loginPassword')?.value;
+    const msgEl    = document.getElementById('status-msg-login');
+    const btn      = e.target.querySelector('button[type="submit"]');
 
-    setStatus(msg, 'loading', 'Authenticating…');
+    if (!email || !password) {
+        showAlert(msgEl, 'error', 'Please fill in all fields.');
+        return;
+    }
+
+    showAlert(msgEl, 'loading', 'Authenticating…');
     btn.disabled = true;
 
     try {
-        await signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-        // onAuthStateChanged will redirect
+        await signInWithEmailAndPassword(auth, email, password);
+        // onAuthStateChanged handles redirect
     } catch (err) {
-        const friendly = getFriendlyError(err.code);
-        setStatus(msg, 'error', friendly);
+        showAlert(msgEl, 'error', getFriendlyError(err.code));
         btn.disabled = false;
     }
 });
 
-// ── Register Handler ───────────────────────────────────────────────
-document.getElementById('btnRegister')?.addEventListener('click', async () => {
-    const emailInput    = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const msg           = document.getElementById('status-msg');
+// ── Register ───────────────────────────────────────────────────────
+document.getElementById('registerForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-    if (!emailInput.value || !passwordInput.value) {
-        setStatus(msg, 'error', 'Please fill in email and password before registering.');
+    const email    = document.getElementById('registerEmail')?.value.trim();
+    const password = document.getElementById('registerPassword')?.value;
+    const confirm  = document.getElementById('registerConfirm')?.value;
+    const msgEl    = document.getElementById('status-msg-register');
+    const btn      = e.target.querySelector('button[type="submit"]');
+
+    if (!email || !password || !confirm) {
+        showAlert(msgEl, 'error', 'Please fill in all fields.');
         return;
     }
 
+    if (password !== confirm) {
+        showAlert(msgEl, 'error', 'Passwords do not match.');
+        return;
+    }
+
+    if (password.length < 6) {
+        showAlert(msgEl, 'error', 'Password must be at least 6 characters.');
+        return;
+    }
+
+    showAlert(msgEl, 'loading', 'Creating your account…');
+    btn.disabled = true;
+
     try {
-        await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
-        setStatus(msg, 'success', 'Account created successfully. Signing you in…');
+        await createUserWithEmailAndPassword(auth, email, password);
+        showAlert(msgEl, 'success', 'Account created! Redirecting…');
+        // onAuthStateChanged handles redirect
     } catch (err) {
-        setStatus(msg, 'error', getFriendlyError(err.code));
+        showAlert(msgEl, 'error', getFriendlyError(err.code));
+        btn.disabled = false;
     }
 });
 
@@ -74,33 +95,34 @@ document.getElementById('btnRegister')?.addEventListener('click', async () => {
 document.getElementById('btnLogout')?.addEventListener('click', () => signOut(auth));
 
 // ── Helpers ────────────────────────────────────────────────────────
-function setStatus(el, type, text) {
+function showAlert(el, type, text) {
     if (!el) return;
     el.style.display = 'block';
     el.textContent = text;
-    el.className = 'status-alert';
-    if (type === 'error')   el.style.cssText = '';
-    if (type === 'success') {
-        el.style.background = 'var(--green-faint)';
-        el.style.borderColor = 'rgba(34,197,94,0.25)';
-        el.style.color = 'var(--green)';
-    }
-    if (type === 'loading') {
-        el.style.background = 'var(--accent-faint)';
-        el.style.borderColor = 'rgba(99,102,241,0.25)';
-        el.style.color = 'var(--accent-light)';
-    }
+
+    const styles = {
+        error:   { bg: 'var(--red-faint)',    border: 'rgba(239,68,68,0.25)',   color: 'var(--red)' },
+        success: { bg: 'var(--green-faint)',   border: 'rgba(34,197,94,0.25)',   color: 'var(--green)' },
+        loading: { bg: 'var(--accent-faint)', border: 'rgba(99,102,241,0.25)', color: 'var(--accent-light)' },
+    };
+
+    const s = styles[type] || styles.error;
+    el.style.background   = s.bg;
+    el.style.borderColor  = s.border;
+    el.style.color        = s.color;
+    el.style.border       = `1px solid ${s.border}`;
 }
 
 function getFriendlyError(code) {
     const map = {
-        'auth/user-not-found':     'No account found with this email address.',
-        'auth/wrong-password':     'Incorrect password. Please try again.',
-        'auth/invalid-email':      'Please enter a valid email address.',
-        'auth/too-many-requests':  'Too many attempts. Please wait before trying again.',
-        'auth/email-already-in-use': 'This email is already registered. Sign in instead.',
-        'auth/weak-password':      'Password must be at least 6 characters.',
-        'auth/invalid-credential': 'Invalid credentials. Check your email and password.',
+        'auth/user-not-found':        'No account found with this email address.',
+        'auth/wrong-password':         'Incorrect password. Please try again.',
+        'auth/invalid-email':          'Please enter a valid email address.',
+        'auth/too-many-requests':      'Too many failed attempts. Please try again later.',
+        'auth/email-already-in-use':   'This email is already registered. Sign in instead.',
+        'auth/weak-password':          'Password must be at least 6 characters.',
+        'auth/invalid-credential':     'Invalid email or password. Please try again.',
+        'auth/network-request-failed': 'Network error. Check your internet connection.',
     };
-    return map[code] || 'An unexpected error occurred. Please try again.';
+    return map[code] ?? 'An unexpected error occurred. Please try again.';
 }

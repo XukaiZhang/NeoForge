@@ -11,32 +11,33 @@ const emptyState    = document.getElementById('emptyState');
 
 let allAssets = [];
 
-// ── Register asset ─────────────────────────────────────────────────
+// ── Register ───────────────────────────────────────────────────────
 assetForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving…';
 
     try {
-        await addDoc(collection(db, "inventory"), {
-            sn:     document.getElementById('serial').value.toUpperCase().trim(),
-            modelo: document.getElementById('modelo').value.trim(),
-            tipo:   document.getElementById('tipo').value,
-            creado: serverTimestamp(),
+        await addDoc(collection(db, 'inventory'), {
+            sn:       document.getElementById('serial').value.toUpperCase().trim(),
+            modelo:   document.getElementById('modelo').value.trim(),
+            tipo:     document.getElementById('tipo').value,
+            creado:   serverTimestamp(),
             operator: auth.currentUser?.email ?? 'unknown'
         });
         e.target.reset();
     } catch (err) {
-        console.error("Asset registration failed:", err);
-        alert("Failed to register asset. Please try again.");
+        console.error('Asset registration failed:', err);
+        alert('Failed to register asset. Please try again.');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-plus-lg"></i> Register Asset';
+        btn.innerHTML = '<i class="bi bi-plus-lg"></i> Register';
     }
 });
 
-// ── Real-time listener ─────────────────────────────────────────────
-const invQ = query(collection(db, "inventory"), orderBy("creado", "desc"));
+// ── Real-time ──────────────────────────────────────────────────────
+const invQ = query(collection(db, 'inventory'), orderBy('creado', 'desc'));
 
 onSnapshot(invQ, (snap) => {
     allAssets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -53,12 +54,14 @@ searchInput?.addEventListener('input', () => {
 function renderAssets(assets) {
     if (!inventoryBody) return;
 
+    const countEl = document.getElementById('assetCount');
+    if (countEl) countEl.textContent = assets.length;
+
     if (assets.length === 0) {
         inventoryBody.innerHTML = '';
         if (emptyState) emptyState.style.display = 'flex';
         return;
     }
-
     if (emptyState) emptyState.style.display = 'none';
 
     inventoryBody.innerHTML = assets.map(item => {
@@ -68,15 +71,15 @@ function renderAssets(assets) {
 
         return `
             <tr class="fade-in">
-                <td><span class="serial-cell">${escHtml(item.sn)}</span></td>
-                <td>${escHtml(item.modelo)}</td>
-                <td><span class="type-badge type-${item.tipo}">${escHtml(item.tipo)}</span></td>
+                <td><span class="serial-cell">${esc(item.sn)}</span></td>
+                <td style="font-size:0.83rem">${esc(item.modelo)}</td>
+                <td><span class="type-badge type-${item.tipo}">${esc(item.tipo)}</span></td>
                 <td>
-                    <div class="health-bar">
-                        <div class="health-fill" style="width: 85%"></div>
+                    <div class="health-bar" title="Health: 85%">
+                        <div class="health-fill" style="width:85%"></div>
                     </div>
                 </td>
-                <td style="font-size: 0.78rem; color: var(--text-tertiary);">${date}</td>
+                <td style="font-size:0.77rem;color:var(--text-tertiary);font-family:var(--font-mono)">${date}</td>
                 <td>
                     <button onclick="deleteAsset('${item.id}')" class="btn-purge">
                         <i class="bi bi-trash"></i> Remove
@@ -89,43 +92,39 @@ function renderAssets(assets) {
 
 // ── Counters ───────────────────────────────────────────────────────
 function updateCounters(assets) {
-    const counts = { Workstation: 0, Mobile: 0, Server: 0 };
-    assets.forEach(a => { if (counts[a.tipo] !== undefined) counts[a.tipo]++; });
+    const c = { Workstation: 0, Mobile: 0, Server: 0 };
+    assets.forEach(a => { if (c[a.tipo] !== undefined) c[a.tipo]++; });
 
-    const wsEl = document.getElementById('countWorkstation');
-    const mbEl = document.getElementById('countMobile');
-    const srEl = document.getElementById('countServer');
-    const ttEl = document.getElementById('countTotal');
-
-    if (wsEl) wsEl.textContent = counts.Workstation;
-    if (mbEl) mbEl.textContent = counts.Mobile;
-    if (srEl) srEl.textContent = counts.Server;
-    if (ttEl) ttEl.textContent = assets.length;
+    const ids = { Workstation: 'countWorkstation', Mobile: 'countMobile', Server: 'countServer' };
+    Object.entries(ids).forEach(([k, id]) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = c[k];
+    });
+    const ttl = document.getElementById('countTotal');
+    if (ttl) ttl.textContent = assets.length;
 }
 
 // ── Filter ─────────────────────────────────────────────────────────
-function filterAssets(assets, query) {
-    if (!query.trim()) return assets;
-    const q = query.toLowerCase();
+function filterAssets(assets, q) {
+    if (!q.trim()) return assets;
+    const s = q.toLowerCase();
     return assets.filter(a =>
-        a.sn?.toLowerCase().includes(q) ||
-        a.modelo?.toLowerCase().includes(q) ||
-        a.tipo?.toLowerCase().includes(q)
+        a.sn?.toLowerCase().includes(s) ||
+        a.modelo?.toLowerCase().includes(s) ||
+        a.tipo?.toLowerCase().includes(s)
     );
 }
 
 // ── Delete ─────────────────────────────────────────────────────────
 window.deleteAsset = async (id) => {
-    if (!confirm("Remove this asset from inventory? This cannot be undone.")) return;
+    if (!confirm('Remove this asset from inventory? This cannot be undone.')) return;
     try {
-        await deleteDoc(doc(db, "inventory", id));
+        await deleteDoc(doc(db, 'inventory', id));
     } catch (e) {
-        alert("Failed to remove asset.");
+        alert('Failed to remove asset.');
     }
 };
 
-// ── Utils ──────────────────────────────────────────────────────────
-function escHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function esc(s = '') {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
