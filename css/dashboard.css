@@ -1,75 +1,19 @@
 /* ═══════════════════════════════════════════════════════════════
    DASHBOARD — Ticket Queue
+   (Form has been moved to new-ticket.html)
    ═══════════════════════════════════════════════════════════════ */
 
-.content-grid {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    gap: 20px;
-    padding: 20px 28px 28px;
-    flex: 1;
-    min-height: 0;
-    align-items: start;
-}
+/* ── Topbar additions ───────────────────────────────────────── */
+/* btn-new-ticket and filter-select styles live in new-ticket.css */
 
-/* ── Form panel ─────────────────────────────────────────────── */
-.form-panel {
-    background: var(--bg-surface);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
+/* Ensure topbar-right can hold button */
+.topbar-right {
     display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: sticky;
-    top: 20px;
-}
-
-.ticket-form {
-    padding: 18px 22px 22px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
-
-.field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    align-items: center;
     gap: 10px;
 }
 
-/* ── Table panel ────────────────────────────────────────────── */
-.table-panel {
-    min-height: 300px;
-    max-height: calc(100vh - 260px);
-    display: flex;
-    flex-direction: column;
-}
-
 /* ── Responsive ─────────────────────────────────────────────── */
-@media (max-width: 1024px) {
-    .content-grid {
-        grid-template-columns: 300px 1fr;
-        gap: 16px;
-    }
-}
-
 @media (max-width: 768px) {
-    .content-grid {
-        grid-template-columns: 1fr;
-        padding: 16px;
-        gap: 16px;
-    }
-
-    .form-panel {
-        position: relative;
-        top: 0;
-    }
-
-    .table-panel {
-        max-height: none;
-    }
-
-    .field-row {
-        grid-template-columns: 1fr;
-    }
+    .topbar-right .status-indicator { display: none; }
 }

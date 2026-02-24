@@ -1,7 +1,19 @@
 /* ═══════════════════════════════════════════════════════════════
    LOGIN PAGE — Animated sliding panel
+
+   State A (login):    [ Form: Sign In  |  Overlay (right) ]
+   State B (register): [ Overlay (left) |  Form: Register  ]
+
+   How it works:
+   • .overlay-container is a 50%-wide clipping window, anchored right
+   • .overlay inside is 200% wide with two panels (left/right)
+   • Default: strip shifted so the RIGHT panel shows
+   • Register-active:
+       – container slides left (translateX -100%) to cover left half
+       – strip resets to 0 so the LEFT panel is now visible
    ═══════════════════════════════════════════════════════════════ */
 
+/* ── Page shell ──────────────────────────────────────────────── */
 .auth-gate {
     position: relative;
     overflow: hidden;
@@ -12,7 +24,6 @@
     justify-content: center;
 }
 
-/* ── Decorative background ───────────────────────────────────── */
 .auth-bg-grid {
     position: fixed;
     inset: 0;
@@ -40,24 +51,24 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 900px;
-    min-height: 560px;
+    max-width: 920px;
     padding: 20px;
 }
 
-/* ── Card (the rectangle) ────────────────────────────────────── */
+/* ── Card ────────────────────────────────────────────────────── */
 .auth-card {
     position: relative;
     background: var(--bg-surface);
     border: 1px solid var(--border-default);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg), 0 0 80px rgba(99,102,241,0.06);
+    box-shadow: var(--shadow-lg), 0 0 80px rgba(99,102,241,0.07);
     overflow: hidden;
-    min-height: 560px;
-    display: flex;
+    min-height: 580px;
 }
 
-/* ── Form containers ─────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════
+   FORM CONTAINERS
+   ════════════════════════════════════════════════════════════════ */
 .form-container {
     position: absolute;
     top: 0;
@@ -66,102 +77,126 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px 44px;
-    transition: all 0.65s cubic-bezier(0.68, -0.02, 0.27, 1.02);
+    padding: 44px 48px;
     background: var(--bg-surface);
+    transition:
+        transform 0.65s cubic-bezier(0.76, 0, 0.24, 1),
+        opacity   0.50s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
+/* ── Login state (default) ───────────────────────────────────── */
+/* Sign-in is on the left half, visible */
 .sign-in-container {
     left: 0;
     z-index: 2;
+    transform: translateX(0);
     opacity: 1;
+    pointer-events: all;
 }
 
+/* Sign-up is on the right half, but invisible — overlay covers it */
 .sign-up-container {
-    left: 0;
+    left: 50%;
     z-index: 1;
+    transform: translateX(0);
     opacity: 0;
     pointer-events: none;
 }
 
-/* ── Active: register mode ───────────────────────────────────── */
+/* ── Register state ──────────────────────────────────────────── */
+/* Sign-in slides off to the left */
 .register-active .sign-in-container {
-    left: 50%;
+    transform: translateX(-100%);
     opacity: 0;
     pointer-events: none;
     z-index: 1;
 }
 
+/* Sign-up (already in right half) becomes visible */
 .register-active .sign-up-container {
-    left: 50%;
     opacity: 1;
     pointer-events: all;
     z-index: 2;
 }
 
-/* ── Overlay container ───────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════
+   OVERLAY CONTAINER + STRIP
+   ════════════════════════════════════════════════════════════════ */
+
+/* The clipping window — starts covering the right half */
 .overlay-container {
     position: absolute;
     top: 0;
-    left: 50%;
+    left: 50%;           /* right half by default */
     width: 50%;
     height: 100%;
     overflow: hidden;
     z-index: 100;
-    transition: transform 0.65s cubic-bezier(0.68, -0.02, 0.27, 1.02);
+    transition: left 0.65s cubic-bezier(0.76, 0, 0.24, 1);
 }
 
+/* On register: clipping window moves to cover LEFT half */
 .register-active .overlay-container {
-    transform: translateX(-100%);
+    left: 0%;
 }
 
+/* 200%-wide strip with two panels inside */
 .overlay {
     position: relative;
-    background: linear-gradient(135deg, #4f46e5 0%, #6366f1 50%, #818cf8 100%);
     height: 100%;
     width: 200%;
     display: flex;
-    transition: transform 0.65s cubic-bezier(0.68, -0.02, 0.27, 1.02);
+    /* Default: shift left so the RIGHT panel (index 1) is inside the clipping window */
+    transform: translateX(-50%);
+    transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1);
+    background: linear-gradient(145deg, #3730a3 0%, #4f46e5 40%, #6366f1 70%, #818cf8 100%);
 }
 
+/* On register: reset strip so the LEFT panel (index 0) is inside the clipping window */
 .register-active .overlay {
-    transform: translateX(50%);
+    transform: translateX(0%);
 }
 
-.overlay-panel {
-    position: relative;
-    width: 50%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 44px;
-}
-
-/* Subtle pattern on overlay */
+/* Decorative texture */
 .overlay::before {
     content: '';
     position: absolute;
     inset: 0;
     background-image:
-        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.06) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
+        radial-gradient(circle at 15% 85%, rgba(255,255,255,0.07) 0%, transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(255,255,255,0.09) 0%, transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%);
     pointer-events: none;
+    z-index: 0;
 }
 
+/* Each panel takes half the strip (= full width of the clipping window) */
+.overlay-panel {
+    position: relative;
+    z-index: 1;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    flex-shrink: 0;
+}
+
+/* ── Overlay content ─────────────────────────────────────────── */
 .overlay-content {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 16px;
-    max-width: 300px;
+    gap: 14px;
+    max-width: 280px;
 }
 
 .logo-mark-lg {
-    width: 56px;
-    height: 56px;
-    background: rgba(255,255,255,0.2);
+    width: 54px;
+    height: 54px;
+    background: rgba(255,255,255,0.18);
     border: 2px solid rgba(255,255,255,0.35);
     border-radius: var(--radius-md);
     display: flex;
@@ -169,40 +204,40 @@
     justify-content: center;
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #fff;
-    margin-bottom: 8px;
-    backdrop-filter: blur(10px);
+    margin-bottom: 6px;
+    backdrop-filter: blur(8px);
 }
 
 .overlay-content h3 {
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: 1.55rem;
     font-weight: 800;
     color: #fff;
     margin: 0;
-    line-height: 1.1;
+    line-height: 1.15;
 }
 
 .overlay-content p {
-    font-size: 0.88rem;
-    color: rgba(255,255,255,0.8);
-    line-height: 1.6;
+    font-size: 0.86rem;
+    color: rgba(255,255,255,0.78);
+    line-height: 1.65;
     margin: 0;
 }
 
 .btn-ghost {
-    margin-top: 8px;
-    padding: 10px 32px;
+    margin-top: 6px;
+    padding: 10px 30px;
     background: transparent;
-    border: 2px solid rgba(255,255,255,0.7);
+    border: 2px solid rgba(255,255,255,0.65);
     border-radius: 40px;
     color: #fff;
     font-family: var(--font-sans);
-    font-size: 0.88rem;
+    font-size: 0.87rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
     letter-spacing: 0.02em;
 }
 
@@ -212,21 +247,24 @@
     transform: translateY(-1px);
 }
 
-/* ── Form styles ─────────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════════════
+   FORM STYLES
+   ════════════════════════════════════════════════════════════════ */
 .auth-form {
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
 }
 
 .auth-form h2 {
     font-family: var(--font-display);
-    font-size: 1.7rem;
+    font-size: 1.75rem;
     font-weight: 800;
     color: var(--text-primary);
     margin: 0 0 2px;
     letter-spacing: -0.5px;
+    line-height: 1.1;
 }
 
 .form-subtitle {
@@ -236,7 +274,6 @@
     line-height: 1.5;
 }
 
-/* ── Form groups ─────────────────────────────────────────────── */
 .form-group {
     display: flex;
     flex-direction: column;
@@ -296,20 +333,20 @@
 
 .input-wrapper input::placeholder { color: var(--text-tertiary); }
 
-/* ── Status alert ────────────────────────────────────────────── */
+/* ── Alert ───────────────────────────────────────────────────── */
 .status-alert {
     padding: 10px 14px;
     border-radius: var(--radius-sm);
-    font-size: 0.8rem;
+    font-size: 0.79rem;
     font-family: var(--font-mono);
     background: var(--red-faint);
     border: 1px solid rgba(239,68,68,0.25);
     color: var(--red);
-    animation: fadeInDown 0.2s ease;
+    animation: alertIn 0.2s ease;
 }
 
-@keyframes fadeInDown {
-    from { opacity: 0; transform: translateY(-6px); }
+@keyframes alertIn {
+    from { opacity: 0; transform: translateY(-4px); }
     to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -329,25 +366,25 @@
     font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 2px;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    margin-top: 4px;
 }
 
 .btn-primary-action:hover {
-    background: #5558e8;
+    background: #5254e0;
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px var(--accent-glow);
+    box-shadow: 0 6px 22px var(--accent-glow);
 }
-
-.btn-primary-action:active { transform: translateY(0); }
+.btn-primary-action:active   { transform: translateY(0); }
 .btn-primary-action:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-/* ── Switch link ─────────────────────────────────────────────── */
+/* ── Mobile switch (hidden on desktop, overlay handles it) ───── */
 .form-switch {
     font-size: 0.78rem;
     color: var(--text-tertiary);
     text-align: center;
     margin: 0;
+    display: none; /* shown only on mobile via media query */
 }
 
 .link-btn {
@@ -362,35 +399,34 @@
     text-decoration: underline;
     text-underline-offset: 2px;
 }
-
 .link-btn:hover { color: var(--accent); }
 
-/* ═══════════════════════════════════════════════════════════════
-   RESPONSIVE
-   ═══════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════
+   RESPONSIVE — ≤ 700px
+   ════════════════════════════════════════════════════════════════ */
 @media (max-width: 700px) {
-    .auth-container {
-        padding: 16px;
-        min-height: auto;
-        align-items: flex-start;
-    }
+    .auth-container { padding: 16px; }
 
     .auth-card {
         min-height: auto;
-        flex-direction: column;
         overflow: visible;
+        display: flex;
+        flex-direction: column;
     }
 
-    /* On mobile: stack forms, hide overlay */
+    /* Hide overlay on mobile */
     .overlay-container { display: none; }
 
+    /* Make forms stack */
     .form-container {
         position: relative;
         width: 100%;
+        height: auto;
         left: 0 !important;
+        transform: none !important;
         opacity: 1 !important;
         pointer-events: all !important;
-        padding: 32px 24px;
+        padding: 36px 24px;
         display: none;
     }
 
@@ -399,8 +435,6 @@
     .register-active .sign-in-container { display: none; }
     .register-active .sign-up-container { display: flex; }
 
-    .auth-form h2 { font-size: 1.4rem; }
-
-    /* Show mobile switch text instead */
-    .form-switch { display: block; }
+    .form-switch  { display: block; }
+    .auth-form h2 { font-size: 1.45rem; }
 }

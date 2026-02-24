@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NeoForge — Tickets</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body class="viewport">
 
-    <!-- Mobile overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- Mobile hamburger -->
     <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
         <i class="bi bi-list"></i>
     </button>
@@ -62,6 +59,8 @@
 
         <!-- ── Content ── -->
         <main class="content-area">
+
+            <!-- Topbar -->
             <header class="topbar">
                 <div class="topbar-left">
                     <div class="page-breadcrumb">
@@ -76,10 +75,14 @@
                         <div class="status-dot online"></div>
                         <span>Systems operational</span>
                     </div>
+                    <a href="new-ticket.html" class="btn-new-ticket">
+                        <i class="bi bi-plus-lg"></i>
+                        New Ticket
+                    </a>
                 </div>
             </header>
 
-            <!-- Stats -->
+            <!-- Stats row -->
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-icon critical"><i class="bi bi-exclamation-triangle-fill"></i></div>
@@ -111,88 +114,69 @@
                 </div>
             </div>
 
-            <!-- Content grid -->
-            <div class="content-grid">
-                <!-- New ticket -->
-                <div class="form-panel">
-                    <div class="panel-header">
-                        <h3>New Incident Report</h3>
-                        <p>Submit a new support ticket</p>
-                    </div>
-                    <form id="ticketForm" class="ticket-form">
-                        <div class="field-group">
-                            <label>Subject</label>
-                            <input type="text" id="titulo" placeholder="Brief description of the issue" required>
+            <!-- Ticket table -->
+            <div class="dashboard-content">
+                <div class="table-panel">
+                    <div class="table-topbar">
+                        <div class="search-wrapper">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="ticketSearch" placeholder="Search tickets by ID, subject, operator…">
                         </div>
-                        <div class="field-group">
-                            <label>Description</label>
-                            <textarea id="descripcion" rows="5" placeholder="Detailed steps, context, and expected behavior…" required></textarea>
-                        </div>
-                        <div class="field-row">
-                            <div class="field-group">
-                                <label>Department</label>
-                                <select id="departamento">
+                        <div class="table-actions">
+                            <div class="ticket-count"><span id="ticketCount">0</span> tickets</div>
+                            <div class="filter-group">
+                                <select id="filterPrio" class="filter-select">
+                                    <option value="">All priorities</option>
+                                    <option value="P0">P0 — Critical</option>
+                                    <option value="P1">P1 — High</option>
+                                    <option value="P2">P2 — Medium</option>
+                                    <option value="P3">P3 — Low</option>
+                                </select>
+                                <select id="filterDept" class="filter-select">
+                                    <option value="">All departments</option>
                                     <option value="DevOps">DevOps</option>
                                     <option value="SecOps">SecOps</option>
                                     <option value="Hardware">Hardware</option>
                                 </select>
                             </div>
-                            <div class="field-group">
-                                <label>Priority</label>
-                                <select id="prioridad">
-                                    <option value="P3">P3 — Low</option>
-                                    <option value="P2">P2 — Medium</option>
-                                    <option value="P1">P1 — High</option>
-                                    <option value="P0">P0 — Critical</option>
-                                </select>
-                            </div>
                         </div>
-                        <button type="submit" class="btn-submit">
-                            <i class="bi bi-send"></i>
-                            Submit Ticket
-                        </button>
-                    </form>
-                </div>
-
-                <!-- Ticket list -->
-                <div class="table-panel">
-                    <div class="table-topbar">
-                        <div class="search-wrapper">
-                            <i class="bi bi-search"></i>
-                            <input type="text" id="ticketSearch" placeholder="Search by ID, subject, operator…">
-                        </div>
-                        <div class="ticket-count"><span id="ticketCount">0</span> tickets</div>
                     </div>
+
                     <div class="table-scroll">
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Ticket ID</th>
                                     <th>Subject</th>
                                     <th>Priority</th>
                                     <th>Department</th>
+                                    <th>Operator</th>
                                     <th>SLA</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="ticketsBody"></tbody>
                         </table>
+
                         <div class="table-empty" id="emptyState">
-                            <i class="bi bi-inbox"></i>
-                            <p>No tickets yet. Submit your first incident report.</p>
+                            <div class="empty-icon"><i class="bi bi-inbox"></i></div>
+                            <h3>No tickets yet</h3>
+                            <p>Get started by filing your first incident report.</p>
+                            <a href="new-ticket.html" class="btn-empty-action">
+                                <i class="bi bi-plus-lg"></i> Create Ticket
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
+
         </main>
     </div>
 
     <script>
-        // Mobile sidebar toggle
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
         const toggle  = document.getElementById('menuToggle');
-
         toggle?.addEventListener('click', () => {
             sidebar.classList.toggle('open');
             overlay.classList.toggle('visible');

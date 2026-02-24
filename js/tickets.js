@@ -1,57 +1,51 @@
 import { db, auth } from './config.js';
 import { 
-    collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc 
+    collection, onSnapshot, query, orderBy, doc, deleteDoc 
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import './auth.js';
 
-const ticketForm  = document.getElementById('ticketForm');
-const ticketsBody = document.getElementById('ticketsBody');
-const searchInput = document.getElementById('ticketSearch');
-const emptyState  = document.getElementById('emptyState');
+const ticketsBody  = document.getElementById('ticketsBody');
+const searchInput  = document.getElementById('ticketSearch');
+const filterPrio   = document.getElementById('filterPrio');
+const filterDept   = document.getElementById('filterDept');
+const emptyState   = document.getElementById('emptyState');
 
 let allTickets = [];
 
-// ── Submit ─────────────────────────────────────────────────────────
-ticketForm?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const btn = e.target.querySelector('button[type="submit"]');
-    btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Submitting…';
-
-    const payload = {
-        titulo:      document.getElementById('titulo').value.trim(),
-        descripcion: document.getElementById('descripcion').value.trim(),
-        depto:       document.getElementById('departamento').value,
-        prioridad:   document.getElementById('prioridad').value,
-        timestamp:   serverTimestamp(),
-        operator:    auth.currentUser?.email ?? 'unknown'
-    };
-
-    try {
-        await addDoc(collection(db, 'tickets'), payload);
-        e.target.reset();
-    } catch (err) {
-        console.error('Ticket submission failed:', err);
-        alert('Failed to submit ticket. Please try again.');
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-send"></i> Submit Ticket';
-    }
-});
-
-// ── Real-time ──────────────────────────────────────────────────────
+// ── Real-time listener ─────────────────────────────────────────────
 const q = query(collection(db, 'tickets'), orderBy('timestamp', 'desc'));
 
 onSnapshot(q, (snapshot) => {
     allTickets = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
     updateCounters(allTickets);
-    renderTickets(filterTickets(allTickets, searchInput?.value ?? ''));
+    applyFilters();
 });
 
-// ── Search ─────────────────────────────────────────────────────────
-searchInput?.addEventListener('input', () => {
-    renderTickets(filterTickets(allTickets, searchInput.value));
-});
+// ── Filter triggers ────────────────────────────────────────────────
+searchInput?.addEventListener('input',  applyFilters);
+filterPrio?.addEventListener('change',  applyFilters);
+filterDept?.addEventListener('change',  applyFilters);
+
+function applyFilters() {
+    const search = searchInput?.value.toLowerCase().trim() ?? '';
+    const prio   = filterPrio?.value  ?? '';
+    const dept   = filterDept?.value  ?? '';
+
+    const filtered = allTickets.filter(t => {
+        const matchSearch = !search ||
+            t.titulo?.toLowerCase().includes(search) ||
+            t.operator?.toLowerCase().includes(search) ||
+            t.id.slice(-6).toLowerCase().includes(search) ||
+            t.depto?.toLowerCase().includes(search);
+
+        const matchPrio = !prio || t.prioridad === prio;
+        const matchDept = !dept || t.depto === dept;
+
+        return matchSearch && matchPrio && matchDept;
+    });
+
+    renderTickets(filtered);
+}
 
 // ── Render ─────────────────────────────────────────────────────────
 function renderTickets(tickets) {
@@ -72,14 +66,14 @@ function renderTickets(tickets) {
             <td><span class="ticket-id">#${t.id.slice(-6).toUpperCase()}</span></td>
             <td>
                 <div class="ticket-subject">${esc(t.titulo)}</div>
-                <div class="ticket-operator">${esc(t.operator)}</div>
             </td>
             <td><span class="prio-tag prio-${t.prioridad}">${t.prioridad}</span></td>
             <td><span class="dept-badge">${esc(t.depto)}</span></td>
+            <td><span class="ticket-operator">${esc(t.operator)}</span></td>
             <td><span class="sla-active">Active</span></td>
             <td>
                 <button onclick="purgeTicket('${t.id}')" class="btn-purge">
-                    <i class="bi bi-trash"></i> Delete
+                    <i class="bi bi-trash"></i>
                 </button>
             </td>
         </tr>
@@ -98,18 +92,6 @@ function updateCounters(tickets) {
 
     const nav = document.getElementById('navTicketCount');
     if (nav) nav.textContent = tickets.length;
-}
-
-// ── Filter ─────────────────────────────────────────────────────────
-function filterTickets(tickets, q) {
-    if (!q.trim()) return tickets;
-    const s = q.toLowerCase();
-    return tickets.filter(t =>
-        t.titulo?.toLowerCase().includes(s) ||
-        t.operator?.toLowerCase().includes(s) ||
-        t.id.slice(-6).toLowerCase().includes(s) ||
-        t.depto?.toLowerCase().includes(s)
-    );
 }
 
 // ── Delete ─────────────────────────────────────────────────────────

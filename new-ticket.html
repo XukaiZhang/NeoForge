@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoForge — New Ticket</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/new-ticket.css">
+</head>
+<body class="viewport">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+        <i class="bi bi-list"></i>
+    </button>
+
+    <div class="layout-grid">
+        <!-- ── Sidebar ── -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark-sm">NF</div>
+                <span class="sidebar-brand">NeoForge</span>
+            </div>
+
+            <div class="sidebar-section-label">Main Menu</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <span>Tickets</span>
+                </a>
+                <a href="inventory.html" class="nav-item">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Inventory</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="user-card">
+                    <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
+                    <div class="user-info">
+                        <div id="userEmail" class="user-name">—</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Sign out
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── Content ── -->
+        <main class="content-area">
+
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="page-breadcrumb">
+                        <span>Dashboard</span>
+                        <i class="bi bi-chevron-right"></i>
+                        <a href="dashboard.html" class="breadcrumb-link">Tickets</a>
+                        <i class="bi bi-chevron-right"></i>
+                        <span class="breadcrumb-current">New Ticket</span>
+                    </div>
+                    <h1 class="page-title">New Incident Report</h1>
+                </div>
+                <div class="topbar-right">
+                    <a href="dashboard.html" class="btn-back">
+                        <i class="bi bi-arrow-left"></i>
+                        Back to queue
+                    </a>
+                </div>
+            </header>
+
+            <!-- Two-column layout: form + sidebar info -->
+            <div class="new-ticket-layout">
+
+                <!-- ── Main form ── -->
+                <div class="ticket-form-card">
+                    <div class="card-header">
+                        <div class="card-header-icon"><i class="bi bi-ticket-perforated-fill"></i></div>
+                        <div>
+                            <h2>Incident Details</h2>
+                            <p>Fill in the information below to open a new support ticket.</p>
+                        </div>
+                    </div>
+
+                    <form id="ticketForm" class="ticket-form" novalidate>
+
+                        <!-- Subject -->
+                        <div class="form-section">
+                            <label class="form-label" for="titulo">
+                                Subject <span class="required">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="titulo"
+                                class="form-input"
+                                placeholder="Concise summary of the issue"
+                                maxlength="120"
+                                required
+                            >
+                            <div class="char-count"><span id="charCount">0</span> / 120</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-section">
+                            <label class="form-label" for="descripcion">
+                                Description <span class="required">*</span>
+                            </label>
+                            <textarea
+                                id="descripcion"
+                                class="form-input form-textarea"
+                                rows="7"
+                                placeholder="Describe the issue in detail:&#10;• What happened?&#10;• Steps to reproduce&#10;• Expected vs actual behavior&#10;• Any relevant error messages"
+                                required
+                            ></textarea>
+                        </div>
+
+                        <!-- Meta row -->
+                        <div class="form-meta-row">
+                            <div class="form-section">
+                                <label class="form-label" for="departamento">Department</label>
+                                <div class="select-wrapper">
+                                    <select id="departamento" class="form-input form-select">
+                                        <option value="DevOps">DevOps</option>
+                                        <option value="SecOps">SecOps</option>
+                                        <option value="Hardware">Hardware</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <label class="form-label" for="prioridad">Priority</label>
+                                <div class="select-wrapper">
+                                    <select id="prioridad" class="form-input form-select">
+                                        <option value="P3">P3 — Low</option>
+                                        <option value="P2">P2 — Medium</option>
+                                        <option value="P1">P1 — High</option>
+                                        <option value="P0">P0 — Critical</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <label class="form-label" for="assignee">Assign to</label>
+                                <div class="select-wrapper">
+                                    <select id="assignee" class="form-input form-select">
+                                        <option value="">Unassigned</option>
+                                        <option value="L1">L1 Support</option>
+                                        <option value="L2">L2 Support</option>
+                                        <option value="L3">L3 Engineering</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Priority visual selector -->
+                        <div class="form-section">
+                            <label class="form-label">Priority level</label>
+                            <div class="prio-picker" id="prioPicker">
+                                <button type="button" class="prio-btn" data-value="P3">
+                                    <span class="prio-dot p3"></span>
+                                    <div>
+                                        <strong>P3 — Low</strong>
+                                        <small>Minor issue, no urgency</small>
+                                    </div>
+                                </button>
+                                <button type="button" class="prio-btn" data-value="P2">
+                                    <span class="prio-dot p2"></span>
+                                    <div>
+                                        <strong>P2 — Medium</strong>
+                                        <small>Affects workflow, workaround available</small>
+                                    </div>
+                                </button>
+                                <button type="button" class="prio-btn" data-value="P1">
+                                    <span class="prio-dot p1"></span>
+                                    <div>
+                                        <strong>P1 — High</strong>
+                                        <small>Significant impact, no workaround</small>
+                                    </div>
+                                </button>
+                                <button type="button" class="prio-btn" data-value="P0">
+                                    <span class="prio-dot p0"></span>
+                                    <div>
+                                        <strong>P0 — Critical</strong>
+                                        <small>Service down, immediate action needed</small>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Status message -->
+                        <div id="formStatus" class="form-status" style="display:none;"></div>
+
+                        <!-- Actions -->
+                        <div class="form-actions">
+                            <a href="dashboard.html" class="btn-cancel">
+                                <i class="bi bi-x"></i>
+                                Cancel
+                            </a>
+                            <button type="submit" class="btn-submit" id="submitBtn">
+                                <i class="bi bi-send-fill"></i>
+                                Submit Ticket
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- ── Right sidebar: guidelines + SLA ── -->
+                <aside class="ticket-sidebar">
+
+                    <!-- SLA Table -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="bi bi-clock-history"></i>
+                            SLA Response Times
+                        </div>
+                        <div class="sla-table">
+                            <div class="sla-row">
+                                <span class="sla-tag p0">P0</span>
+                                <div class="sla-info">
+                                    <span class="sla-label">Critical</span>
+                                    <span class="sla-time">15 min response</span>
+                                </div>
+            </div>
+                            <div class="sla-row">
+                                <span class="sla-tag p1">P1</span>
+                                <div class="sla-info">
+                                    <span class="sla-label">High</span>
+                                    <span class="sla-time">1 hr response</span>
+                                </div>
+                            </div>
+                            <div class="sla-row">
+                                <span class="sla-tag p2">P2</span>
+                                <div class="sla-info">
+                                    <span class="sla-label">Medium</span>
+                                    <span class="sla-time">4 hr response</span>
+                                </div>
+                            </div>
+                            <div class="sla-row">
+                                <span class="sla-tag p3">P3</span>
+                                <div class="sla-info">
+                                    <span class="sla-label">Low</span>
+                                    <span class="sla-time">1 business day</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tips -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="bi bi-lightbulb"></i>
+                            Tips for a good ticket
+                        </div>
+                        <ul class="tips-list">
+                            <li>
+                                <i class="bi bi-check2-circle"></i>
+                                Use a clear, specific subject line
+                            </li>
+                            <li>
+                                <i class="bi bi-check2-circle"></i>
+                                Include exact error messages or screenshots
+                            </li>
+                            <li>
+                                <i class="bi bi-check2-circle"></i>
+                                Describe steps to reproduce the problem
+                            </li>
+                            <li>
+                                <i class="bi bi-check2-circle"></i>
+                                Mention the number of users affected
+                            </li>
+                            <li>
+                                <i class="bi bi-check2-circle"></i>
+                                Choose the lowest applicable priority
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Contacts per dept -->
+                    <div class="info-card">
+                        <div class="info-card-header">
+                            <i class="bi bi-people"></i>
+                            Department Contacts
+                        </div>
+                        <div class="contacts-list">
+                            <div class="contact-row">
+                                <div class="contact-avatar devops">DO</div>
+                                <div class="contact-info">
+                                    <span class="contact-name">DevOps Team</span>
+                                    <span class="contact-tag">Infrastructure · CI/CD</span>
+                                </div>
+                            </div>
+                            <div class="contact-row">
+                                <div class="contact-avatar secops">SO</div>
+                                <div class="contact-info">
+                                    <span class="contact-name">SecOps Team</span>
+                                    <span class="contact-tag">Security · Compliance</span>
+                                </div>
+                            </div>
+                            <div class="contact-row">
+                                <div class="contact-avatar hardware">HW</div>
+                                <div class="contact-info">
+                                    <span class="contact-name">Hardware Team</span>
+                                    <span class="contact-tag">Devices · Networking</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </aside>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const toggle  = document.getElementById('menuToggle');
+        toggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('visible');
+        });
+        overlay?.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+        });
+
+        // Character counter for subject
+        const titulo   = document.getElementById('titulo');
+        const counter  = document.getElementById('charCount');
+        titulo?.addEventListener('input', () => {
+            counter.textContent = titulo.value.length;
+        });
+
+        // Priority picker — sync with hidden select
+        const prioPicker = document.getElementById('prioPicker');
+        const prioSelect = document.getElementById('prioridad');
+
+        function updatePicker(val) {
+            document.querySelectorAll('.prio-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.value === val);
+            });
+            if (prioSelect) prioSelect.value = val;
+        }
+
+        prioPicker?.addEventListener('click', e => {
+            const btn = e.target.closest('.prio-btn');
+            if (btn) updatePicker(btn.dataset.value);
+        });
+
+        prioSelect?.addEventListener('change', () => updatePicker(prioSelect.value));
+
+        // Init picker
+        updatePicker('P3');
+    </script>
+    <script type="module" src="js/new-ticket.js"></script>
+</body>
+</html>
