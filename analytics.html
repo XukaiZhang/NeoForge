@@ -2,56 +2,209 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NeoForge // Analíticas</title>
+    <title>NeoForge — Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/main.css">
-    <style>
-        .chart-card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 20px; }
-        .stat-val { font-size: 2rem; font-weight: 700; color: #4f46e5; }
-        .log-entry { font-family: 'Inter'; font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #475569; }
-    </style>
+    <link rel="stylesheet" href="css/analytics.css">
 </head>
 <body class="viewport">
     <div class="layout-grid">
-        <aside class="sidebar-v2">
-            <div class="nav-top"><i class="bi bi-shield-check"></i> NeoForge</div>
-            <nav class="v-nav">
-                <a href="dashboard.html" class="v-link"><i class="bi bi-ticket-perforated"></i><span>Tickets</span></a>
-                <a href="inventory.html" class="v-link"><i class="bi bi-box-seam"></i><span>Inventario</span></a>
-                <a href="analytics.html" class="v-link active"><i class="bi bi-graph-up-arrow"></i><span>Analíticas</span></a>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark-sm">NF</div>
+                <span class="sidebar-brand">NeoForge</span>
+            </div>
+
+            <div class="sidebar-section-label">Main Menu</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <span>Tickets</span>
+                </a>
+                <a href="inventory.html" class="nav-item">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Inventory</span>
+                </a>
+                <a href="analytics.html" class="nav-item active">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
             </nav>
+
+            <div class="sidebar-bottom">
+                <div class="user-card">
+                    <div class="user-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="user-info">
+                        <div id="userEmail" class="user-name">—</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Sign out
+                </button>
+            </div>
         </aside>
-        <main class="content-frame">
-            <header class="top-meta"><h2>Rendimiento del Sistema</h2></header>
-            <div class="p-4">
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4">
-                        <div class="chart-card">
-                            <div class="text-muted small fw-bold">TIEMPO MEDIO RESPUESTA</div>
-                            <div class="stat-val">1.2h</div>
-                        </div>
+
+        <!-- Main content -->
+        <main class="content-area">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="page-breadcrumb">
+                        <span class="breadcrumb-root">Dashboard</span>
+                        <i class="bi bi-chevron-right"></i>
+                        <span class="breadcrumb-current">Analytics</span>
                     </div>
-                    <div class="col-md-4">
-                        <div class="chart-card">
-                            <div class="text-muted small fw-bold">DISPONIBILIDAD SERVICIOS</div>
-                            <div class="stat-val text-success">99.98%</div>
-                        </div>
+                    <h1 class="page-title">System Analytics</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="refresh-badge">
+                        <div class="status-dot online"></div>
+                        <span>Live monitoring</span>
                     </div>
-                    <div class="col-md-4">
-                        <div class="chart-card">
-                            <div class="text-muted small fw-bold">TICKETS RESUELTOS (MES)</div>
-                            <div class="stat-val">142</div>
+                </div>
+            </header>
+
+            <!-- KPI cards -->
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">System Uptime</div>
+                    <div class="kpi-value">99.9<span class="kpi-unit">%</span></div>
+                    <div class="kpi-trend positive"><i class="bi bi-arrow-up-short"></i> 0.1% vs last week</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Avg. Resolution Time</div>
+                    <div class="kpi-value">4.2<span class="kpi-unit">h</span></div>
+                    <div class="kpi-trend positive"><i class="bi bi-arrow-down-short"></i> 12% improvement</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Open Tickets</div>
+                    <div class="kpi-value" id="kpiOpenTickets">—</div>
+                    <div class="kpi-trend neutral">Across all departments</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">SLA Compliance</div>
+                    <div class="kpi-value">94<span class="kpi-unit">%</span></div>
+                    <div class="kpi-trend negative"><i class="bi bi-arrow-down-short"></i> 2% below target</div>
+                </div>
+            </div>
+
+            <!-- Charts and logs -->
+            <div class="analytics-grid">
+                <!-- Load chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Ticket Load by Department</h3>
+                        <span class="chart-period">Last 30 days</span>
+                    </div>
+                    <div class="bar-chart">
+                        <div class="bar-group">
+                            <div class="bar-track"><div class="bar-fill" style="height: 82%"><span class="bar-val">82%</span></div></div>
+                            <div class="bar-label">DevOps</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-track"><div class="bar-fill medium" style="height: 57%"><span class="bar-val">57%</span></div></div>
+                            <div class="bar-label">SecOps</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-track"><div class="bar-fill low" style="height: 34%"><span class="bar-val">34%</span></div></div>
+                            <div class="bar-label">Hardware</div>
                         </div>
                     </div>
                 </div>
-                
+
+                <!-- Priority distribution -->
                 <div class="chart-card">
-                    <h5 class="mb-4 fw-bold">Registro de Auditoría</h5>
-                    <div id="logsBody">
-                        <div class="log-entry"><span class="badge bg-info me-2">INFO</span> Sesión de administrador iniciada desde 192.168.1.1</div>
-                        <div class="log-entry"><span class="badge bg-warning me-2">WARN</span> Uso de disco superior al 80% en Nodo_01</div>
-                        <div class="log-entry"><span class="badge bg-success me-2">SUCCESS</span> Copia de seguridad diaria completada</div>
+                    <div class="chart-header">
+                        <h3>Priority Distribution</h3>
+                        <span class="chart-period">Current queue</span>
+                    </div>
+                    <div class="donut-wrapper">
+                        <svg class="donut-chart" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#1e2433" stroke-width="16"/>
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#ef4444" stroke-width="16" stroke-dasharray="28 254" stroke-dashoffset="0" stroke-linecap="round"/>
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#f97316" stroke-width="16" stroke-dasharray="57 254" stroke-dashoffset="-28" stroke-linecap="round"/>
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#eab308" stroke-width="16" stroke-dasharray="85 254" stroke-dashoffset="-85" stroke-linecap="round"/>
+                            <circle cx="60" cy="60" r="45" fill="none" stroke="#6366f1" stroke-width="16" stroke-dasharray="84 254" stroke-dashoffset="-170" stroke-linecap="round"/>
+                        </svg>
+                        <div class="donut-legend">
+                            <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div><span>P0 Critical</span><strong>11%</strong></div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div><span>P1 High</span><strong>22%</strong></div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#eab308"></div><span>P2 Medium</span><strong>33%</strong></div>
+                            <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div><span>P3 Low</span><strong>33%</strong></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Uptime visualization -->
+                <div class="chart-card uptime-card">
+                    <div class="chart-header">
+                        <h3>Server Uptime — Last 90 Days</h3>
+                        <span class="uptime-badge">99.9%</span>
+                    </div>
+                    <div class="uptime-grid">
+                        <!-- 90 boxes generated dynamically by JS or static placeholders -->
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                const grid = document.querySelector('.uptime-grid');
+                                for (let i = 0; i < 90; i++) {
+                                    const box = document.createElement('div');
+                                    const rand = Math.random();
+                                    box.className = 'uptime-box ' + (rand > 0.05 ? 'up' : rand > 0.02 ? 'degraded' : 'down');
+                                    box.title = `Day ${90 - i}`;
+                                    grid.appendChild(box);
+                                }
+                            });
+                        </script>
+                    </div>
+                    <div class="uptime-legend">
+                        <div class="uleg-item"><div class="uleg-box up"></div>Operational</div>
+                        <div class="uleg-item"><div class="uleg-box degraded"></div>Degraded</div>
+                        <div class="uleg-item"><div class="uleg-box down"></div>Outage</div>
+                    </div>
+                </div>
+
+                <!-- Audit log -->
+                <div class="log-card">
+                    <div class="chart-header">
+                        <h3>Live Audit Log</h3>
+                        <div class="log-controls">
+                            <div class="status-dot online"></div>
+                            <span>Streaming</span>
+                        </div>
+                    </div>
+                    <div class="log-terminal" id="logsBody">
+                        <div class="log-entry info">
+                            <span class="log-time">09:41:03</span>
+                            <span class="log-level info-tag">INFO</span>
+                            <span class="log-msg">Kernel initialized — all services nominal</span>
+                        </div>
+                        <div class="log-entry warn">
+                            <span class="log-time">09:41:07</span>
+                            <span class="log-level warn-tag">WARN</span>
+                            <span class="log-msg">High memory pressure detected in IT_DEPT cluster</span>
+                        </div>
+                        <div class="log-entry success">
+                            <span class="log-time">09:41:12</span>
+                            <span class="log-level success-tag">AUTH</span>
+                            <span class="log-msg">Admin session established — operator authenticated</span>
+                        </div>
+                        <div class="log-entry info">
+                            <span class="log-time">09:42:00</span>
+                            <span class="log-level info-tag">INFO</span>
+                            <span class="log-msg">Firestore snapshot listener active on /tickets</span>
+                        </div>
+                        <div class="log-entry info">
+                            <span class="log-time">09:42:01</span>
+                            <span class="log-level info-tag">INFO</span>
+                            <span class="log-msg">Firestore snapshot listener active on /inventory</span>
+                        </div>
                     </div>
                 </div>
             </div>

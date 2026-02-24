@@ -3,36 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoForge // Enterprise Login</title>
+    <title>NeoForge — Authentication</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/login.css">
 </head>
 <body class="auth-gate">
-    <div id="kernel-loader" class="loader-bar"></div>
-    <section class="auth-wrapper">
-        <div class="glass-card">
-            <div class="auth-header">
-                <h1>Neo<span>Forge</span></h1>
-                <div class="security-string">Portal de Gestión de Incidencias</div>
-            </div>
-            <form id="loginForm">
-                <div class="field-wrap">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="email" placeholder="nombre@empresa.com" required>
+    <div class="auth-bg-grid"></div>
+    <div class="auth-bg-glow"></div>
+
+    <div class="auth-split">
+        <!-- Left branding panel -->
+        <div class="auth-brand-panel">
+            <div class="brand-content">
+                <div class="brand-logo">
+                    <div class="logo-mark">NF</div>
                 </div>
-                <div class="field-wrap">
-                    <label>Contraseña</label>
-                    <input type="password" id="password" placeholder="••••••••" required>
+                <h1 class="brand-name">Neo<span>Forge</span></h1>
+                <p class="brand-tagline">Enterprise Helpdesk & Asset Management Platform</p>
+                <div class="brand-features">
+                    <div class="feature-item">
+                        <div class="feature-dot"></div>
+                        <span>Real-time ticket management</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-dot"></div>
+                        <span>Asset inventory tracking</span>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-dot"></div>
+                        <span>Multi-department SLA monitoring</span>
+                    </div>
                 </div>
-                <div id="status-msg" class="terminal-msg"></div>
-                <button type="submit" class="btn-glitch">Iniciar Sesión</button>
-            </form>
-            <div class="auth-nav">
-                <button id="btnRegister" class="link-cmd">Solicitar acceso nuevo</button>
+                <div class="brand-footer">
+                    <div class="enc-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        AES-256 Encrypted
+                    </div>
+                </div>
             </div>
         </div>
-    </section>
+
+        <!-- Right form panel -->
+        <div class="auth-form-panel">
+            <div class="form-card">
+                <div class="form-header">
+                    <h2>Sign in</h2>
+                    <p>Enter your credentials to access the platform</p>
+                </div>
+
+                <form id="loginForm" class="auth-form">
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+                            <input type="email" id="email" placeholder="operator@company.com" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">
+                            Password
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            <input type="password" id="password" placeholder="••••••••••••" required>
+                        </div>
+                    </div>
+
+                    <div id="status-msg" class="status-alert" style="display:none;"></div>
+
+                    <button type="submit" class="btn-primary-action">
+                        <span>Sign In</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </button>
+                </form>
+
+                <div class="form-divider"><span>or</span></div>
+
+                <button id="btnRegister" class="btn-secondary-action">Create new account</button>
+
+                <p class="form-legal">By signing in, you agree to NeoForge's Terms of Service and Privacy Policy.</p>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/auth.js"></script>
 </body>
 </html>

@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NeoForge // Panel de Tickets</title>
+    <title>NeoForge — Tickets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -10,80 +12,171 @@
 </head>
 <body class="viewport">
     <div class="layout-grid">
-        <aside class="sidebar-v2">
-            <div class="nav-top"><i class="bi bi-shield-check"></i> NeoForge</div>
-            <nav class="v-nav">
-                <a href="dashboard.html" class="v-link active"><i class="bi bi-ticket-perforated"></i><span>Tickets</span></a>
-                <a href="inventory.html" class="v-link"><i class="bi bi-box-seam"></i><span>Inventario</span></a>
-                <a href="analytics.html" class="v-link"><i class="bi bi-graph-up-arrow"></i><span>Analíticas</span></a>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark-sm">NF</div>
+                <span class="sidebar-brand">NeoForge</span>
+            </div>
+
+            <div class="sidebar-section-label">Main Menu</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <span>Tickets</span>
+                    <div class="nav-badge" id="navTicketCount">0</div>
+                </a>
+                <a href="inventory.html" class="nav-item">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Inventory</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
             </nav>
-            <div class="nav-bottom">
-                <button id="btnLogout" class="power-off"><i class="bi bi-box-arrow-left"></i></button>
+
+            <div class="sidebar-bottom">
+                <div class="user-card">
+                    <div class="user-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="user-info">
+                        <div id="userEmail" class="user-name">—</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-logout" title="Sign out">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Sign out
+                </button>
             </div>
         </aside>
 
-        <main class="content-frame">
-            <header class="top-meta">
-                <h2>Gestión de Incidencias</h2>
-                <div class="user-meta d-flex align-items-center gap-3">
-                    <span id="userEmail" class="small fw-medium text-muted">---</span>
+        <!-- Main content -->
+        <main class="content-area">
+            <!-- Top bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="page-breadcrumb">
+                        <span class="breadcrumb-root">Dashboard</span>
+                        <i class="bi bi-chevron-right"></i>
+                        <span class="breadcrumb-current">Tickets</span>
+                    </div>
+                    <h1 class="page-title">Ticket Queue</h1>
+                </div>
+                <div class="topbar-right">
+                    <div class="status-indicator">
+                        <div class="status-dot online"></div>
+                        <span>Systems operational</span>
+                    </div>
                 </div>
             </header>
 
-            <div class="dashboard-engine">
-                <div class="form-side">
-                    <div class="panel-header">Crear Nuevo Ticket</div>
-                    <form id="ticketForm">
-                        <div class="input-stack">
-                            <label class="small fw-bold text-muted mb-1">Asunto</label>
-                            <input type="text" id="titulo" placeholder="Ej: Error en servidor de correo" required>
-                            
-                            <label class="small fw-bold text-muted mb-1">Descripción</label>
-                            <textarea id="descripcion" rows="4" placeholder="Describe el problema detalladamente..." required></textarea>
-                            
-                            <div class="row g-2">
-                                <div class="col-6">
-                                    <label class="small fw-bold text-muted mb-1">Departamento</label>
-                                    <select id="departamento">
-                                        <option value="Soporte IT">Soporte IT</option>
-                                        <option value="Desarrollo">Desarrollo</option>
-                                        <option value="Mantenimiento">Mantenimiento</option>
-                                    </select>
-                                </div>
-                                <div class="col-6">
-                                    <label class="small fw-bold text-muted mb-1">Prioridad</label>
-                                    <select id="prioridad">
-                                        <option value="P3">Baja</option>
-                                        <option value="P2">Media</option>
-                                        <option value="P1">Alta</option>
-                                        <option value="P0">Crítica</option>
-                                    </select>
-                                </div>
+            <!-- Stats row -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon critical"><i class="bi bi-exclamation-triangle-fill"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countP0">0</div>
+                        <div class="stat-label">Critical (P0)</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon high"><i class="bi bi-arrow-up-circle-fill"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countP1">0</div>
+                        <div class="stat-label">High (P1)</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon medium"><i class="bi bi-dash-circle-fill"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countP2">0</div>
+                        <div class="stat-label">Medium (P2)</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon low"><i class="bi bi-check-circle-fill"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countP3">0</div>
+                        <div class="stat-label">Low (P3)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content grid -->
+            <div class="content-grid">
+                <!-- New ticket form -->
+                <div class="form-panel">
+                    <div class="panel-header">
+                        <h3>New Incident Report</h3>
+                        <p>Submit a new support ticket</p>
+                    </div>
+                    <form id="ticketForm" class="ticket-form">
+                        <div class="field-group">
+                            <label>Subject</label>
+                            <input type="text" id="titulo" placeholder="Brief description of the issue" required>
+                        </div>
+                        <div class="field-group">
+                            <label>Description</label>
+                            <textarea id="descripcion" rows="5" placeholder="Provide detailed reproduction steps and context..." required></textarea>
+                        </div>
+                        <div class="field-row">
+                            <div class="field-group">
+                                <label>Department</label>
+                                <select id="departamento">
+                                    <option value="DevOps">DevOps</option>
+                                    <option value="SecOps">SecOps</option>
+                                    <option value="Hardware">Hardware</option>
+                                </select>
+                            </div>
+                            <div class="field-group">
+                                <label>Priority</label>
+                                <select id="prioridad">
+                                    <option value="P3">P3 — Low</option>
+                                    <option value="P2">P2 — Medium</option>
+                                    <option value="P1">P1 — High</option>
+                                    <option value="P0">P0 — Critical</option>
+                                </select>
                             </div>
                         </div>
-                        <button type="submit" class="btn-primary-custom w-100 mt-3">Enviar Ticket</button>
+                        <button type="submit" class="btn-submit">
+                            <i class="bi bi-send"></i>
+                            Submit Ticket
+                        </button>
                     </form>
                 </div>
 
-                <div class="table-side">
-                    <div class="table-filters">
-                        <i class="bi bi-search text-muted"></i>
-                        <input type="text" id="ticketSearch" placeholder="Buscar por ID o asunto...">
-                        <div class="counter-box">Activos: <span id="ticketCount">0</span></div>
+                <!-- Ticket list -->
+                <div class="table-panel">
+                    <div class="table-topbar">
+                        <div class="search-wrapper">
+                            <i class="bi bi-search"></i>
+                            <input type="text" id="ticketSearch" placeholder="Search by ID, subject or operator...">
+                        </div>
+                        <div class="ticket-count">
+                            <span id="ticketCount">0</span> tickets
+                        </div>
                     </div>
-                    <div class="neo-table-container">
-                        <table class="n-table">
+                    <div class="table-scroll">
+                        <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Incidencia</th>
-                                    <th>Prioridad</th>
-                                    <th>Estado</th>
-                                    <th>Acción</th>
+                                    <th>Ticket ID</th>
+                                    <th>Subject</th>
+                                    <th>Priority</th>
+                                    <th>Department</th>
+                                    <th>SLA Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="ticketsBody"></tbody>
                         </table>
+                        <div class="table-empty" id="emptyState">
+                            <i class="bi bi-inbox"></i>
+                            <p>No tickets found. Submit your first incident report.</p>
+                        </div>
                     </div>
                 </div>
             </div>

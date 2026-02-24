@@ -2,7 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>NeoForge // Inventario de Activos</title>
+    <title>NeoForge — Inventory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="css/main.css">
@@ -10,58 +12,147 @@
 </head>
 <body class="viewport">
     <div class="layout-grid">
-        <aside class="sidebar-v2">
-            <div class="nav-top"><i class="bi bi-shield-check"></i> NeoForge</div>
-            <nav class="v-nav">
-                <a href="dashboard.html" class="v-link"><i class="bi bi-ticket-perforated"></i><span>Tickets</span></a>
-                <a href="inventory.html" class="v-link active"><i class="bi bi-box-seam"></i><span>Inventario</span></a>
-                <a href="analytics.html" class="v-link"><i class="bi bi-graph-up-arrow"></i><span>Analíticas</span></a>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark-sm">NF</div>
+                <span class="sidebar-brand">NeoForge</span>
+            </div>
+
+            <div class="sidebar-section-label">Main Menu</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <span>Tickets</span>
+                </a>
+                <a href="inventory.html" class="nav-item active">
+                    <i class="bi bi-box-seam"></i>
+                    <span>Inventory</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <i class="bi bi-bar-chart-line"></i>
+                    <span>Analytics</span>
+                </a>
             </nav>
-            <div class="nav-bottom">
-                <button id="btnLogout" class="power-off"><i class="bi bi-box-arrow-left"></i></button>
+
+            <div class="sidebar-bottom">
+                <div class="user-card">
+                    <div class="user-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="user-info">
+                        <div id="userEmail" class="user-name">—</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-logout">
+                    <i class="bi bi-box-arrow-right"></i>
+                    Sign out
+                </button>
             </div>
         </aside>
 
-        <main class="content-frame">
-            <header class="top-meta"><h2>Control de Activos</h2></header>
-            <div class="inventory-engine">
-                <div class="panel-v3 p-4">
-                    <form id="assetForm" class="row g-3">
-                        <div class="col-md-3">
-                            <label class="small fw-bold text-muted">S/N</label>
-                            <input type="text" id="serial" class="n-input" placeholder="Número de Serie" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small fw-bold text-muted">Modelo</label>
-                            <input type="text" id="modelo" class="n-input" placeholder="Ej: MacBook Pro" required>
-                        </div>
-                        <div class="col-md-3">
-                            <label class="small fw-bold text-muted">Categoría</label>
-                            <select id="tipo" class="n-input">
-                                <option value="Laptop">Laptop</option>
-                                <option value="Mobile">Móvil</option>
-                                <option value="Server">Servidor</option>
-                                <option value="Network">Redes</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3 d-flex align-items-end">
-                            <button type="submit" class="btn-primary-custom w-100">Registrar Activo</button>
-                        </div>
-                    </form>
+        <!-- Main content -->
+        <main class="content-area">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="page-breadcrumb">
+                        <span class="breadcrumb-root">Dashboard</span>
+                        <i class="bi bi-chevron-right"></i>
+                        <span class="breadcrumb-current">Inventory</span>
+                    </div>
+                    <h1 class="page-title">Asset Inventory</h1>
                 </div>
-                <div class="neo-table-container">
-                    <table class="n-table">
+            </header>
+
+            <!-- Asset stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="bi bi-pc-display"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countWorkstation">0</div>
+                        <div class="stat-label">Workstations</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="bi bi-phone"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countMobile">0</div>
+                        <div class="stat-label">Mobile Units</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="bi bi-server"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countServer">0</div>
+                        <div class="stat-label">Rack Servers</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon neutral"><i class="bi bi-collection"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="countTotal">0</div>
+                        <div class="stat-label">Total Assets</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Register form -->
+            <div class="register-panel">
+                <div class="panel-header">
+                    <h3>Register New Asset</h3>
+                    <p>Add hardware to your asset registry</p>
+                </div>
+                <form id="assetForm" class="asset-form">
+                    <div class="field-group">
+                        <label>Serial Number</label>
+                        <input type="text" id="serial" placeholder="e.g. SN-2024-00142" required>
+                    </div>
+                    <div class="field-group">
+                        <label>Asset Model</label>
+                        <input type="text" id="modelo" placeholder="e.g. Dell OptiPlex 7090" required>
+                    </div>
+                    <div class="field-group">
+                        <label>Asset Type</label>
+                        <select id="tipo">
+                            <option value="Workstation">Workstation</option>
+                            <option value="Mobile">Mobile Unit</option>
+                            <option value="Server">Rack Server</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i class="bi bi-plus-lg"></i>
+                        Register Asset
+                    </button>
+                </form>
+            </div>
+
+            <!-- Table -->
+            <div class="table-panel">
+                <div class="table-topbar">
+                    <div class="search-wrapper">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="assetSearch" placeholder="Search by serial, model or type...">
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table class="data-table">
                         <thead>
                             <tr>
-                                <th>S/N</th>
-                                <th>Modelo</th>
-                                <th>Categoría</th>
-                                <th>Estado Vida</th>
-                                <th>Acción</th>
+                                <th>Serial Number</th>
+                                <th>Model</th>
+                                <th>Type</th>
+                                <th>Health</th>
+                                <th>Registered</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="inventoryBody"></tbody>
                     </table>
+                    <div class="table-empty" id="emptyState">
+                        <i class="bi bi-box"></i>
+                        <p>No assets registered. Add your first asset above.</p>
+                    </div>
                 </div>
             </div>
         </main>
