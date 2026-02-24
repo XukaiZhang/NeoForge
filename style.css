@@ -1,32 +1,99 @@
 :root {
-    --bs-primary: #00d2ff;
-    --bs-primary-rgb: 0, 210, 255;
+    /* Paleta Cyber-Corporate Neoforge */
+    --bs-primary: #00e5ff; /* Cyan más vibrante */
+    --bs-primary-rgb: 0, 229, 255;
+    --neoforge-bg: #0b0d10;
+    --neoforge-surface: #15181e;
+    --neoforge-surface-hover: #1c2028;
+    --neoforge-border: #262b36;
 }
 
 body {
-    /* Fondo ligeramente más oscuro que el dark por defecto de Bootstrap */
-    background-color: #0f1115;
+    background-color: var(--neoforge-bg);
+    color: #e2e8f0;
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Estilo personalizado para la barra de navegación */
+/* Tipografía de marca */
+.navbar-brand {
+    letter-spacing: 1px;
+    text-shadow: 0 0 10px rgba(var(--bs-primary-rgb), 0.3);
+}
+
+/* Barra de navegación */
 .neoforge-navbar {
-    background-color: #1a1d24;
-    border-bottom: 2px solid var(--bs-primary);
+    background-color: var(--neoforge-surface);
+    border-bottom: 1px solid var(--neoforge-border);
 }
 
-/* Efecto de elevación en las tarjetas al pasar el ratón */
+/* Tarjetas y contenedores */
 .card {
-    background-color: #1a1d24;
-    border: 1px solid #2a2d35;
-    transition: transform 0.2s;
+    background-color: var(--neoforge-surface);
+    border: 1px solid var(--neoforge-border);
+    border-radius: 12px;
+    transition: all 0.3s ease;
 }
 
-.card:hover {
-    transform: translateY(-2px);
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5) !important;
 }
 
-/* Colores personalizados para las etiquetas de prioridad */
-.badge-critica { background-color: #ff3366; color: white; }
-.badge-alta { background-color: #ff9900; color: black; }
-.badge-media { background-color: #00ccff; color: black; }
-.badge-baja { background-color: #00cc66; color: black; }
+/* Inputs y Formularios */
+.form-control, .form-select {
+    border: 1px solid var(--neoforge-border);
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb), 0.25);
+}
+
+/* Tablas Premium */
+.table-dark {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(255, 255, 255, 0.02);
+    --bs-table-hover-bg: var(--neoforge-surface-hover);
+    --bs-table-border-color: var(--neoforge-border);
+}
+
+/* Badges de Prioridad (Optimizados para accesibilidad) */
+.badge {
+    padding: 0.5em 0.75em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.badge-critica { background-color: rgba(255, 51, 102, 0.2); color: #ff3366; border: 1px solid #ff3366; }
+.badge-alta { background-color: rgba(255, 153, 0, 0.2); color: #ff9900; border: 1px solid #ff9900; }
+.badge-media { background-color: rgba(0, 204, 255, 0.2); color: #00ccff; border: 1px solid #00ccff; }
+.badge-baja { background-color: rgba(0, 204, 102, 0.2); color: #00cc66; border: 1px solid #00cc66; }
+
+/* Estados */
+.badge-abierto { background-color: #6c757d; }
+.badge-resuelto { background-color: #198754; }
+
+/* Animación de latido para SLA vencido */
+@keyframes pulse-danger {
+    0% { color: #dc3545; text-shadow: 0 0 0px rgba(220,53,69,0); }
+    50% { color: #ff6b6b; text-shadow: 0 0 8px rgba(220,53,69,0.8); }
+    100% { color: #dc3545; text-shadow: 0 0 0px rgba(220,53,69,0); }
+}
+.sla-overdue {
+    animation: pulse-danger 2s infinite;
+    font-weight: bold;
+}
+
+/* Estilización del Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--neoforge-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: #3f4654;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--bs-primary);
+}
