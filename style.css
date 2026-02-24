@@ -1,0 +1,32 @@
+:root {
+    --bs-primary: #00d2ff;
+    --bs-primary-rgb: 0, 210, 255;
+}
+
+body {
+    /* Fondo ligeramente más oscuro que el dark por defecto de Bootstrap */
+    background-color: #0f1115;
+}
+
+/* Estilo personalizado para la barra de navegación */
+.neoforge-navbar {
+    background-color: #1a1d24;
+    border-bottom: 2px solid var(--bs-primary);
+}
+
+/* Efecto de elevación en las tarjetas al pasar el ratón */
+.card {
+    background-color: #1a1d24;
+    border: 1px solid #2a2d35;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+/* Colores personalizados para las etiquetas de prioridad */
+.badge-critica { background-color: #ff3366; color: white; }
+.badge-alta { background-color: #ff9900; color: black; }
+.badge-media { background-color: #00ccff; color: black; }
+.badge-baja { background-color: #00cc66; color: black; }
