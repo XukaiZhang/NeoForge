@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --sidebar: #0f172a;
+    --border: #e2e8f0;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --radius: 8px;
+    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+body {
+    background: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar Profesional */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.layout-grid {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    height: 100vh;
+}
+
+.sidebar-v2 {
+    background: var(--sidebar);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0;
+}
+
+.nav-top { 
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 0 1.5rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.v-nav { flex: 1; }
+.v-link {
+    display: flex;
+    align-items: center;
+    padding: 10px 1.5rem;
+    color: #94a3b8;
+    text-decoration: none;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.v-link i { margin-right: 12px; font-size: 1.2rem; }
+.v-link:hover { color: white; background: rgba(255,255,255,0.05); }
+.v-link.active { color: white; background: var(--primary); }
+
+.nav-bottom {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.power-off { 
+    background: rgba(239, 68, 68, 0.1); 
+    border: none; 
+    color: #f87171; 
+    width: 40px; 
+    height: 40px; 
+    border-radius: var(--radius);
+    transition: 0.3s;
+}
+.power-off:hover { background: #ef4444; color: white; }
+
+.content-frame { overflow-y: auto; display: flex; flex-direction: column; }
+
+.top-meta { 
+    padding: 1rem 2rem; 
+    background: white;
+    border-bottom: 1px solid var(--border); 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.top-meta h2 { font-size: 1.25rem; font-weight: 600; margin: 0; }
+
+.btn-primary-custom {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius);
+    font-weight: 500;
+    transition: 0.2s;
+}
+.btn-primary-custom:hover { background: var(--primary-hover); }

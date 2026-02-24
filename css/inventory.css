@@ -1,0 +1,28 @@
+.inventory-engine { padding: 2rem; }
+.panel-v3 { 
+    background: white; 
+    border: 1px solid var(--border); 
+    border-radius: var(--radius);
+    margin-bottom: 2rem;
+}
+
+.n-input { 
+    width: 100%; 
+    background: #fff; 
+    border: 1px solid var(--border); 
+    padding: 10px; 
+    border-radius: 6px;
+    font-size: 0.9rem; 
+}
+
+.health-bar { width: 100px; height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+.health-fill { height: 100%; background: #10b981; }
+
+.badge-asset {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}

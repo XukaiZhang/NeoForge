@@ -1,0 +1,68 @@
+.dashboard-engine { display: grid; grid-template-columns: 400px 1fr; flex: 1; }
+
+.form-side { background: white; border-right: 1px solid var(--border); padding: 2rem; }
+.panel-header { font-weight: 600; font-size: 1rem; color: var(--text-main); margin-bottom: 1.5rem; }
+
+.input-stack input, .input-stack textarea, .input-stack select {
+    width: 100%; 
+    background: #fff; 
+    border: 1px solid var(--border); 
+    padding: 10px 14px; 
+    margin-bottom: 12px; 
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+}
+
+.table-side { background: var(--bg-main); padding: 2rem; }
+.table-filters { 
+    margin-bottom: 1.5rem;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center;
+    background: white;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+}
+.table-filters input { border: none; font-size: 0.9rem; width: 70%; outline: none; }
+.counter-box { font-weight: 600; color: var(--text-muted); font-size: 0.85rem; }
+
+.neo-table-container { 
+    background: white; 
+    border-radius: var(--radius); 
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.n-table { width: 100%; border-collapse: collapse; }
+.n-table th { 
+    background: #f8fafc;
+    padding: 12px 20px; 
+    font-size: 0.75rem; 
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted); 
+    text-align: left; 
+    border-bottom: 1px solid var(--border); 
+}
+.n-table td { padding: 16px 20px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+
+.prio-tag { 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 0.75rem; 
+    font-weight: 600; 
+}
+.prio-P0 { background: #fef2f2; color: #dc2626; }
+.prio-P1 { background: #fff7ed; color: #ea580c; }
+.prio-P3 { background: #f0f9ff; color: #0284c7; }
+
+.btn-purge { 
+    background: #fff; 
+    border: 1px solid #e2e8f0; 
+    color: #64748b; 
+    padding: 6px 12px; 
+    border-radius: 6px;
+    font-size: 0.8rem;
+}
+.btn-purge:hover { background: #fef2f2; color: #dc2626; border-color: #fecaca; }

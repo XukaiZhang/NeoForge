@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>NeoForge // Analíticas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .chart-card { background: white; border-radius: 8px; border: 1px solid #e2e8f0; padding: 20px; }
+        .stat-val { font-size: 2rem; font-weight: 700; color: #4f46e5; }
+        .log-entry { font-family: 'Inter'; font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #475569; }
+    </style>
+</head>
+<body class="viewport">
+    <div class="layout-grid">
+        <aside class="sidebar-v2">
+            <div class="nav-top"><i class="bi bi-shield-check"></i> NeoForge</div>
+            <nav class="v-nav">
+                <a href="dashboard.html" class="v-link"><i class="bi bi-ticket-perforated"></i><span>Tickets</span></a>
+                <a href="inventory.html" class="v-link"><i class="bi bi-box-seam"></i><span>Inventario</span></a>
+                <a href="analytics.html" class="v-link active"><i class="bi bi-graph-up-arrow"></i><span>Analíticas</span></a>
+            </nav>
+        </aside>
+        <main class="content-frame">
+            <header class="top-meta"><h2>Rendimiento del Sistema</h2></header>
+            <div class="p-4">
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <div class="text-muted small fw-bold">TIEMPO MEDIO RESPUESTA</div>
+                            <div class="stat-val">1.2h</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <div class="text-muted small fw-bold">DISPONIBILIDAD SERVICIOS</div>
+                            <div class="stat-val text-success">99.98%</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="chart-card">
+                            <div class="text-muted small fw-bold">TICKETS RESUELTOS (MES)</div>
+                            <div class="stat-val">142</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <h5 class="mb-4 fw-bold">Registro de Auditoría</h5>
+                    <div id="logsBody">
+                        <div class="log-entry"><span class="badge bg-info me-2">INFO</span> Sesión de administrador iniciada desde 192.168.1.1</div>
+                        <div class="log-entry"><span class="badge bg-warning me-2">WARN</span> Uso de disco superior al 80% en Nodo_01</div>
+                        <div class="log-entry"><span class="badge bg-success me-2">SUCCESS</span> Copia de seguridad diaria completada</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>
