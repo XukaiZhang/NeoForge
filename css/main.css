@@ -813,6 +813,9 @@ body {
 /* ═══════════════════════════════════════════════════════════════
    RESPONSIVE — Tablet (≤ 1024px)
    ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (≤ 1024px)
+   ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
     .stats-row {
         grid-template-columns: repeat(2, 1fr);
@@ -825,7 +828,8 @@ body {
 @media (max-width: 768px) {
     :root { --sidebar-w: 230px; }
 
-    .viewport { overflow: auto; height: auto; min-height: 100vh; }
+    /* Page chrome */
+    .viewport        { overflow: auto; height: auto; min-height: 100vh; }
 
     .layout-grid {
         grid-template-columns: 1fr;
@@ -833,54 +837,67 @@ body {
         min-height: 100vh;
     }
 
-    /* Sidebar: off-canvas on mobile */
+    /* Off-canvas sidebar */
     .sidebar {
         position: fixed;
-        top: 0;
-        left: 0;
+        top: 0; left: 0;
         height: 100vh;
         transform: translateX(-100%);
         z-index: 200;
         box-shadow: var(--shadow-lg);
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
     }
+    .sidebar.open { transform: translateX(0); }
 
-    .sidebar.open {
-        transform: translateX(0);
-    }
+    .sidebar-overlay { display: none; }
+    .sidebar-overlay.visible { display: block; }
 
-    .sidebar-overlay.visible {
-        display: block;
-    }
+    .menu-toggle { display: flex; }
 
-    .menu-toggle {
-        display: flex;
-    }
-
-    /* Content: full width, scrollable */
+    /* Main content */
     .content-area {
         height: auto;
         min-height: 100vh;
         overflow: visible;
-        padding-top: 60px; /* room for hamburger */
+        padding-top: 56px; /* hamburger clearance */
     }
 
+    /* Topbar */
     .topbar {
-        padding: 16px 16px 14px;
+        padding: 12px 14px 12px;
         flex-wrap: wrap;
+        gap: 8px;
     }
+    .page-title       { font-size: 1.15rem; }
+    .page-breadcrumb  { font-size: 0.7rem; }
+    .topbar-right     { gap: 6px; }
 
-    .page-title { font-size: 1.2rem; }
-
-    .topbar-right { display: none; }
-
+    /* Stats */
     .stats-row {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        padding: 16px 16px 0;
+        gap: 8px;
+        padding: 12px 14px 0;
     }
+    .stat-card        { padding: 12px; gap: 10px; }
+    .stat-icon        { width: 34px; height: 34px; font-size: 0.85rem; flex-shrink:0; }
+    .stat-value       { font-size: 1.25rem; }
+    .stat-label       { font-size: 0.66rem; }
 
-    .stat-card { padding: 14px; }
-    .stat-value { font-size: 1.3rem; }
+    /* Sidebar internals */
+    .sidebar-shortcut-hint { display: none; }
+
+    /* Table panel */
+    .table-panel      { border-radius: var(--radius-sm); }
+    .table-topbar     { flex-direction: column; align-items: stretch; padding: 10px 12px; gap: 8px; }
+    .search-wrapper   { min-width: unset; }
+    .table-actions    { flex-wrap: wrap; gap: 6px; }
+    .table-scroll     { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .data-table       { min-width: 540px; }
+    .table-footer     { padding: 8px 12px; flex-wrap: wrap; gap: 6px; }
+    .table-footer-info{ font-size: 0.65rem; }
+
+    /* Topbar right: hide status on mobile */
+    .status-indicator { display: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -889,14 +906,20 @@ body {
 @media (max-width: 480px) {
     .stats-row {
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 6px;
+        padding: 10px 10px 0;
     }
+    .stat-card    { padding: 10px; }
+    .stat-icon    { width: 30px; height: 30px; font-size: 0.8rem; }
+    .stat-value   { font-size: 1.1rem; }
+    .stat-label   { font-size: 0.6rem; }
 
-    .stat-icon { width: 32px; height: 32px; font-size: 0.85rem; }
-    .stat-value { font-size: 1.2rem; }
-    .stat-label { font-size: 0.65rem; }
+    .topbar       { padding: 10px; }
+    .page-title   { font-size: 1rem; }
 
-    .data-table { min-width: 480px; }
+    .data-table   { min-width: 480px; }
+    .table-topbar { gap: 6px; }
 
-    .table-topbar { flex-wrap: wrap; gap: 8px; }
+    /* Panel padding reduction */
+    .panel-header { padding: 14px 14px 12px; }
 }

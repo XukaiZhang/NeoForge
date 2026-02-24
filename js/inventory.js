@@ -16,7 +16,7 @@ assetForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button[type="submit"]');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Saving…';
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Guardando…';
 
     try {
         await addDoc(collection(db, 'inventory'), {
@@ -28,11 +28,11 @@ assetForm?.addEventListener('submit', async (e) => {
         });
         e.target.reset();
     } catch (err) {
-        console.error('Asset registration failed:', err);
-        alert('Failed to register asset. Please try again.');
+        console.error('Error al registrar activo:', err);
+        alert('Error al registrar el activo. Por favor inténtalo de nuevo.');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-plus-lg"></i> Register';
+        btn.innerHTML = '<i class="bi bi-plus-lg"></i> Registrar';
     }
 });
 
@@ -66,7 +66,7 @@ function renderAssets(assets) {
 
     inventoryBody.innerHTML = assets.map(item => {
         const date = item.creado?.toDate?.()
-            ? item.creado.toDate().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+            ? item.creado.toDate().toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'numeric' })
             : '—';
 
         return `

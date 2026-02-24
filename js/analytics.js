@@ -13,7 +13,7 @@ function buildUptimeGrid() {
         const daysAgo = days - i;
         const d = new Date();
         d.setDate(d.getDate() - daysAgo);
-        const label = d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
+        const label = d.toLocaleDateString('es-ES', { day:'2-digit', month:'short' });
         const box = document.createElement('div');
         box.className = `uptime-box ${status}`;
         box.setAttribute('title', `${label} — ${status.charAt(0).toUpperCase() + status.slice(1)}`);
@@ -173,16 +173,16 @@ function buildSparkline() {
 // ─── Live audit log ───────────────────────────────────────────────
 const LOG_EVENTS = [
     { level: 'INFO',  tag: 'info-tag',    msgs: [
-        'Firestore snapshot updated on /tickets',
+        'Snapshot de Firestore actualizado en /tickets',
         'User session verified successfully',
         'Inventory sync complete — 0 conflicts',
         'Scheduled health check passed',
         'Database index rebuild completed',
     ]},
     { level: 'WARN',  tag: 'warn-tag',    msgs: [
-        'High memory pressure in IT_DEPT cluster',
+        'Alta presión de memoria en el clúster IT_DEPT',
         'API response time exceeded 800ms threshold',
-        'Firestore quota at 78% — monitor usage',
+        'Cuota de Firestore al 78% — supervisa el uso',
         'Rate limit approaching on auth endpoint',
     ]},
     { level: 'AUTH',  tag: 'auth-tag',    msgs: [
@@ -195,9 +195,9 @@ const LOG_EVENTS = [
         'Asset sync retry #2 — connection refused',
     ]},
     { level: 'OK',    tag: 'success-tag', msgs: [
-        'Kernel initialized — all services nominal',
+        'Kernel inicializado — todos los servicios nominales',
         'Backup completed successfully',
-        'SSL certificate renewed — valid 90 days',
+        'Certificado SSL renovado — válido 90 días',
     ]},
 ];
 
@@ -229,10 +229,10 @@ function appendLog(level, tag, msg) {
 
 function seedInitialLogs() {
     const seeds = [
-        { level: 'OK',   tag: 'success-tag', msg: 'Kernel initialized — all services nominal' },
-        { level: 'INFO', tag: 'info-tag',     msg: 'Firestore listeners active on /tickets and /inventory' },
+        { level: 'OK',   tag: 'success-tag', msg: 'Kernel inicializado — todos los servicios nominales' },
+        { level: 'INFO', tag: 'info-tag',     msg: 'Listeners de Firestore activos en /tickets e /inventory' },
         { level: 'AUTH', tag: 'auth-tag',     msg: 'Admin session established' },
-        { level: 'INFO', tag: 'info-tag',     msg: 'Analytics dashboard loaded' },
+        { level: 'INFO', tag: 'info-tag',     msg: 'Panel de analíticas cargado' },
     ];
     seeds.reverse().forEach(s => appendLog(s.level, s.tag, s.msg));
 }
@@ -268,10 +268,10 @@ function connectFirestore() {
             buildDonut(tickets);
 
             // Log the update
-            appendLog('INFO', 'info-tag', `Firestore: ${tickets.length} ticket(s) in queue`);
+            appendLog('INFO', 'info-tag', `Firestore: ${tickets.length} ticket(s) en cola`);
         });
     } catch (e) {
-        console.warn('Firestore not available — using demo data');
+        console.warn('Firestore no disponible — usando datos de demo');
         buildDeptChart([
             { depto: 'DevOps' }, { depto: 'DevOps' }, { depto: 'DevOps' }, { depto: 'DevOps' },
             { depto: 'SecOps' }, { depto: 'SecOps' }, { depto: 'SecOps' },

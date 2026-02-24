@@ -514,3 +514,29 @@
     .kpi-row { grid-template-columns: 1fr 1fr; }
     .kpi-value { font-size: 1.4rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE ADICIONAL — Analíticas
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .analytics-grid { grid-template-columns: 1fr; }
+    .kpi-row        { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 768px) {
+    .kpi-row        { grid-template-columns: repeat(2, 1fr); gap: 8px; padding: 12px 14px 0; }
+    .analytics-grid { padding: 12px 14px 24px; gap: 12px; }
+    .chart-card     { padding: 16px; }
+    .uptime-grid    { gap: 3px; }
+    .uptime-grid > div { width: 10px; height: 10px; }
+    .log-terminal   { max-height: 200px; }
+}
+
+@media (max-width: 480px) {
+    .kpi-row        { grid-template-columns: 1fr 1fr; gap: 6px; padding: 8px 10px 0; }
+    .kpi-card       { padding: 14px; }
+    .kpi-value      { font-size: 1.9rem; }
+    .analytics-grid { padding: 8px 10px 20px; gap: 10px; }
+    .chart-header h3 { font-size: 0.88rem; }
+    .uptime-grid > div { width: 8px; height: 8px; }
+}

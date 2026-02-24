@@ -98,7 +98,7 @@ document.getElementById('drawerCommentSubmit')?.addEventListener('click', async 
     if (text) {
         updates.activity = arrayUnion({
             text,
-            author: auth.currentUser?.email ?? 'Unknown',
+            author: auth.currentUser?.email ?? 'Desconocido',
             ts:     new Date().toISOString(),
         });
     }
@@ -108,7 +108,7 @@ document.getElementById('drawerCommentSubmit')?.addEventListener('click', async 
         if (input)     input.value = '';
         if (statusSel) statusSel.value = '';
     } catch (e) {
-        console.error('Failed to update ticket:', e);
+        console.error('Error al actualizar el ticket:', e);
     }
 });
 
@@ -175,7 +175,7 @@ function renderPagination(filtered) {
     const end   = Math.min(currentPage * PAGE_SIZE, total);
 
     if (pageIndicator)  pageIndicator.textContent  = `${currentPage} / ${totalPages}`;
-    if (paginationInfo) paginationInfo.textContent = `Showing ${total === 0 ? 0 : start}–${end} of ${total}`;
+    if (paginationInfo) paginationInfo.textContent = `Mostrando ${total === 0 ? 0 : start}–${end} de ${total}`;
     if (btnPrev)  btnPrev.disabled  = currentPage <= 1;
     if (btnNext)  btnNext.disabled  = currentPage >= totalPages;
 }
@@ -193,8 +193,8 @@ function renderTickets(tickets, totalFiltered) {
     if (!hasResults) {
         ticketsBody.innerHTML = '';
         if (emptyMsg) emptyMsg.textContent = totalFiltered === 0 && allTickets.length > 0
-            ? 'No tickets match your current filters.'
-            : 'No tickets yet. Create your first incident report.';
+            ? 'Ningún ticket coincide con los filtros.'
+            : 'Sin tickets aún. Crea tu primer parte de incidencia.';
         return;
     }
 
@@ -246,10 +246,10 @@ function buildMiniDonut(tickets) {
     if (totalEl) totalEl.textContent = total;
 
     const config = [
-        { key:'P0', label:'P0 Critical', color:'#ef4444' },
-        { key:'P1', label:'P1 High',     color:'#f97316' },
-        { key:'P2', label:'P2 Medium',   color:'#eab308' },
-        { key:'P3', label:'P3 Low',      color:'#6366f1' },
+        { key:'P0', label:'P0 Crítico', color:'#ef4444' },
+        { key:'P1', label:'P1 Alto',    color:'#f97316' },
+        { key:'P2', label:'P2 Medio',   color:'#eab308' },
+        { key:'P3', label:'P3 Bajo',    color:'#6366f1' },
     ];
 
     const counts = {};
@@ -351,9 +351,9 @@ function syncStatCards() {
 
 // ── Delete ─────────────────────────────────────────────────────────
 window.purgeTicket = async (id) => {
-    if (!confirm('Delete this ticket permanently?')) return;
+    if (!confirm('¿Eliminar este ticket permanentemente?')) return;
     try { await deleteDoc(doc(db, 'tickets', id)); }
-    catch (e) { alert('Failed to delete ticket.'); }
+    catch (e) { alert('Error al eliminar el ticket.'); }
 };
 
 // ── Helpers ────────────────────────────────────────────────────────
@@ -368,17 +368,17 @@ function shortEmail(email = '') {
 function formatTime(ts) {
     if (!ts) return '—';
     const d = ts.toDate ? ts.toDate() : new Date(ts);
-    return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'2-digit' });
+    return d.toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'2-digit' });
 }
 
 function timeAgo(ts) {
     if (!ts) return '—';
     const d    = ts.toDate ? ts.toDate() : new Date(ts);
     const diff = Math.floor((Date.now() - d.getTime()) / 1000);
-    if (diff < 60)    return 'Just now';
-    if (diff < 3600)  return Math.floor(diff/60) + 'm ago';
-    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
-    return Math.floor(diff/86400) + 'd ago';
+    if (diff < 60)    return 'Ahora mismo';
+    if (diff < 3600)  return Math.floor(diff/60) + ' min atrás';
+    if (diff < 86400) return Math.floor(diff/3600) + ' h atrás';
+    return Math.floor(diff/86400) + ' d atrás';
 }
 
 // Expose for inline HTML onclick

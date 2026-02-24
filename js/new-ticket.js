@@ -19,21 +19,21 @@ form?.addEventListener('submit', async (e) => {
 
     // Client-side validation
     if (!titulo) {
-        showStatus('error', 'Please provide a subject for this ticket.');
+        showStatus('error', 'Por favor indica un asunto para el ticket.');
         document.getElementById('titulo')?.focus();
         return;
     }
 
     if (!descripcion) {
-        showStatus('error', 'Please add a description before submitting.');
+        showStatus('error', 'Por favor añade una descripción antes de enviar.');
         document.getElementById('descripcion')?.focus();
         return;
     }
 
     // Loading state
     submitBtn.disabled = true;
-    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Submitting…';
-    showStatus('loading', 'Creating ticket…');
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando…';
+    showStatus('loading', 'Creando ticket…');
 
     try {
         const docRef = await addDoc(collection(db, 'tickets'), {
@@ -47,7 +47,7 @@ form?.addEventListener('submit', async (e) => {
             status: 'open',
         });
 
-        showStatus('success', `Ticket #${docRef.id.slice(-6).toUpperCase()} created successfully. Redirecting…`);
+        showStatus('success', `Ticket #${docRef.id.slice(-6).toUpperCase()} creado correctamente. Redirigiendo…`);
 
         // Redirect after short delay so user sees the success message
         setTimeout(() => {
@@ -55,10 +55,10 @@ form?.addEventListener('submit', async (e) => {
         }, 1400);
 
     } catch (err) {
-        console.error('Ticket creation failed:', err);
-        showStatus('error', 'Failed to create ticket. Please try again.');
+        console.error('Error al crear el ticket:', err);
+        showStatus('error', 'Error al crear el ticket. Por favor inténtalo de nuevo.');
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Submit Ticket';
+        submitBtn.innerHTML = '<i class="bi bi-send-fill"></i> Enviar Ticket';
     }
 });
 

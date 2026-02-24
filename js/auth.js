@@ -40,7 +40,7 @@ onAuthStateChanged(auth, (user) => {
 // ── Google Sign In / Register (shared handler) ────────────────────
 async function googleSignIn(msgElId) {
     const msgEl = document.getElementById(msgElId);
-    showAlert(msgEl, 'loading', 'Opening Google sign-in…');
+    showAlert(msgEl, 'loading', 'Abriendo Google…');
     try {
         await signInWithPopup(auth, googleProvider);
         // onAuthStateChanged handles redirect
@@ -64,9 +64,9 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     const msgEl    = document.getElementById('status-msg-login');
     const btn      = e.target.querySelector('button[type="submit"]');
 
-    if (!email || !password) { showAlert(msgEl, 'error', 'Please fill in all fields.'); return; }
+    if (!email || !password) { showAlert(msgEl, 'error', 'Por favor rellena todos los campos.'); return; }
 
-    showAlert(msgEl, 'loading', 'Authenticating…');
+    showAlert(msgEl, 'loading', 'Autenticando…');
     btn.disabled = true;
 
     try {
@@ -86,18 +86,18 @@ document.getElementById('registerForm')?.addEventListener('submit', async (e) =>
     const msgEl    = document.getElementById('status-msg-register');
     const btn      = e.target.querySelector('button[type="submit"]');
 
-    if (!email || !password || !confirm) { showAlert(msgEl, 'error', 'Please fill in all fields.'); return; }
-    if (password !== confirm)            { showAlert(msgEl, 'error', 'Passwords do not match.'); return; }
-    if (password.length < 6)            { showAlert(msgEl, 'error', 'Password must be at least 6 characters.'); return; }
+    if (!email || !password || !confirm) { showAlert(msgEl, 'error', 'Por favor rellena todos los campos.'); return; }
+    if (password !== confirm)            { showAlert(msgEl, 'error', 'Las contraseñas no coinciden.'); return; }
+    if (password.length < 6)            { showAlert(msgEl, 'error', 'La contraseña debe tener al menos 6 caracteres.'); return; }
 
-    showAlert(msgEl, 'loading', 'Creating your account…');
+    showAlert(msgEl, 'loading', 'Creando tu cuenta…');
     btn.disabled = true;
 
     try {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
         // Set display name from email prefix
         await updateProfile(cred.user, { displayName: email.split('@')[0] });
-        showAlert(msgEl, 'success', 'Account created! Redirecting…');
+        showAlert(msgEl, 'success', '¡Cuenta creada! Redirigiendo…');
     } catch (err) {
         showAlert(msgEl, 'error', getFriendlyError(err.code));
         btn.disabled = false;
@@ -110,14 +110,14 @@ document.getElementById('btnSendReset')?.addEventListener('click', async () => {
     const msgEl  = document.getElementById('forgotStatus');
     const btn    = document.getElementById('btnSendReset');
 
-    if (!email) { showAlert(msgEl, 'error', 'Please enter your email address.'); return; }
+    if (!email) { showAlert(msgEl, 'error', 'Por favor introduce tu dirección de correo.'); return; }
 
     btn.disabled = true;
-    showAlert(msgEl, 'loading', 'Sending reset link…');
+    showAlert(msgEl, 'loading', 'Enviando enlace de restablecimiento…');
 
     try {
         await sendPasswordResetEmail(auth, email);
-        showAlert(msgEl, 'success', 'Reset link sent! Check your inbox.');
+        showAlert(msgEl, 'success', '¡Enlace enviado! Revisa tu bandeja de entrada.');
     } catch (err) {
         showAlert(msgEl, 'error', getFriendlyError(err.code));
         btn.disabled = false;
@@ -145,16 +145,16 @@ export function showAlert(el, type, text) {
 
 export function getFriendlyError(code) {
     const map = {
-        'auth/user-not-found':        'No account found with this email.',
-        'auth/wrong-password':        'Incorrect password. Please try again.',
-        'auth/invalid-email':         'Please enter a valid email address.',
-        'auth/too-many-requests':     'Too many attempts. Please try again later.',
-        'auth/email-already-in-use':  'This email is already registered. Sign in instead.',
-        'auth/weak-password':         'Password must be at least 6 characters.',
-        'auth/invalid-credential':    'Invalid email or password.',
-        'auth/popup-blocked':         'Popup was blocked. Allow popups and try again.',
-        'auth/network-request-failed':'Network error. Check your connection.',
-        'auth/cancelled-popup-request':'Sign-in cancelled.',
+        'auth/user-not-found':        'No se encontró ninguna cuenta con este correo.',
+        'auth/wrong-password':        'Contraseña incorrecta. Por favor inténtalo de nuevo.',
+        'auth/invalid-email':         'Por favor introduce un correo electrónico válido.',
+        'auth/too-many-requests':     'Demasiados intentos. Por favor inténtalo más tarde.',
+        'auth/email-already-in-use':  'Este correo ya está registrado. Inicia sesión.',
+        'auth/weak-password':         'La contraseña debe tener al menos 6 caracteres.',
+        'auth/invalid-credential':    'Correo o contraseña incorrectos.',
+        'auth/popup-blocked':         'El popup fue bloqueado. Permite popups e inténtalo.',
+        'auth/network-request-failed':'Error de red. Comprueba tu conexión.',
+        'auth/cancelled-popup-request':'Inicio de sesión cancelado.',
     };
-    return map[code] ?? 'An unexpected error occurred. Please try again.';
+    return map[code] ?? 'Ocurrió un error inesperado. Por favor inténtalo de nuevo.';
 }

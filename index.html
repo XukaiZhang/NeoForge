@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoForge — Helpdesk Platform</title>
+    <title>NeoForge — Plataforma de Helpdesk</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <style>
@@ -121,9 +121,9 @@
     <div class="splash" id="splash">
         <div class="logo-mark">NF</div>
         <div class="brand-name">Neo<span>Forge</span></div>
-        <div class="brand-sub">HELPDESK &amp; ASSET MANAGEMENT</div>
+        <div class="brand-sub">HELPDESK Y GESTIÓN DE ACTIVOS</div>
         <div class="loader-track"><div class="loader-fill"></div></div>
-        <div class="loader-status" id="loaderStatus">Initializing…</div>
+        <div class="loader-status" id="loaderStatus">Iniciando…</div>
     </div>
 
     <script type="module">
@@ -141,13 +141,13 @@
 
         const statusEl = document.getElementById('loaderStatus');
         const splash   = document.getElementById('splash');
-        const msgs = ['Initializing…','Connecting to Firebase…','Checking session…'];
+        const msgs = ['Iniciando…','Conectando a Firebase…','Verificando sesión…'];
         let i = 0;
         const ticker = setInterval(() => { if (statusEl) statusEl.textContent = msgs[Math.min(++i, msgs.length-1)]; }, 500);
 
         function go(url) {
             clearInterval(ticker);
-            if (statusEl) statusEl.textContent = 'Redirecting…';
+            if (statusEl) statusEl.textContent = 'Redirigiendo…';
             splash.classList.add('leaving');
             setTimeout(() => window.location.replace(url), 380);
         }

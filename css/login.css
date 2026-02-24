@@ -599,3 +599,22 @@
     margin-bottom: 18px;
     line-height: 1.5;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE ADICIONAL — Login
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+    .auth-container   { padding: 12px; }
+    .form-container   { padding: 28px 18px; }
+    .auth-form h2     { font-size: 1.35rem; }
+    .btn-google       { font-size: 0.82rem; padding: 10px 12px; }
+    .btn-primary-action { font-size: 0.86rem; }
+    .modal-card       { padding: 22px 18px; }
+}
+
+@media (max-width: 360px) {
+    .form-container   { padding: 24px 14px; }
+    .auth-form        { gap: 12px; }
+    .auth-form h2     { font-size: 1.2rem; }
+    .input-wrapper input { font-size: 0.83rem; }
+}

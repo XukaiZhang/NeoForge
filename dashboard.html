@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoForge — Ticket Queue</title>
+    <title>NeoForge — Cola de Tickets</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
 <body class="viewport">
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <button class="menu-toggle" id="menuToggle" aria-label="Open menu"><i class="bi bi-list"></i></button>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><i class="bi bi-list"></i></button>
 
     <!-- ═══════════════ TICKET DETAIL DRAWER ═══════════════ -->
     <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -32,20 +32,20 @@
             <div class="drawer-meta" id="drawerMeta"></div>
             <!-- Description -->
             <div class="drawer-section">
-                <div class="drawer-section-label">Description</div>
+                <div class="drawer-section-label">Descripción</div>
                 <div class="drawer-desc" id="drawerDesc">—</div>
             </div>
             <!-- Activity / comments -->
             <div class="drawer-section">
-                <div class="drawer-section-label">Activity</div>
+                <div class="drawer-section-label">Actividad</div>
                 <div class="drawer-activity" id="drawerActivity"></div>
             </div>
             <!-- Add comment -->
             <div class="drawer-comment-form">
-                <textarea id="drawerCommentInput" placeholder="Add a note or update…" rows="3"></textarea>
+                <textarea id="drawerCommentInput" placeholder="Añade una nota o actualización…" rows="3"></textarea>
                 <div class="drawer-comment-actions">
                     <select id="drawerStatusChange" class="filter-select">
-                        <option value="">Change status…</option>
+                        <option value="">Cambiar estado…</option>
                         <option value="open">Open</option>
                         <option value="in-progress">In Progress</option>
                         <option value="resolved">Resolved</option>
@@ -67,7 +67,7 @@
                 <span class="sidebar-brand">NeoForge</span>
             </div>
 
-            <div class="sidebar-section-label">Main Menu</div>
+            <div class="sidebar-section-label">Menú Principal</div>
             <nav class="sidebar-nav">
                 <a href="dashboard.html" class="nav-item active">
                     <i class="bi bi-ticket-perforated"></i>
@@ -76,15 +76,15 @@
                 </a>
                 <a href="inventory.html" class="nav-item">
                     <i class="bi bi-box-seam"></i>
-                    <span>Inventory</span>
+                    <span>Inventario</span>
                 </a>
                 <a href="analytics.html" class="nav-item">
                     <i class="bi bi-bar-chart-line"></i>
-                    <span>Analytics</span>
+                    <span>Analíticas</span>
                 </a>
                 <a href="new-ticket.html" class="nav-item nav-item-cta">
                     <i class="bi bi-plus-circle"></i>
-                    <span>New Ticket</span>
+                    <span>Nuevo Ticket</span>
                 </a>
             </nav>
 
@@ -100,12 +100,12 @@
                     </div>
                     <div class="user-info">
                         <div id="userEmail" class="user-name">—</div>
-                        <div class="user-role">Administrator</div>
+                        <div class="user-role">Administrador</div>
                     </div>
                 </div>
                 <button id="btnLogout" class="btn-logout">
                     <i class="bi bi-box-arrow-right"></i>
-                    Sign out
+                    Cerrar sesión
                 </button>
             </div>
         </aside>
@@ -121,19 +121,19 @@
                         <i class="bi bi-chevron-right"></i>
                         <span class="breadcrumb-current">Tickets</span>
                     </div>
-                    <h1 class="page-title">Ticket Queue</h1>
+                    <h1 class="page-title">Cola de Tickets</h1>
                 </div>
                 <div class="topbar-right">
                     <div class="status-indicator">
                         <div class="status-dot online"></div>
-                        <span>Live</span>
+                        <span>En vivo</span>
                     </div>
-                    <button class="topbar-icon-btn" id="topbarSearch" title="Search (F)">
+                    <button class="topbar-icon-btn" id="topbarSearch" title="Buscar (B)">
                         <i class="bi bi-search"></i>
                     </button>
                     <a href="new-ticket.html" class="btn-new-ticket">
                         <i class="bi bi-plus-lg"></i>
-                        <span>New Ticket</span>
+                        <span>Nuevo Ticket</span>
                     </a>
                 </div>
             </header>
@@ -144,7 +144,7 @@
                     <div class="stat-icon critical"><i class="bi bi-exclamation-triangle-fill"></i></div>
                     <div class="stat-info">
                         <div class="stat-value" id="countP0">0</div>
-                        <div class="stat-label">Critical · P0</div>
+                        <div class="stat-label">Crítico · P0</div>
                     </div>
                     <div class="stat-trend" id="trendP0"></div>
                 </div>
@@ -152,7 +152,7 @@
                     <div class="stat-icon high"><i class="bi bi-arrow-up-circle-fill"></i></div>
                     <div class="stat-info">
                         <div class="stat-value" id="countP1">0</div>
-                        <div class="stat-label">High · P1</div>
+                        <div class="stat-label">Alto · P1</div>
                     </div>
                     <div class="stat-trend" id="trendP1"></div>
                 </div>
@@ -160,7 +160,7 @@
                     <div class="stat-icon medium"><i class="bi bi-dash-circle-fill"></i></div>
                     <div class="stat-info">
                         <div class="stat-value" id="countP2">0</div>
-                        <div class="stat-label">Medium · P2</div>
+                        <div class="stat-label">Medio · P2</div>
                     </div>
                     <div class="stat-trend" id="trendP2"></div>
                 </div>
@@ -168,7 +168,7 @@
                     <div class="stat-icon low"><i class="bi bi-check-circle-fill"></i></div>
                     <div class="stat-info">
                         <div class="stat-value" id="countP3">0</div>
-                        <div class="stat-label">Low · P3</div>
+                        <div class="stat-label">Bajo · P3</div>
                     </div>
                     <div class="stat-trend" id="trendP3"></div>
                 </div>
@@ -184,7 +184,7 @@
                         <div class="table-topbar">
                             <div class="search-wrapper">
                                 <i class="bi bi-search"></i>
-                                <input type="text" id="ticketSearch" placeholder="Search tickets… (F)">
+                                <input type="text" id="ticketSearch" placeholder="Buscar tickets… (B)">
                                 <kbd class="search-kbd">F</kbd>
                             </div>
                             <div class="table-actions">
@@ -193,25 +193,25 @@
                                 </span>
                                 <div class="filter-chips" id="filterChips"></div>
                                 <select id="filterPrio" class="filter-select">
-                                    <option value="">All priorities</option>
-                                    <option value="P0">P0 Critical</option>
-                                    <option value="P1">P1 High</option>
-                                    <option value="P2">P2 Medium</option>
-                                    <option value="P3">P3 Low</option>
+                                    <option value="">Todas las prioridades</option>
+                                    <option value="P0">P0 Crítico</option>
+                                    <option value="P1">P1 Alto</option>
+                                    <option value="P2">P2 Medio</option>
+                                    <option value="P3">P3 Bajo</option>
                                 </select>
                                 <select id="filterDept" class="filter-select">
-                                    <option value="">All departments</option>
+                                    <option value="">Todos los departamentos</option>
                                     <option value="DevOps">DevOps</option>
                                     <option value="SecOps">SecOps</option>
                                     <option value="Hardware">Hardware</option>
                                 </select>
                                 <select id="filterStatus" class="filter-select">
-                                    <option value="">All statuses</option>
+                                    <option value="">Todos los estados</option>
                                     <option value="open">Open</option>
                                     <option value="in-progress">In Progress</option>
                                     <option value="resolved">Resolved</option>
                                 </select>
-                                <button id="btnClearFilters" class="btn-clear-filters" style="display:none;" title="Clear filters">
+                                <button id="btnClearFilters" class="btn-clear-filters" style="display:none;" title="Limpiar filtros">
                                     <i class="bi bi-x-lg"></i>
                                 </button>
                             </div>
@@ -231,12 +231,12 @@
                                         <th class="th-sort" data-col="prioridad">
                                             Priority <i class="bi bi-arrow-down-up sort-icon"></i>
                                         </th>
-                                        <th>Department</th>
-                                        <th>Operator</th>
+                                        <th>Departamento</th>
+                                        <th>Operador</th>
                                         <th class="th-sort" data-col="timestamp">
                                             Created <i class="bi bi-arrow-down-up sort-icon"></i>
                                         </th>
-                                        <th>Status</th>
+                                        <th>Estado</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -245,8 +245,8 @@
 
                             <div class="table-empty" id="emptyState" style="display:none;">
                                 <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-                                <h3>No tickets found</h3>
-                                <p id="emptyStateMsg">No tickets match your current filters.</p>
+                                <h3>No se encontraron tickets</h3>
+                                <p id="emptyStateMsg">Ningún ticket coincide con los filtros actuales.</p>
                                 <a href="new-ticket.html" class="btn-empty-action">
                                     <i class="bi bi-plus-lg"></i> Create First Ticket
                                 </a>
@@ -255,7 +255,7 @@
 
                         <!-- Pagination -->
                         <div class="table-footer">
-                            <span class="table-footer-info" id="paginationInfo">Showing 0–0 of 0</span>
+                            <span class="table-footer-info" id="paginationInfo">Mostrando 0–0 de 0</span>
                             <div class="pagination-btns">
                                 <button class="page-btn" id="btnPrevPage" disabled>
                                     <i class="bi bi-chevron-left"></i>
@@ -275,7 +275,7 @@
                     <!-- Quick stats donut -->
                     <div class="side-card">
                         <div class="side-card-header">
-                            <i class="bi bi-pie-chart-fill"></i> Distribution
+                            <i class="bi bi-pie-chart-fill"></i> Distribución
                         </div>
                         <div class="mini-donut-wrap">
                             <svg class="mini-donut" viewBox="0 0 80 80" id="miniDonutSvg"></svg>
@@ -290,18 +290,18 @@
                     <!-- Recent activity -->
                     <div class="side-card activity-card">
                         <div class="side-card-header">
-                            <i class="bi bi-clock-history"></i> Recent Activity
+                            <i class="bi bi-clock-history"></i> Actividad Reciente
                             <span class="activity-live-dot"></span>
                         </div>
                         <div class="activity-feed" id="activityFeed">
-                            <div class="activity-empty">No activity yet</div>
+                            <div class="activity-empty">Sin actividad aún</div>
                         </div>
                     </div>
 
                     <!-- SLA summary -->
                     <div class="side-card">
                         <div class="side-card-header">
-                            <i class="bi bi-shield-check"></i> SLA Targets
+                            <i class="bi bi-shield-check"></i> Objetivos SLA
                         </div>
                         <div class="sla-mini-table">
                             <div class="sla-mini-row">
@@ -357,7 +357,7 @@
         window.openDrawer = function(ticket) {
             document.getElementById('drawerTicketId').textContent    = '#' + ticket.id.slice(-6).toUpperCase();
             document.getElementById('drawerTicketTitle').textContent = ticket.titulo || '—';
-            document.getElementById('drawerDesc').textContent        = ticket.descripcion || 'No description provided.';
+            document.getElementById('drawerDesc').textContent        = ticket.descripcion || 'Sin descripción.';
 
             document.getElementById('drawerMeta').innerHTML = `
                 <span class="prio-tag prio-${ticket.prioridad}">${ticket.prioridad}</span>
@@ -399,7 +399,7 @@
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
             if (e.key === 'n' || e.key === 'N') {
-                window.location.href = 'new-ticket.html';
+                window.location.href = 'nuevo-ticket.html';
             }
             if (e.key === 'f' || e.key === 'F') {
                 e.preventDefault();
@@ -439,13 +439,13 @@
             return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
         function timeAgo(ts) {
-            if (!ts) return 'Unknown time';
+            if (!ts) return 'Hace tiempo';
             const d = ts.toDate ? ts.toDate() : new Date(ts);
             const diff = Math.floor((Date.now() - d.getTime()) / 1000);
-            if (diff < 60)   return 'Just now';
-            if (diff < 3600) return Math.floor(diff/60) + 'm ago';
-            if (diff < 86400)return Math.floor(diff/3600) + 'h ago';
-            return Math.floor(diff/86400) + 'd ago';
+            if (diff < 60)   return 'Ahora mismo';
+            if (diff < 3600) return Math.floor(diff/60) + ' min atrás';
+            if (diff < 86400)return Math.floor(diff/3600) + ' h atrás';
+            return Math.floor(diff/86400) + ' d atrás';
         }
         window.esc     = esc;
         window.timeAgo = timeAgo;

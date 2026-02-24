@@ -600,3 +600,39 @@
 
     .dashboard-content { padding: 16px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE ADICIONAL — Nuevo Ticket
+   ═══════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+    .new-ticket-layout {
+        grid-template-columns: 1fr;
+        padding: 12px 14px 28px;
+        gap: 14px;
+    }
+    .ticket-sidebar { position: relative; top: 0; }
+    .form-meta-row  { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+    .new-ticket-layout  { padding: 10px 10px 20px; }
+    .ticket-form        { padding: 18px 16px 20px; gap: 18px; }
+    .card-header        { padding: 16px; gap: 12px; }
+    .form-meta-row      { grid-template-columns: 1fr; }
+    .prio-picker        { grid-template-columns: 1fr; }
+    .form-actions       { flex-direction: column; }
+    .btn-cancel         { width: 100%; justify-content: center; }
+    .topbar-right .btn-back span { display: none; }
+}
+
+@media (max-width: 480px) {
+    .new-ticket-layout  { padding: 8px 8px 16px; }
+    .ticket-form        { padding: 14px 12px 16px; }
+    .prio-btn           { padding: 10px 12px; gap: 10px; }
+    .prio-btn strong    { font-size: 0.78rem; }
+    .prio-btn small     { font-size: 0.65rem; }
+    .info-card-header   { padding: 10px 14px; font-size: 0.7rem; }
+    .sla-row            { padding: 8px 14px; }
+    .tips-list li       { padding: 7px 14px; }
+    .contacts-list .contact-row { padding: 8px 14px; }
+}

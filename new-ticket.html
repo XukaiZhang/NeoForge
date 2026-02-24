@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoForge — New Ticket</title>
+    <title>NeoForge — Nuevo Ticket</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
@@ -13,7 +13,7 @@
 <body class="viewport">
 
     <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
         <i class="bi bi-list"></i>
     </button>
 
@@ -25,7 +25,7 @@
                 <span class="sidebar-brand">NeoForge</span>
             </div>
 
-            <div class="sidebar-section-label">Main Menu</div>
+            <div class="sidebar-section-label">Menú Principal</div>
             <nav class="sidebar-nav">
                 <a href="dashboard.html" class="nav-item active">
                     <i class="bi bi-ticket-perforated"></i>
@@ -33,11 +33,11 @@
                 </a>
                 <a href="inventory.html" class="nav-item">
                     <i class="bi bi-box-seam"></i>
-                    <span>Inventory</span>
+                    <span>Inventario</span>
                 </a>
                 <a href="analytics.html" class="nav-item">
                     <i class="bi bi-bar-chart-line"></i>
-                    <span>Analytics</span>
+                    <span>Analíticas</span>
                 </a>
             </nav>
 
@@ -46,12 +46,12 @@
                     <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
                     <div class="user-info">
                         <div id="userEmail" class="user-name">—</div>
-                        <div class="user-role">Administrator</div>
+                        <div class="user-role">Administrador</div>
                     </div>
                 </div>
                 <button id="btnLogout" class="btn-logout">
                     <i class="bi bi-box-arrow-right"></i>
-                    Sign out
+                    Cerrar sesión
                 </button>
             </div>
         </aside>
@@ -66,14 +66,14 @@
                         <i class="bi bi-chevron-right"></i>
                         <a href="dashboard.html" class="breadcrumb-link">Tickets</a>
                         <i class="bi bi-chevron-right"></i>
-                        <span class="breadcrumb-current">New Ticket</span>
+                        <span class="breadcrumb-current">Nuevo Ticket</span>
                     </div>
-                    <h1 class="page-title">New Incident Report</h1>
+                    <h1 class="page-title">Nuevo Parte de Incidencia</h1>
                 </div>
                 <div class="topbar-right">
                     <a href="dashboard.html" class="btn-back">
                         <i class="bi bi-arrow-left"></i>
-                        Back to queue
+                        Volver a la cola
                     </a>
                 </div>
             </header>
@@ -86,8 +86,8 @@
                     <div class="card-header">
                         <div class="card-header-icon"><i class="bi bi-ticket-perforated-fill"></i></div>
                         <div>
-                            <h2>Incident Details</h2>
-                            <p>Fill in the information below to open a new support ticket.</p>
+                            <h2>Detalles del Incidente</h2>
+                            <p>Rellena los campos a continuación para abrir un ticket de soporte.</p>
                         </div>
                     </div>
 
@@ -102,7 +102,7 @@
                                 type="text"
                                 id="titulo"
                                 class="form-input"
-                                placeholder="Concise summary of the issue"
+                                placeholder="Resumen conciso del problema"
                                 maxlength="120"
                                 required
                             >
@@ -126,7 +126,7 @@
                         <!-- Meta row -->
                         <div class="form-meta-row">
                             <div class="form-section">
-                                <label class="form-label" for="departamento">Department</label>
+                                <label class="form-label" for="departamento">Departamento</label>
                                 <div class="select-wrapper">
                                     <select id="departamento" class="form-input form-select">
                                         <option value="DevOps">DevOps</option>
@@ -137,7 +137,7 @@
                             </div>
 
                             <div class="form-section">
-                                <label class="form-label" for="prioridad">Priority</label>
+                                <label class="form-label" for="prioridad">Prioridad</label>
                                 <div class="select-wrapper">
                                     <select id="prioridad" class="form-input form-select">
                                         <option value="P3">P3 — Low</option>
@@ -149,13 +149,13 @@
                             </div>
 
                             <div class="form-section">
-                                <label class="form-label" for="assignee">Assign to</label>
+                                <label class="form-label" for="assignee">Asignar a</label>
                                 <div class="select-wrapper">
                                     <select id="assignee" class="form-input form-select">
-                                        <option value="">Unassigned</option>
-                                        <option value="L1">L1 Support</option>
-                                        <option value="L2">L2 Support</option>
-                                        <option value="L3">L3 Engineering</option>
+                                        <option value="">Sin asignar</option>
+                                        <option value="L1">Soporte L1</option>
+                                        <option value="L2">Soporte L2</option>
+                                        <option value="L3">Ingeniería L3</option>
                                     </select>
                                 </div>
                             </div>
@@ -163,7 +163,7 @@
 
                         <!-- Priority visual selector -->
                         <div class="form-section">
-                            <label class="form-label">Priority level</label>
+                            <label class="form-label">Nivel de prioridad</label>
                             <div class="prio-picker" id="prioPicker">
                                 <button type="button" class="prio-btn" data-value="P3">
                                     <span class="prio-dot p3"></span>
@@ -207,7 +207,7 @@
                             </a>
                             <button type="submit" class="btn-submit" id="submitBtn">
                                 <i class="bi bi-send-fill"></i>
-                                Submit Ticket
+                                Enviar Ticket
                             </button>
                         </div>
 
@@ -221,7 +221,7 @@
                     <div class="info-card">
                         <div class="info-card-header">
                             <i class="bi bi-clock-history"></i>
-                            SLA Response Times
+                            Tiempos de Respuesta SLA
                         </div>
                         <div class="sla-table">
                             <div class="sla-row">
@@ -259,28 +259,28 @@
                     <div class="info-card">
                         <div class="info-card-header">
                             <i class="bi bi-lightbulb"></i>
-                            Tips for a good ticket
+                            Consejos para un buen ticket
                         </div>
                         <ul class="tips-list">
                             <li>
                                 <i class="bi bi-check2-circle"></i>
-                                Use a clear, specific subject line
+                                Usa un asunto claro y específico
                             </li>
                             <li>
                                 <i class="bi bi-check2-circle"></i>
-                                Include exact error messages or screenshots
+                                Incluye mensajes de error exactos o capturas
                             </li>
                             <li>
                                 <i class="bi bi-check2-circle"></i>
-                                Describe steps to reproduce the problem
+                                Describe los pasos para reproducir el problema
                             </li>
                             <li>
                                 <i class="bi bi-check2-circle"></i>
-                                Mention the number of users affected
+                                Indica el número de usuarios afectados
                             </li>
                             <li>
                                 <i class="bi bi-check2-circle"></i>
-                                Choose the lowest applicable priority
+                                Elige la prioridad más baja posible
                             </li>
                         </ul>
                     </div>
@@ -289,28 +289,28 @@
                     <div class="info-card">
                         <div class="info-card-header">
                             <i class="bi bi-people"></i>
-                            Department Contacts
+                            Contactos por Departamento
                         </div>
                         <div class="contacts-list">
                             <div class="contact-row">
                                 <div class="contact-avatar devops">DO</div>
                                 <div class="contact-info">
                                     <span class="contact-name">DevOps Team</span>
-                                    <span class="contact-tag">Infrastructure · CI/CD</span>
+                                    <span class="contact-tag">Infraestructura · CI/CD</span>
                                 </div>
                             </div>
                             <div class="contact-row">
                                 <div class="contact-avatar secops">SO</div>
                                 <div class="contact-info">
                                     <span class="contact-name">SecOps Team</span>
-                                    <span class="contact-tag">Security · Compliance</span>
+                                    <span class="contact-tag">Seguridad · Cumplimiento</span>
                                 </div>
                             </div>
                             <div class="contact-row">
                                 <div class="contact-avatar hardware">HW</div>
                                 <div class="contact-info">
                                     <span class="contact-name">Hardware Team</span>
-                                    <span class="contact-tag">Devices · Networking</span>
+                                    <span class="contact-tag">Dispositivos · Redes</span>
                                 </div>
                             </div>
                         </div>
