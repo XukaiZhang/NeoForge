@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoForge — Equipo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/agentes.css">
+</head>
+<body class="viewport">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><i class="bi bi-list"></i></button>
+
+<div class="layout-grid">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-mark-sm">NF</div>
+      <span class="sidebar-brand">NeoForge</span>
+    </div>
+    <div class="sidebar-section-label">Menú Principal</div>
+    <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item"><i class="bi bi-ticket-perforated"></i><span>Tickets</span><div class="nav-badge" id="navTicketCount">0</div></a>
+                <a href="agentes.html" class="nav-item active"><i class="bi bi-people-fill"></i><span>Equipo</span></a>
+                <a href="informes.html" class="nav-item"><i class="bi bi-bar-chart-line"></i><span>Informes</span></a>
+                <a href="conocimiento.html" class="nav-item"><i class="bi bi-book"></i><span>Conocimiento</span></a>
+                <a href="perfil.html" class="nav-item"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+                <a href="new-ticket.html" class="nav-item nav-item-cta"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
+            </nav>
+    <div class="sidebar-shortcut-hint"><kbd>N</kbd> Nuevo ticket</div>
+    <div class="sidebar-bottom">
+      <div class="user-card">
+        <div class="user-avatar"><span id="userAvatarInitial"><i class="bi bi-person-fill"></i></span></div>
+        <div class="user-info">
+          <div id="userEmail" class="user-name">—</div>
+          <div id="userRole" class="user-role">Agente de soporte</div>
+        </div>
+      </div>
+      <button id="btnLogout" class="btn-logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="content-area">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="page-breadcrumb"><span>Panel</span><i class="bi bi-chevron-right"></i><span class="breadcrumb-current">Equipo</span></div>
+        <h1 class="page-title">Equipo de soporte</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="status-indicator"><div class="status-dot online"></div><span>En vivo</span></div>
+      </div>
+    </header>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-icon blue"><i class="bi bi-people-fill"></i></div><div class="stat-info"><div class="stat-value" id="statTotalAgentes">0</div><div class="stat-label">Agentes registrados</div></div></div>
+      <div class="stat-card"><div class="stat-icon medium"><i class="bi bi-ticket-perforated"></i></div><div class="stat-info"><div class="stat-value" id="statAsignados">0</div><div class="stat-label">Tickets asignados</div></div></div>
+      <div class="stat-card"><div class="stat-icon high"><i class="bi bi-exclamation-circle-fill"></i></div><div class="stat-info"><div class="stat-value" id="statSinAsignar">0</div><div class="stat-label">Sin asignar</div></div></div>
+      <div class="stat-card"><div class="stat-icon green"><i class="bi bi-check2-all"></i></div><div class="stat-info"><div class="stat-value" id="statResueltos30d">0</div><div class="stat-label">Resueltos (30d)</div></div></div>
+    </div>
+
+    <!-- Two-column grid -->
+    <div class="agentes-grid">
+
+      <!-- Tabla agentes -->
+      <div class="agentes-main">
+        <div class="table-panel">
+          <div class="table-topbar">
+            <div class="search-wrapper"><i class="bi bi-search"></i><input type="text" id="agenteSearch" placeholder="Buscar agente por nombre o email…"></div>
+            <div class="table-actions">
+              <span class="ticket-count"><span id="agenteCount">0</span> agentes</span>
+              <select id="filterDeptAgente" class="filter-select">
+                <option value="">Todos los dptos.</option>
+                <option value="DevOps">DevOps</option>
+                <option value="SecOps">SecOps</option>
+                <option value="Hardware">Hardware</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table">
+              <thead><tr>
+                <th>Agente</th><th>Departamento</th><th>Tickets abiertos</th><th>Resueltos (30d)</th><th>Carga</th><th></th>
+              </tr></thead>
+              <tbody id="agentesBody"></tbody>
+            </table>
+            <div class="table-empty" id="agentesEmpty" style="display:none;">
+              <div class="empty-icon"><i class="bi bi-people"></i></div>
+              <h3>Sin agentes aún</h3>
+              <p>Los agentes aparecerán aquí cuando se registren con código de organización.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar derecho -->
+      <div class="agentes-side">
+
+        <!-- Cola sin asignar -->
+        <div class="side-card">
+          <div class="side-card-header"><i class="bi bi-exclamation-circle"></i> Sin asignar <span class="side-live-badge" id="unassignedBadge">0</span></div>
+          <div class="unassigned-feed" id="unassignedFeed"><div class="activity-empty">Sin tickets pendientes</div></div>
+        </div>
+
+        <!-- Ranking resolutores -->
+        <div class="side-card">
+          <div class="side-card-header"><i class="bi bi-trophy-fill" style="color:var(--yellow)"></i> Top resolutores (30d)</div>
+          <div class="ranking-list" id="rankingList"><div class="activity-empty">Sin datos aún</div></div>
+        </div>
+
+        <!-- Distribución por dpto -->
+        <div class="side-card">
+          <div class="side-card-header"><i class="bi bi-pie-chart-fill"></i> Carga por departamento</div>
+          <div class="dept-load-bars" id="deptLoadBars"><div class="activity-empty">Sin datos</div></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Drawer detalle agente -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="ticket-drawer" id="agenteDrawer">
+  <div class="drawer-header">
+    <div>
+      <div class="drawer-ticket-id" id="adUid">—</div>
+      <h3 class="drawer-ticket-title" id="adNombre">—</h3>
+    </div>
+    <button class="drawer-close" id="drawerClose"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="drawer-body">
+    <div class="drawer-section">
+      <div class="drawer-section-label">Datos del agente</div>
+      <div id="adInfoGrid" class="ad-info-grid"></div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">Tickets activos asignados</div>
+      <div id="adTicketsList" class="ad-tickets-list"><div class="activity-empty">Sin tickets asignados</div></div>
+    </div>
+    <div class="drawer-section">
+      <div class="drawer-section-label">Asignar tickets sin asignar</div>
+      <div class="ad-assign-wrap">
+        <select id="adTicketToAssign" class="filter-select" style="flex:1"><option value="">Seleccionar ticket sin asignar…</option></select>
+        <button class="btn-comment-submit" id="adBtnAssign"><i class="bi bi-arrow-right-circle"></i> Asignar</button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  const sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay');
+  document.getElementById('menuToggle')?.addEventListener('click',()=>{sb.classList.toggle('open');ov.classList.toggle('visible');});
+  ov?.addEventListener('click',()=>{sb.classList.remove('open');ov.classList.remove('visible');});
+  const drawer=document.getElementById('agenteDrawer'),dov=document.getElementById('drawerOverlay');
+  function closeDrawer(){drawer.classList.remove('open');dov.classList.remove('visible');}
+  document.getElementById('drawerClose')?.addEventListener('click',closeDrawer);
+  dov?.addEventListener('click',closeDrawer);
+  document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT') return;
+    if(e.key==='Escape') closeDrawer();
+    if(e.key==='n'||e.key==='N') window.location.href='new-ticket.html';
+  });
+</script>
+<script type="module" src="js/agentes.js"></script>
+<script type="module" src="js/auth.js"></script>
+</body>
+</html>

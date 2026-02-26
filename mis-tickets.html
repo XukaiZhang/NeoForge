@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoForge — Mis Tickets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/mis-tickets.css">
+</head>
+<body class="mis-tickets-body">
+
+  <!-- TOPBAR CLIENTE -->
+  <header class="ct-topbar">
+    <div class="ct-topbar-left">
+      <div class="logo-mark-sm">NF</div>
+      <span class="sidebar-brand">NeoForge</span>
+    </div>
+    <nav class="ct-nav">
+      <button class="ct-nav-btn active" id="navMisTickets"><i class="bi bi-ticket-perforated"></i><span>Mis tickets</span></button>
+      <button class="ct-nav-btn" id="navNuevoTicket"><i class="bi bi-plus-circle"></i><span>Nueva solicitud</span></button>
+    </nav>
+    <div class="ct-topbar-right">
+      <div class="ct-user-pill">
+        <div class="ct-avatar" id="ctAvatar">?</div>
+        <span id="userEmail" class="ct-username">—</span>
+      </div>
+      <button id="btnLogout" class="ct-btn-logout"><i class="bi bi-box-arrow-right"></i><span>Salir</span></button>
+    </div>
+  </header>
+
+  <!-- MOBILE NAV -->
+  <div class="ct-mobile-nav">
+    <button class="ct-nav-btn active" id="mNavMisTickets"><i class="bi bi-ticket-perforated"></i><span>Mis tickets</span></button>
+    <button class="ct-nav-btn" id="mNavNuevo"><i class="bi bi-plus-circle"></i><span>Nueva solicitud</span></button>
+  </div>
+
+  <main class="ct-main">
+
+    <!-- ══ SECCIÓN: MIS TICKETS ══ -->
+    <section id="secMisTickets" class="ct-section">
+      <div class="ct-section-head">
+        <div>
+          <h1 class="ct-page-title">Mis solicitudes</h1>
+          <p class="ct-page-sub">Seguimiento de todos tus tickets de soporte</p>
+        </div>
+        <button class="ct-btn-nuevo" id="btnNuevoTop"><i class="bi bi-plus-lg"></i> Nueva solicitud</button>
+      </div>
+
+      <!-- Stats cliente -->
+      <div class="ct-stats">
+        <div class="ct-stat ct-stat--open">
+          <div class="ct-stat-val" id="cstAbiertos">0</div>
+          <div class="ct-stat-lbl"><i class="bi bi-clock-history"></i> Abiertos</div>
+        </div>
+        <div class="ct-stat ct-stat--prog">
+          <div class="ct-stat-val" id="cstEnProceso">0</div>
+          <div class="ct-stat-lbl"><i class="bi bi-arrow-repeat"></i> En proceso</div>
+        </div>
+        <div class="ct-stat ct-stat--done">
+          <div class="ct-stat-val" id="cstResueltos">0</div>
+          <div class="ct-stat-lbl"><i class="bi bi-check2-circle"></i> Resueltos</div>
+        </div>
+        <div class="ct-stat ct-stat--total">
+          <div class="ct-stat-val" id="cstTotal">0</div>
+          <div class="ct-stat-lbl"><i class="bi bi-collection"></i> Total</div>
+        </div>
+      </div>
+
+      <!-- Filtros rápidos -->
+      <div class="ct-filter-bar">
+        <div class="search-wrapper ct-search">
+          <i class="bi bi-search"></i>
+          <input type="text" id="ctSearch" placeholder="Buscar por asunto o ID…">
+        </div>
+        <div class="ct-status-chips" id="ctChips">
+          <button class="ct-chip active" data-status="">Todos</button>
+          <button class="ct-chip" data-status="open"><span class="ct-dot ct-dot--open"></span>Abierto</button>
+          <button class="ct-chip" data-status="in-progress"><span class="ct-dot ct-dot--prog"></span>En proceso</button>
+          <button class="ct-chip" data-status="resolved"><span class="ct-dot ct-dot--done"></span>Resuelto</button>
+          <button class="ct-chip" data-status="closed">Cerrado</button>
+        </div>
+      </div>
+
+      <!-- Lista tickets (cards en mobile, table en desktop) -->
+      <div id="ctTicketsList" class="ct-tickets-list"></div>
+
+      <!-- Empty state -->
+      <div id="ctEmpty" class="ct-empty" style="display:none;">
+        <div class="ct-empty-icon"><i class="bi bi-inbox"></i></div>
+        <h3>Sin solicitudes aún</h3>
+        <p>Cuando tengas algún problema o consulta, créa tu primer ticket.</p>
+        <button class="ct-btn-nuevo" id="btnNuevoEmpty"><i class="bi bi-plus-lg"></i> Crear mi primer ticket</button>
+      </div>
+    </section>
+
+    <!-- ══ SECCIÓN: NUEVO TICKET ══ -->
+    <section id="secNuevoTicket" class="ct-section" style="display:none;">
+      <div class="ct-section-head">
+        <div>
+          <h1 class="ct-page-title">Nueva solicitud</h1>
+          <p class="ct-page-sub">Describe tu problema y te ayudaremos lo antes posible</p>
+        </div>
+        <button class="ct-btn-volver" id="btnVolver"><i class="bi bi-arrow-left"></i> Volver</button>
+      </div>
+
+      <div class="ct-form-layout">
+        <!-- Formulario -->
+        <div class="ct-form-card">
+          <div id="ctFormStatus" class="status-alert" style="display:none;"></div>
+          <form id="ctTicketForm" novalidate>
+            <div class="ct-field">
+              <label for="ctAsunto">Asunto <span class="required">*</span><span class="ct-char-counter"><span id="ctCharCount">0</span>/120</span></label>
+              <input type="text" id="ctAsunto" maxlength="120" placeholder="¿Cuál es el problema en pocas palabras?" required>
+            </div>
+            <div class="ct-field">
+              <label for="ctDescripcion">Descripción <span class="required">*</span></label>
+              <textarea id="ctDescripcion" rows="6" placeholder="Describe el problema con detalle:&#10;• ¿Qué ocurrió exactamente?&#10;• ¿Cuándo comenzó?&#10;• ¿A cuántos usuarios afecta?" required></textarea>
+            </div>
+            <div class="ct-field-row">
+              <div class="ct-field">
+                <label for="ctDepartamento">Departamento</label>
+                <select id="ctDepartamento">
+                  <option value="DevOps">DevOps</option>
+                  <option value="SecOps">SecOps</option>
+                  <option value="Hardware">Hardware</option>
+                </select>
+              </div>
+              <div class="ct-field">
+                <label for="ctUrgencia">Urgencia</label>
+                <select id="ctUrgencia">
+                  <option value="P3">Baja — sin urgencia</option>
+                  <option value="P2">Media — afecta mi trabajo</option>
+                  <option value="P1">Alta — sin solución temporal</option>
+                  <option value="P0">Crítica — servicio caído</option>
+                </select>
+              </div>
+            </div>
+            <div class="ct-form-actions">
+              <button type="button" class="ct-btn-cancelar" id="btnCancelarForm">Cancelar</button>
+              <button type="submit" class="ct-btn-enviar" id="ctBtnEnviar"><i class="bi bi-send-fill"></i> Enviar solicitud</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Info lateral -->
+        <aside class="ct-form-aside">
+          <div class="ct-info-card">
+            <div class="ct-info-head"><i class="bi bi-clock-history"></i> Tiempos de respuesta</div>
+            <div class="ct-sla-rows">
+              <div class="ct-sla-row"><span class="prio-tag prio-P0">Crítica</span><span>~15 min</span></div>
+              <div class="ct-sla-row"><span class="prio-tag prio-P1">Alta</span><span>~1 hora</span></div>
+              <div class="ct-sla-row"><span class="prio-tag prio-P2">Media</span><span>~4 horas</span></div>
+              <div class="ct-sla-row"><span class="prio-tag prio-P3">Baja</span><span>1 día hábil</span></div>
+            </div>
+          </div>
+          <div class="ct-info-card">
+            <div class="ct-info-head"><i class="bi bi-lightbulb"></i> Consejos</div>
+            <ul class="ct-tips">
+              <li><i class="bi bi-check2"></i> Usa un asunto claro y específico</li>
+              <li><i class="bi bi-check2"></i> Indica cuándo empezó el problema</li>
+              <li><i class="bi bi-check2"></i> Menciona cuántos usuarios están afectados</li>
+              <li><i class="bi bi-check2"></i> Elige la urgencia adecuada</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL DETALLE TICKET -->
+  <div class="modal-overlay" id="ctDetailModal" style="display:none;">
+    <div class="modal-card ct-detail-modal">
+      <div class="modal-header">
+        <div>
+          <div class="drawer-ticket-id" id="ctdId">—</div>
+          <h3 id="ctdTitulo">—</h3>
+        </div>
+        <button class="modal-close" id="ctdClose"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="drawer-meta" id="ctdMeta"></div>
+      <div class="drawer-section-label">Descripción</div>
+      <div class="drawer-desc" id="ctdDesc">—</div>
+      <div class="drawer-section-label">Actividad</div>
+      <div class="drawer-activity" id="ctdActivity"></div>
+      <div class="ct-reply-hint"><i class="bi bi-info-circle"></i> Los agentes responderán pronto. Recibirás actualizaciones aquí.</div>
+    </div>
+  </div>
+
+  <script type="module" src="js/mis-tickets.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script>
+    function showSec(sec) {
+      document.getElementById('secMisTickets').style.display  = sec==='mis' ? 'block' : 'none';
+      document.getElementById('secNuevoTicket').style.display = sec==='nuevo' ? 'block' : 'none';
+      document.querySelectorAll('.ct-nav-btn').forEach(b => {
+        b.classList.toggle('active', (sec==='mis' && (b.id==='navMisTickets'||b.id==='mNavMisTickets')) || (sec==='nuevo' && (b.id==='navNuevoTicket'||b.id==='mNavNuevo')));
+      });
+    }
+    ['navNuevoTicket','mNavNuevo','btnNuevoTop','btnNuevoEmpty'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>showSec('nuevo')));
+    ['navMisTickets','mNavMisTickets','btnVolver','btnCancelarForm'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>showSec('mis')));
+
+    // Char counter
+    const asunto = document.getElementById('ctAsunto');
+    asunto?.addEventListener('input',()=>{ document.getElementById('ctCharCount').textContent = asunto.value.length; });
+
+    // Status chips
+    document.getElementById('ctChips')?.addEventListener('click', e => {
+      const chip = e.target.closest('.ct-chip');
+      if (!chip) return;
+      document.querySelectorAll('.ct-chip').forEach(c=>c.classList.remove('active'));
+      chip.classList.add('active');
+      window.filterClienteTickets?.(chip.dataset.status);
+    });
+
+    // Search
+    document.getElementById('ctSearch')?.addEventListener('input', e => {
+      window.searchClienteTickets?.(e.target.value);
+    });
+
+    // Detail modal close
+    const ctModal = document.getElementById('ctDetailModal');
+    document.getElementById('ctdClose')?.addEventListener('click',()=>ctModal.style.display='none');
+    ctModal?.addEventListener('click',e=>{ if(e.target===ctModal) ctModal.style.display='none'; });
+  </script>
+</body>
+</html>

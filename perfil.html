@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoForge — Perfil</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/perfil.css">
+</head>
+<body class="viewport">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><i class="bi bi-list"></i></button>
+
+    <div class="layout-grid">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark-sm">NF</div>
+                <span class="sidebar-brand">NeoForge</span>
+            </div>
+            <div class="sidebar-section-label">Menú Principal</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item"><i class="bi bi-ticket-perforated"></i><span>Tickets</span><div class="nav-badge" id="navTicketCount">0</div></a>
+                <a href="agentes.html" class="nav-item"><i class="bi bi-people-fill"></i><span>Equipo</span></a>
+                <a href="informes.html" class="nav-item"><i class="bi bi-bar-chart-line"></i><span>Informes</span></a>
+                <a href="conocimiento.html" class="nav-item"><i class="bi bi-book"></i><span>Conocimiento</span></a>
+                <a href="perfil.html" class="nav-item active"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+                <a href="new-ticket.html" class="nav-item nav-item-cta"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
+            </nav>
+            <div class="sidebar-shortcut-hint"><kbd>N</kbd> Nuevo ticket</div>
+            <div class="sidebar-bottom">
+                <div class="user-card">
+                    <div class="user-avatar"><span id="userAvatarInitial"><i class="bi bi-person-fill"></i></span></div>
+                    <div class="user-info">
+                        <div id="userEmail" class="user-name">—</div>
+                        <div id="userRole" class="user-role">Agente de soporte</div>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content-area">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="page-breadcrumb"><span>Panel</span><i class="bi bi-chevron-right"></i><span class="breadcrumb-current">Perfil</span></div>
+                    <h1 class="page-title">Perfil y configuración</h1>
+                </div>
+            </header>
+
+            <div class="perfil-layout">
+
+                <!-- Columna izquierda: tarjeta de perfil + stats -->
+                <aside class="perfil-side">
+
+                    <!-- Tarjeta identidad -->
+                    <div class="perfil-id-card">
+                        <div class="perfil-avatar-wrap">
+                            <div class="perfil-avatar" id="perfilAvatar">?</div>
+                            <div class="perfil-avatar-badge" id="perfilRolBadge">Agente</div>
+                        </div>
+                        <div class="perfil-id-info">
+                            <div class="perfil-nombre" id="perfilNombre">—</div>
+                            <div class="perfil-email" id="perfilEmailDisplay">—</div>
+                        </div>
+                        <div class="perfil-id-stats">
+                            <div class="pid-stat">
+                                <div class="pid-stat-val" id="pidTicketsAbiertos">0</div>
+                                <div class="pid-stat-lbl">Asignados</div>
+                            </div>
+                            <div class="pid-stat">
+                                <div class="pid-stat-val" id="pidResueltos">0</div>
+                                <div class="pid-stat-lbl">Resueltos</div>
+                            </div>
+                            <div class="pid-stat">
+                                <div class="pid-stat-val" id="pidArticulos">0</div>
+                                <div class="pid-stat-lbl">Artículos</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actividad reciente -->
+                    <div class="perfil-card">
+                        <div class="perfil-card-header"><i class="bi bi-clock-history"></i> Actividad reciente</div>
+                        <div class="perfil-activity" id="perfilActivity">
+                            <div class="activity-empty">Sin actividad registrada</div>
+                        </div>
+                    </div>
+
+                </aside>
+
+                <!-- Columna derecha: formularios de configuración -->
+                <div class="perfil-main">
+
+                    <!-- Sección: Datos personales -->
+                    <div class="perfil-section-card" id="sectionDatos">
+                        <div class="perfil-section-header" onclick="toggleSection('sectionDatos')">
+                            <div class="psh-left">
+                                <i class="bi bi-person-fill psh-icon"></i>
+                                <div>
+                                    <h3>Datos personales</h3>
+                                    <p>Nombre, departamento y foto de perfil</p>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-down psh-toggle" id="togDatos"></i>
+                        </div>
+                        <div class="perfil-section-body" id="bodyDatos">
+                            <div id="datosStatus" class="status-alert" style="display:none;"></div>
+                            <form id="formDatos" novalidate>
+                                <div class="pf-field-row">
+                                    <div class="pf-field">
+                                        <label for="pfNombre">Nombre para mostrar</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-person input-icon-bi"></i>
+                                            <input type="text" id="pfNombre" placeholder="Tu nombre completo">
+                                        </div>
+                                    </div>
+                                    <div class="pf-field">
+                                        <label for="pfDepartamento">Departamento</label>
+                                        <div class="input-wrapper">
+                                            <i class="bi bi-building input-icon-bi"></i>
+                                            <select id="pfDepartamento">
+                                                <option value="">Sin asignar</option>
+                                                <option value="DevOps">DevOps</option>
+                                                <option value="SecOps">SecOps</option>
+                                                <option value="Hardware">Hardware</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="pf-field">
+                                    <label for="pfEmail">Correo electrónico</label>
+                                    <div class="input-wrapper">
+                                        <i class="bi bi-envelope input-icon-bi"></i>
+                                        <input type="email" id="pfEmail" placeholder="—" readonly style="opacity:0.6;cursor:not-allowed">
+                                    </div>
+                                    <span class="pf-hint"><i class="bi bi-info-circle"></i> El correo no se puede cambiar desde aquí.</span>
+                                </div>
+                                <div class="pf-actions">
+                                    <button type="submit" class="btn-new-ticket" id="btnGuardarDatos">
+                                        <i class="bi bi-check-lg"></i> Guardar cambios
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Contraseña -->
+                    <div class="perfil-section-card" id="sectionPassword">
+                        <div class="perfil-section-header" onclick="toggleSection('sectionPassword')">
+                            <div class="psh-left">
+                                <i class="bi bi-lock-fill psh-icon"></i>
+                                <div>
+                                    <h3>Contraseña</h3>
+                                    <p>Cambia tu contraseña de acceso</p>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-down psh-toggle" id="togPassword"></i>
+                        </div>
+                        <div class="perfil-section-body" id="bodyPassword" style="display:none;">
+                            <div id="passStatus" class="status-alert" style="display:none;"></div>
+                            <form id="formPassword" novalidate>
+                                <div class="pf-field">
+                                    <label for="pfPassActual">Contraseña actual</label>
+                                    <div class="input-wrapper">
+                                        <i class="bi bi-lock input-icon-bi"></i>
+                                        <input type="password" id="pfPassActual" placeholder="••••••••" autocomplete="current-password">
+                                        <button type="button" class="pw-toggle" onclick="togPw('pfPassActual',this)" tabindex="-1"><i class="bi bi-eye"></i></button>
+                                    </div>
+                                </div>
+                                <div class="pf-field">
+                                    <label for="pfPassNueva">Nueva contraseña</label>
+                                    <div class="input-wrapper">
+                                        <i class="bi bi-lock input-icon-bi"></i>
+                                        <input type="password" id="pfPassNueva" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                                        <button type="button" class="pw-toggle" onclick="togPw('pfPassNueva',this)" tabindex="-1"><i class="bi bi-eye"></i></button>
+                                    </div>
+                                    <div class="pw-strength">
+                                        <div class="pw-strength-track"><div class="pw-strength-bar" id="pfPwBar"></div></div>
+                                        <span class="pw-strength-label" id="pfPwLabel"></span>
+                                    </div>
+                                </div>
+                                <div class="pf-field">
+                                    <label for="pfPassConfirm">Confirmar nueva contraseña</label>
+                                    <div class="input-wrapper">
+                                        <i class="bi bi-lock-fill input-icon-bi"></i>
+                                        <input type="password" id="pfPassConfirm" placeholder="Repite la nueva contraseña" autocomplete="new-password">
+                                    </div>
+                                </div>
+                                <div class="pf-actions">
+                                    <button type="submit" class="btn-new-ticket" id="btnCambiarPass">
+                                        <i class="bi bi-shield-check"></i> Actualizar contraseña
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Notificaciones -->
+                    <div class="perfil-section-card" id="sectionNotifs">
+                        <div class="perfil-section-header" onclick="toggleSection('sectionNotifs')">
+                            <div class="psh-left">
+                                <i class="bi bi-bell-fill psh-icon"></i>
+                                <div>
+                                    <h3>Notificaciones</h3>
+                                    <p>Controla qué alertas recibes</p>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-down psh-toggle" id="togNotifs"></i>
+                        </div>
+                        <div class="perfil-section-body" id="bodyNotifs" style="display:none;">
+                            <div id="notifsStatus" class="status-alert" style="display:none;"></div>
+                            <div class="notif-list">
+                                <div class="notif-row">
+                                    <div class="notif-info">
+                                        <div class="notif-label">Ticket asignado a mí</div>
+                                        <div class="notif-desc">Recibe un aviso cuando te asignen un ticket nuevo</div>
+                                    </div>
+                                    <label class="pf-toggle"><input type="checkbox" id="notifAsignado" checked><span class="pf-toggle-track"></span></label>
+                                </div>
+                                <div class="notif-row">
+                                    <div class="notif-info">
+                                        <div class="notif-label">Comentario en mi ticket</div>
+                                        <div class="notif-desc">Cuando alguien comente en un ticket asignado a ti</div>
+                                    </div>
+                                    <label class="pf-toggle"><input type="checkbox" id="notifComentario" checked><span class="pf-toggle-track"></span></label>
+                                </div>
+                                <div class="notif-row">
+                                    <div class="notif-info">
+                                        <div class="notif-label">Ticket P0 crítico abierto</div>
+                                        <div class="notif-desc">Alerta de urgencia máxima para todo el equipo</div>
+                                    </div>
+                                    <label class="pf-toggle"><input type="checkbox" id="notifP0" checked><span class="pf-toggle-track"></span></label>
+                                </div>
+                                <div class="notif-row">
+                                    <div class="notif-info">
+                                        <div class="notif-label">Resumen semanal</div>
+                                        <div class="notif-desc">Informe de rendimiento cada lunes por la mañana</div>
+                                    </div>
+                                    <label class="pf-toggle"><input type="checkbox" id="notifResumen"><span class="pf-toggle-track"></span></label>
+                                </div>
+                            </div>
+                            <div class="pf-actions">
+                                <button type="button" class="btn-new-ticket" id="btnGuardarNotifs">
+                                    <i class="bi bi-check-lg"></i> Guardar preferencias
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Apariencia -->
+                    <div class="perfil-section-card" id="sectionApariencia">
+                        <div class="perfil-section-header" onclick="toggleSection('sectionApariencia')">
+                            <div class="psh-left">
+                                <i class="bi bi-palette-fill psh-icon"></i>
+                                <div>
+                                    <h3>Apariencia</h3>
+                                    <p>Tema, densidad y preferencias visuales</p>
+                                </div>
+                            </div>
+                            <i class="bi bi-chevron-down psh-toggle" id="togApariencia"></i>
+                        </div>
+                        <div class="perfil-section-body" id="bodyApariencia" style="display:none;">
+                            <div class="apariencia-grid">
+                                <div class="pf-field">
+                                    <label>Tema de color</label>
+                                    <div class="theme-options">
+                                        <button class="theme-opt active" data-theme="dark" onclick="setTheme('dark')">
+                                            <div class="theme-preview theme-preview--dark"></div>
+                                            <span>Oscuro</span>
+                                        </button>
+                                        <button class="theme-opt" data-theme="light" onclick="setTheme('light')" style="opacity:0.5" title="Próximamente">
+                                            <div class="theme-preview theme-preview--light"></div>
+                                            <span>Claro <small>(pronto)</small></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="pf-field">
+                                    <label>Densidad de la interfaz</label>
+                                    <div class="density-options">
+                                        <button class="density-opt" data-d="compact" onclick="setDensity('compact')">Compacta</button>
+                                        <button class="density-opt active" data-d="normal" onclick="setDensity('normal')">Normal</button>
+                                        <button class="density-opt" data-d="comfortable" onclick="setDensity('comfortable')">Amplia</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="apariencia-info">
+                                <i class="bi bi-info-circle"></i> Las preferencias de apariencia se guardan en este dispositivo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zona peligrosa -->
+                    <div class="perfil-danger-zone">
+                        <div class="danger-header">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Zona de peligro
+                        </div>
+                        <div class="danger-body">
+                            <div class="danger-row">
+                                <div>
+                                    <div class="danger-label">Cerrar todas las sesiones</div>
+                                    <div class="danger-desc">Cierra sesión en todos los dispositivos donde hayas iniciado sesión</div>
+                                </div>
+                                <button class="danger-btn" id="btnCerrarSesiones"><i class="bi bi-box-arrow-right"></i> Cerrar sesiones</button>
+                            </div>
+                            <div class="danger-row danger-row--sep">
+                                <div>
+                                    <div class="danger-label" style="color:var(--red)">Eliminar cuenta</div>
+                                    <div class="danger-desc">Esta acción es permanente e irreversible. Se borrarán todos tus datos.</div>
+                                </div>
+                                <button class="danger-btn danger-btn--red" id="btnEliminarCuenta"><i class="bi bi-trash3"></i> Eliminar cuenta</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const sb = document.getElementById('sidebar'), ov = document.getElementById('sidebarOverlay');
+        document.getElementById('menuToggle')?.addEventListener('click', () => { sb.classList.toggle('open'); ov.classList.toggle('visible'); });
+        ov?.addEventListener('click', () => { sb.classList.remove('open'); ov.classList.remove('visible'); });
+
+        document.addEventListener('keydown', e => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key === 'n' || e.key === 'N') window.location.href = 'new-ticket.html';
+        });
+
+        // Accordion sections
+        window.toggleSection = function(id) {
+            const body   = document.getElementById('body' + id.replace('section', ''));
+            const toggle = document.getElementById('tog' + id.replace('section', ''));
+            const open   = body.style.display !== 'none';
+            body.style.display   = open ? 'none' : 'block';
+            if (toggle) toggle.style.transform = open ? '' : 'rotate(180deg)';
+        };
+
+        // Password toggle
+        window.togPw = function(inputId, btn) {
+            const inp = document.getElementById(inputId);
+            const ico = btn.querySelector('i');
+            const show = inp.type === 'password';
+            inp.type = show ? 'text' : 'password';
+            ico.className = show ? 'bi bi-eye-slash' : 'bi bi-eye';
+        };
+
+        // Password strength
+        const pfPwInp = document.getElementById('pfPassNueva');
+        const pfPwBar = document.getElementById('pfPwBar');
+        const pfPwLbl = document.getElementById('pfPwLabel');
+        const pwLvls  = [{w:'0%',c:'transparent',t:''},{w:'25%',c:'var(--red)',t:'Débil'},{w:'50%',c:'var(--orange)',t:'Regular'},{w:'75%',c:'var(--yellow)',t:'Buena'},{w:'100%',c:'var(--green)',t:'Fuerte'}];
+        pfPwInp?.addEventListener('input', () => {
+            const v = pfPwInp.value;
+            if (!v) { pfPwBar.style.width='0%'; pfPwLbl.textContent=''; return; }
+            let s = 1; if(v.length>=8)s++; if(/[A-Z]/.test(v))s++; if(/[0-9]/.test(v))s++; if(/[^A-Za-z0-9]/.test(v))s++;
+            const l = pwLvls[Math.min(s,4)];
+            pfPwBar.style.width = l.w; pfPwBar.style.background = l.c;
+            pfPwLbl.textContent = l.t; pfPwLbl.style.color = l.c;
+        });
+
+        // Theme
+        window.setTheme = function(t) {
+            document.querySelectorAll('.theme-opt').forEach(b=>b.classList.toggle('active', b.dataset.theme===t));
+            localStorage.setItem('nf_theme', t);
+        };
+
+        // Density
+        window.setDensity = function(d) {
+            document.querySelectorAll('.density-opt').forEach(b=>b.classList.toggle('active', b.dataset.d===d));
+            localStorage.setItem('nf_density', d);
+        };
+
+        // Danger actions
+        document.getElementById('btnCerrarSesiones')?.addEventListener('click', async () => {
+            if (!confirm('¿Cerrar todas las sesiones activas?')) return;
+            const { getAuth, signOut } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
+            const { auth } = await import('./js/config.js');
+            await signOut(auth);
+            window.location.replace('login.html');
+        });
+        document.getElementById('btnEliminarCuenta')?.addEventListener('click', () => {
+            alert('Para eliminar tu cuenta por completo, contacta a un administrador del sistema.');
+        });
+    </script>
+    <script type="module" src="js/perfil.js"></script>
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

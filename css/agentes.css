@@ -1,0 +1,235 @@
+/* ════════════════════════════════════════════════════════════════
+   AGENTES.CSS — Página de gestión del equipo
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Grid dos columnas ─────────────────────────────────────────── */
+.agentes-grid {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 20px;
+    padding: 0 24px 32px;
+}
+.agentes-main { min-width: 0; }
+.agentes-side  { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; max-height: calc(100vh - 80px); overflow-y: auto; }
+
+/* ── Side card ─────────────────────────────────────────────────── */
+.side-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+.side-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.side-live-badge {
+    margin-left: auto;
+    background: var(--accent-faint);
+    color: var(--accent-light);
+    border: 1px solid rgba(99,102,241,0.25);
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    padding: 1px 7px;
+    min-width: 22px;
+    text-align: center;
+}
+.activity-empty {
+    padding: 16px;
+    font-size: 0.78rem;
+    color: var(--text-tertiary);
+    text-align: center;
+    font-style: italic;
+}
+
+/* ── Tabla de agentes ──────────────────────────────────────────── */
+.ag-cell-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ag-mini-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-faint);
+    border: 1px solid rgba(99,102,241,0.25);
+    color: var(--accent-light);
+    font-weight: 700;
+    font-size: 0.82rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.ag-name {
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+.ag-email {
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+.ag-num {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.ag-resolved { color: var(--green) !important; }
+
+/* Barra de carga */
+.ag-load-bar-wrap {
+    background: var(--bg-hover);
+    border-radius: 999px;
+    height: 6px;
+    overflow: hidden;
+    width: 80px;
+    margin-bottom: 2px;
+}
+.ag-load-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.5s ease;
+}
+.ag-load-pct {
+    font-size: 0.68rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+
+/* Status dot */
+.ag-status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 2px rgba(34,197,94,0.2);
+}
+
+/* ── Cola sin asignar ──────────────────────────────────────────── */
+.unassigned-feed { padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.uf-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    background: var(--bg-hover);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+    cursor: default;
+}
+.uf-info { min-width: 0; }
+.uf-title {
+    font-size: 0.79rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.uf-meta { font-size: 0.69rem; color: var(--text-tertiary); font-family: var(--font-mono); }
+
+/* ── Ranking ───────────────────────────────────────────────────── */
+.ranking-list { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+.rk-item { display: flex; align-items: center; gap: 8px; }
+.rk-medal { font-size: 1rem; width: 22px; text-align: center; }
+.rk-info { flex: 1; min-width: 0; }
+.rk-name { font-size: 0.78rem; font-weight: 500; color: var(--text-primary); margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rk-bar-wrap { background: var(--bg-hover); border-radius: 999px; height: 4px; overflow: hidden; }
+.rk-bar { height: 100%; background: var(--accent-light); border-radius: 999px; transition: width 0.5s ease; }
+.rk-count { font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); font-family: var(--font-mono); min-width: 22px; text-align: right; }
+
+/* ── Dept bars ─────────────────────────────────────────────────── */
+.dept-load-bars { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.dl-row { display: flex; align-items: center; gap: 8px; }
+.dl-label { font-size: 0.74rem; color: var(--text-secondary); width: 64px; flex-shrink: 0; }
+.dl-bar-wrap { flex: 1; background: var(--bg-hover); border-radius: 999px; height: 6px; overflow: hidden; }
+.dl-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-light)); border-radius: 999px; transition: width 0.5s; }
+.dl-val { font-size: 0.72rem; font-family: var(--font-mono); color: var(--text-tertiary); min-width: 18px; text-align: right; }
+
+/* ── Drawer agente ─────────────────────────────────────────────── */
+.ad-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 4px 0 8px;
+}
+.ad-info-item {
+    background: var(--bg-hover);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+}
+.ad-info-item span {
+    display: block;
+    font-size: 0.67rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    margin-bottom: 3px;
+}
+.ad-info-item strong {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    word-break: break-all;
+}
+.ad-tickets-list { display: flex; flex-direction: column; gap: 8px; }
+.ad-ticket-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    background: var(--bg-hover);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-subtle);
+}
+.ad-ticket-info { flex: 1; min-width: 0; }
+.ad-ticket-title { display: block; font-size: 0.8rem; font-weight: 500; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ad-ticket-meta  { font-size: 0.69rem; color: var(--text-tertiary); font-family: var(--font-mono); }
+.ad-assign-wrap  { display: flex; gap: 8px; align-items: center; }
+
+/* ── Responsive ────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+    .agentes-grid { grid-template-columns: 1fr 240px; }
+}
+@media (max-width: 768px) {
+    .agentes-grid {
+        grid-template-columns: 1fr;
+        padding: 12px 14px 24px;
+        gap: 12px;
+    }
+    .agentes-side {
+        position: static;
+        max-height: none;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+    .agentes-side .side-card:last-child { grid-column: 1 / -1; }
+    .ag-email { max-width: 120px; }
+}
+@media (max-width: 480px) {
+    .agentes-grid  { padding: 10px 10px 20px; gap: 10px; }
+    .agentes-side  { grid-template-columns: 1fr; }
+    .ad-info-grid  { grid-template-columns: 1fr; }
+}

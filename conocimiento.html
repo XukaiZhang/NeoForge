@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoForge — Base de conocimiento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/conocimiento.css">
+</head>
+<body class="viewport">
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú"><i class="bi bi-list"></i></button>
+
+    <div class="layout-grid">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-mark-sm">NF</div>
+                <span class="sidebar-brand">NeoForge</span>
+            </div>
+            <div class="sidebar-section-label">Menú Principal</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item"><i class="bi bi-ticket-perforated"></i><span>Tickets</span><div class="nav-badge" id="navTicketCount">0</div></a>
+                <a href="agentes.html" class="nav-item"><i class="bi bi-people-fill"></i><span>Equipo</span></a>
+                <a href="informes.html" class="nav-item"><i class="bi bi-bar-chart-line"></i><span>Informes</span></a>
+                <a href="conocimiento.html" class="nav-item active"><i class="bi bi-book"></i><span>Conocimiento</span></a>
+                <a href="perfil.html" class="nav-item"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
+                <a href="new-ticket.html" class="nav-item nav-item-cta"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
+            </nav>
+            <div class="sidebar-shortcut-hint"><kbd>N</kbd> Nuevo ticket</div>
+            <div class="sidebar-bottom">
+                <div class="user-card">
+                    <div class="user-avatar"><span id="userAvatarInitial"><i class="bi bi-person-fill"></i></span></div>
+                    <div class="user-info">
+                        <div id="userEmail" class="user-name">—</div>
+                        <div id="userRole" class="user-role">Agente de soporte</div>
+                    </div>
+                </div>
+                <button id="btnLogout" class="btn-logout"><i class="bi bi-box-arrow-right"></i> Cerrar sesión</button>
+            </div>
+        </aside>
+
+        <!-- CONTENT -->
+        <main class="content-area">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="page-breadcrumb"><span>Panel</span><i class="bi bi-chevron-right"></i><span class="breadcrumb-current">Conocimiento</span></div>
+                    <h1 class="page-title">Base de conocimiento</h1>
+                </div>
+                <div class="topbar-right">
+                    <button class="btn-new-ticket" id="btnNuevoArticulo">
+                        <i class="bi bi-plus-lg"></i><span>Nuevo artículo</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue"><i class="bi bi-files"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statTotalArticulos">0</div>
+                        <div class="stat-label">Artículos totales</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green"><i class="bi bi-eye"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statVistas">0</div>
+                        <div class="stat-label">Vistas totales</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon medium"><i class="bi bi-hand-thumbs-up"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statUtiles">0</div>
+                        <div class="stat-label">Marcados útiles</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple"><i class="bi bi-grid"></i></div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statCategorias">0</div>
+                        <div class="stat-label">Categorías</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search bar prominente -->
+            <div class="kbase-search-wrap">
+                <div class="kbase-search-inner">
+                    <i class="bi bi-search kbase-search-icon"></i>
+                    <input type="text" id="kbaseSearch" class="kbase-search-input" placeholder="Buscar en la base de conocimiento…">
+                    <kbd class="search-kbd">K</kbd>
+                </div>
+            </div>
+
+            <!-- Body: categorías + lista artículos -->
+            <div class="kbase-grid">
+
+                <!-- Filtro categorías -->
+                <aside class="kbase-cats">
+                    <div class="kbase-cats-header">Categorías</div>
+                    <div class="kbase-cats-list" id="catList">
+                        <button class="kbase-cat-btn active" data-cat="">
+                            <i class="bi bi-grid-3x3-gap"></i> Todas
+                            <span class="kbase-cat-count" id="catAllCount">0</span>
+                        </button>
+                    </div>
+                    <div class="kbase-cats-header" style="margin-top:16px">Etiquetas populares</div>
+                    <div class="kbase-tags-wrap" id="tagsList"></div>
+                </aside>
+
+                <!-- Lista de artículos -->
+                <div class="kbase-main">
+                    <!-- Toolbar -->
+                    <div class="kbase-toolbar">
+                        <span class="ticket-count"><span id="articulosCount">0</span> artículos</span>
+                        <div class="kbase-sort">
+                            <select id="kbaseSort" class="filter-select">
+                                <option value="reciente">Más reciente</option>
+                                <option value="vistas">Más visto</option>
+                                <option value="util">Más útil</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Cards -->
+                    <div class="kbase-articles" id="articulosList"></div>
+
+                    <!-- Empty -->
+                    <div class="table-empty" id="kbaseEmpty" style="display:none;">
+                        <div class="empty-icon"><i class="bi bi-journal-x"></i></div>
+                        <h3>Sin artículos aún</h3>
+                        <p>Crea el primer artículo para ayudar a tu equipo y clientes.</p>
+                        <button class="btn-empty-action" id="btnNuevoEmpty">
+                            <i class="bi bi-plus-lg"></i> Crear primer artículo
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: Nuevo / Editar artículo -->
+    <div class="modal-overlay" id="articuloModal" style="display:none;">
+        <div class="modal-card art-modal-card">
+            <div class="modal-header">
+                <h3 id="artModalTitle">Nuevo artículo</h3>
+                <button class="modal-close" id="closeArtModal"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div id="artModalStatus" class="status-alert" style="display:none;"></div>
+            <form id="articuloForm" novalidate>
+                <input type="hidden" id="artEditId">
+                <div class="art-form-fields">
+                    <div class="art-field">
+                        <label for="artTitulo">Título <span class="required">*</span></label>
+                        <input type="text" id="artTitulo" placeholder="Título claro y descriptivo" maxlength="120" required>
+                    </div>
+                    <div class="art-field-row">
+                        <div class="art-field">
+                            <label for="artCategoria">Categoría</label>
+                            <select id="artCategoria">
+                                <option value="General">General</option>
+                                <option value="DevOps">DevOps</option>
+                                <option value="SecOps">SecOps</option>
+                                <option value="Hardware">Hardware</option>
+                                <option value="Acceso y cuentas">Acceso y cuentas</option>
+                                <option value="Red y conectividad">Red y conectividad</option>
+                            </select>
+                        </div>
+                        <div class="art-field">
+                            <label for="artEtiquetas">Etiquetas <span class="art-hint">(separadas por comas)</span></label>
+                            <input type="text" id="artEtiquetas" placeholder="vpn, firewall, acceso…">
+                        </div>
+                    </div>
+                    <div class="art-field">
+                        <label for="artContenido">Contenido <span class="required">*</span></label>
+                        <div class="art-editor-toolbar">
+                            <button type="button" class="art-tb-btn" onclick="formatText('bold')" title="Negrita"><i class="bi bi-type-bold"></i></button>
+                            <button type="button" class="art-tb-btn" onclick="formatText('italic')" title="Cursiva"><i class="bi bi-type-italic"></i></button>
+                            <button type="button" class="art-tb-btn" onclick="insertHeading()" title="Encabezado"><i class="bi bi-type-h2"></i></button>
+                            <button type="button" class="art-tb-btn" onclick="insertList()" title="Lista"><i class="bi bi-list-ul"></i></button>
+                            <button type="button" class="art-tb-btn" onclick="insertCode()" title="Código"><i class="bi bi-code-slash"></i></button>
+                            <span class="art-tb-sep"></span>
+                            <span class="art-tb-hint">Markdown soportado</span>
+                        </div>
+                        <textarea id="artContenido" class="art-textarea" rows="10" placeholder="Escribe el contenido del artículo. Puedes usar **negrita**, *cursiva*, # Encabezados y - listas." required></textarea>
+                    </div>
+                    <div class="art-field">
+                        <label>Visibilidad</label>
+                        <div class="art-vis-options">
+                            <label class="art-vis-opt">
+                                <input type="radio" name="artVisibilidad" value="todos" checked>
+                                <span><i class="bi bi-globe"></i> Agentes y clientes</span>
+                            </label>
+                            <label class="art-vis-opt">
+                                <input type="radio" name="artVisibilidad" value="agentes">
+                                <span><i class="bi bi-lock"></i> Solo agentes</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="art-form-actions">
+                    <button type="button" class="btn-cancel" id="cancelArtModal">Cancelar</button>
+                    <button type="submit" class="btn-new-ticket" id="artSubmitBtn">
+                        <i class="bi bi-check-lg"></i> <span id="artSubmitLabel">Publicar artículo</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: Ver artículo -->
+    <div class="modal-overlay" id="viewModal" style="display:none;">
+        <div class="modal-card art-view-card">
+            <div class="modal-header">
+                <div>
+                    <div class="art-view-cat" id="viewCat">—</div>
+                    <h3 id="viewTitulo">—</h3>
+                </div>
+                <button class="modal-close" id="closeViewModal"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="art-view-meta" id="viewMeta"></div>
+            <div class="art-view-content" id="viewContent"></div>
+            <div class="art-view-footer">
+                <div class="art-vote-row">
+                    <span style="font-size:0.82rem;color:var(--text-secondary)">¿Te resultó útil?</span>
+                    <button class="art-vote-btn" id="btnVoteUp"><i class="bi bi-hand-thumbs-up"></i> Sí (<span id="voteUpCount">0</span>)</button>
+                    <button class="art-vote-btn art-vote-btn--down" id="btnVoteDown"><i class="bi bi-hand-thumbs-down"></i> No</button>
+                </div>
+                <div class="art-edit-row" id="artEditRow" style="display:none;">
+                    <button class="art-edit-btn" id="btnEditArticulo"><i class="bi bi-pencil"></i> Editar</button>
+                    <button class="art-edit-btn art-edit-btn--del" id="btnDeleteArticulo"><i class="bi bi-trash"></i> Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sb = document.getElementById('sidebar'), ov = document.getElementById('sidebarOverlay');
+        document.getElementById('menuToggle')?.addEventListener('click', () => { sb.classList.toggle('open'); ov.classList.toggle('visible'); });
+        ov?.addEventListener('click', () => { sb.classList.remove('open'); ov.classList.remove('visible'); });
+
+        // Keyboard shortcut search
+        document.addEventListener('keydown', e => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.key === 'k' || e.key === 'K') { e.preventDefault(); document.getElementById('kbaseSearch')?.focus(); }
+            if (e.key === 'n' || e.key === 'N') window.location.href = 'new-ticket.html';
+        });
+
+        // Modal controls
+        const artModal  = document.getElementById('articuloModal');
+        const viewModal = document.getElementById('viewModal');
+        function openArtModal(edit = false) {
+            document.getElementById('artModalTitle').textContent = edit ? 'Editar artículo' : 'Nuevo artículo';
+            document.getElementById('artSubmitLabel').textContent = edit ? 'Guardar cambios' : 'Publicar artículo';
+            artModal.style.display = 'flex';
+        }
+        function closeArtModal() { artModal.style.display = 'none'; document.getElementById('articuloForm').reset(); document.getElementById('artEditId').value = ''; }
+        document.getElementById('btnNuevoArticulo')?.addEventListener('click', () => openArtModal(false));
+        document.getElementById('btnNuevoEmpty')?.addEventListener('click', () => openArtModal(false));
+        document.getElementById('closeArtModal')?.addEventListener('click', closeArtModal);
+        document.getElementById('cancelArtModal')?.addEventListener('click', closeArtModal);
+        artModal?.addEventListener('click', e => { if (e.target === artModal) closeArtModal(); });
+
+        document.getElementById('closeViewModal')?.addEventListener('click', () => viewModal.style.display = 'none');
+        viewModal?.addEventListener('click', e => { if (e.target === viewModal) viewModal.style.display = 'none'; });
+
+        // Category filter
+        document.getElementById('catList')?.addEventListener('click', e => {
+            const btn = e.target.closest('.kbase-cat-btn');
+            if (!btn) return;
+            document.querySelectorAll('.kbase-cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            window.filterByCategory?.(btn.dataset.cat);
+        });
+
+        // Markdown toolbar helpers
+        window.formatText = function(cmd) {
+            const ta = document.getElementById('artContenido');
+            const s = ta.selectionStart, e = ta.selectionEnd;
+            const sel = ta.value.slice(s, e);
+            const wrap = cmd === 'bold' ? '**' : '*';
+            ta.setRangeText(wrap + (sel || 'texto') + wrap, s, e, 'end');
+            ta.focus();
+        };
+        window.insertHeading = function() {
+            const ta = document.getElementById('artContenido');
+            const pos = ta.selectionStart;
+            ta.setRangeText('\n## Encabezado\n', pos, pos, 'end');
+            ta.focus();
+        };
+        window.insertList = function() {
+            const ta = document.getElementById('artContenido');
+            const pos = ta.selectionStart;
+            ta.setRangeText('\n- Elemento 1\n- Elemento 2\n- Elemento 3\n', pos, pos, 'end');
+            ta.focus();
+        };
+        window.insertCode = function() {
+            const ta = document.getElementById('artContenido');
+            const s = ta.selectionStart, e = ta.selectionEnd;
+            const sel = ta.value.slice(s, e);
+            ta.setRangeText('`' + (sel || 'código') + '`', s, e, 'end');
+            ta.focus();
+        };
+    </script>
+    <script type="module" src="js/conocimiento.js"></script>
+    <script type="module" src="js/auth.js"></script>
+</body>
+</html>

@@ -15,3 +15,21 @@ const firebaseConfig = {
 export const app  = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db   = getFirestore(app);
+
+// ── Rol del usuario ───────────────────────────────────────────────
+// /usuarios/{uid} → { rol: 'agente' | 'cliente', email, nombre, creado }
+export async function getUserRole(uid) {
+    const cached = sessionStorage.getItem('nf_role');
+    if (cached) return cached;
+    try {
+        const { getDoc, doc } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+        const snap = await getDoc(doc(db, 'usuarios', uid));
+        const rol  = snap.exists() ? (snap.data().rol ?? 'cliente') : 'cliente';
+        sessionStorage.setItem('nf_role', rol);
+        return rol;
+    } catch { return 'cliente'; }
+}
+
+export function clearRoleCache() {
+    sessionStorage.removeItem('nf_role');
+}
