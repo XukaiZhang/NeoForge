@@ -77,11 +77,6 @@
                 <a href="new-ticket.html" class="nav-item nav-item-cta"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
             </nav>
 
-            <!-- Keyboard shortcut hint -->
-            <div class="sidebar-shortcut-hint">
-                <kbd>N</kbd> Nuevo ticket &nbsp;·&nbsp; <kbd>B</kbd> Buscar
-            </div>
-
             <div class="sidebar-bottom">
                 <div class="user-card">
                     <div class="user-avatar" id="userAvatarSidebar">
@@ -381,23 +376,6 @@
 
         drawerClose?.addEventListener('click',   closeDrawer);
         drawerOverlay?.addEventListener('click', closeDrawer);
-
-        // ── Keyboard shortcuts ─────────────────────────────────────
-        document.addEventListener('keydown', e => {
-            // Skip if typing in an input
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-
-            if (e.key === 'n' || e.key === 'N') {
-                window.location.href = 'nuevo-ticket.html';
-            }
-            if (e.key === 'f' || e.key === 'F') {
-                e.preventDefault();
-                document.getElementById('ticketSearch')?.focus();
-            }
-            if (e.key === 'Escape') {
-                closeDrawer();
-            }
-        });
 
         // ── Topbar search button ───────────────────────────────────
         document.getElementById('topbarSearch')?.addEventListener('click', () => {
