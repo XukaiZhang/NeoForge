@@ -9,16 +9,17 @@ let allTickets    = [];
 let currentFilter = '';
 let currentSearch = '';
 
-// ── Esperar usuario autenticado ────────────────────────────────────
+// ── Auth ───────────────────────────────────────────────────────────
 onAuthStateChanged(auth, user => {
     if (!user) return;
 
-    // Avatar inicial
-    const display = user.displayName || user.email.split('@')[0];
+    const display  = user.displayName || user.email.split('@')[0];
     const avatarEl = document.getElementById('ctAvatar');
+    const emailEl  = document.getElementById('userEmail');
     if (avatarEl) avatarEl.textContent = display.charAt(0).toUpperCase();
+    if (emailEl)  emailEl.textContent  = user.email;
 
-    // Escuchar tickets del usuario actual
+    // FIX: primary query by ownerUid; fallback to ownerEmail for legacy tickets
     const q = query(
         collection(db, 'tickets'),
         where('ownerUid', '==', user.uid),
@@ -29,6 +30,18 @@ onAuthStateChanged(auth, user => {
         allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
         updateStats();
         renderTickets();
+    }, err => {
+        console.warn('ownerUid query failed, falling back to ownerEmail:', err.message);
+        const q2 = query(
+            collection(db, 'tickets'),
+            where('ownerEmail', '==', user.email),
+            orderBy('timestamp', 'desc')
+        );
+        onSnapshot(q2, snap => {
+            allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            updateStats();
+            renderTickets();
+        });
     });
 });
 
@@ -37,7 +50,6 @@ function updateStats() {
     const abiertos  = allTickets.filter(t => (t.status || 'open') === 'open').length;
     const enProceso = allTickets.filter(t => t.status === 'in-progress').length;
     const resueltos = allTickets.filter(t => t.status === 'resolved' || t.status === 'closed').length;
-
     _set('cstAbiertos',  abiertos);
     _set('cstEnProceso', enProceso);
     _set('cstResueltos', resueltos);
@@ -51,9 +63,7 @@ function renderTickets() {
     if (!list) return;
 
     let filtered = allTickets;
-    if (currentFilter) {
-        filtered = filtered.filter(t => (t.status || 'open') === currentFilter);
-    }
+    if (currentFilter) filtered = filtered.filter(t => (t.status || 'open') === currentFilter);
     if (currentSearch.trim()) {
         const s = currentSearch.toLowerCase();
         filtered = filtered.filter(t =>
@@ -63,16 +73,16 @@ function renderTickets() {
     }
 
     if (allTickets.length === 0) {
-        list.innerHTML  = '';
-        empty.style.display = 'flex';
+        list.innerHTML = '';
+        if (empty) empty.style.display = 'flex';
         return;
     }
-    empty.style.display = 'none';
+    if (empty) empty.style.display = 'none';
 
     if (filtered.length === 0) {
         list.innerHTML = `
             <div style="text-align:center;padding:40px;color:var(--text-tertiary);font-size:0.84rem;">
-                <i class="bi bi-search" style="font-size:1.4rem;display:block;margin-bottom:8px;"></i>
+                <i class="bi bi-search" style="font-size:1.4rem;display:block;margin-bottom:8px;opacity:0.4"></i>
                 No se encontraron tickets con ese filtro.
             </div>`;
         return;
@@ -85,7 +95,7 @@ function renderTickets() {
             ? t.timestamp.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
             : '—';
         return `
-        <div class="ct-ticket-card" onclick="openTicketDetail(${JSON.stringify(t).replace(/"/g, '&quot;')})">
+        <div class="ct-ticket-card" data-id="${t.id}">
             <div class="ct-ticket-prio">
                 <span class="prio-tag prio-${esc(t.prioridad || 'P3')}">${esc(t.prioridad || 'P3')}</span>
             </div>
@@ -98,16 +108,23 @@ function renderTickets() {
                 </div>
             </div>
             <div class="ct-ticket-right">
-                <span class="status-badge status-${status}" style="background:${statusConf.bg};color:${statusConf.color};border-color:${statusConf.border};font-size:0.72rem;padding:3px 9px">
+                <span class="status-badge status-${status}" style="background:${statusConf.bg};color:${statusConf.color};border:1px solid ${statusConf.border};font-size:0.72rem;padding:3px 9px">
                     ${statusConf.label}
                 </span>
                 <i class="bi bi-chevron-right ct-ticket-arrow"></i>
             </div>
         </div>`;
     }).join('');
+
+    // FIX: attach click handlers via event delegation instead of inline onclick with JSON
+    list.querySelectorAll('.ct-ticket-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const t = allTickets.find(x => x.id === card.dataset.id);
+            if (t) window.openTicketDetail(t);
+        });
+    });
 }
 
-// Status config
 const STATUS_CONFIG = {
     'open':        { label: 'Abierto',    bg: 'rgba(59,130,246,0.1)',  color: '#60a5fa', border: 'rgba(59,130,246,0.25)' },
     'in-progress': { label: 'En proceso', bg: 'rgba(234,179,8,0.1)',   color: '#fbbf24', border: 'rgba(234,179,8,0.25)' },
@@ -120,7 +137,7 @@ window.openTicketDetail = function(t) {
     const modal = document.getElementById('ctDetailModal');
     if (!modal) return;
 
-    _set('ctdId',    '#' + t.id.slice(-8).toUpperCase());
+    _set('ctdId',     '#' + t.id.slice(-8).toUpperCase());
     _set('ctdTitulo', t.titulo || 'Sin asunto');
 
     const status = t.status || 'open';
@@ -134,12 +151,13 @@ window.openTicketDetail = function(t) {
         <div class="drawer-meta-item"><i class="bi bi-flag"></i> ${esc(t.prioridad || 'P3')}</div>
         <div class="drawer-meta-item"><i class="bi bi-building"></i> ${esc(t.depto || '—')}</div>
         <div class="drawer-meta-item"><i class="bi bi-calendar3"></i> ${date}</div>
-        ${t.assignedEmail ? `<div class="drawer-meta-item"><i class="bi bi-person-check"></i> ${esc(t.assignedEmail)}</div>` : '<div class="drawer-meta-item" style="color:var(--text-tertiary)"><i class="bi bi-person-dash"></i> Sin asignar</div>'}
+        ${t.assignedEmail
+            ? `<div class="drawer-meta-item"><i class="bi bi-person-check"></i> ${esc(t.assignedEmail)}</div>`
+            : '<div class="drawer-meta-item" style="color:var(--text-tertiary)"><i class="bi bi-person-dash"></i> Sin asignar</div>'}
     `;
 
     document.getElementById('ctdDesc').textContent = t.descripcion || 'Sin descripción.';
 
-    // Actividad
     const actEl = document.getElementById('ctdActivity');
     if (actEl) {
         const acts = Array.isArray(t.activity) ? t.activity : [];
@@ -156,8 +174,8 @@ window.openTicketDetail = function(t) {
                 <div class="activity-entry ${a.type || 'note'}">
                     <div>
                         <strong style="font-size:0.78rem;color:var(--text-primary)">${esc(a.author || 'Sistema')}</strong>
-                        <p style="margin:3px 0 0;font-size:0.8rem">${esc(a.text || '')}</p>
-                        <div style="font-size:0.7rem;color:var(--text-tertiary);margin-top:2px">${timeAgo(a.timestamp)}</div>
+                        <p style="margin:3px 0 0;font-size:0.8rem;color:var(--text-secondary)">${esc(a.text || '')}</p>
+                        <div style="font-size:0.7rem;color:var(--text-tertiary);margin-top:2px">${timeAgo(a.timestamp || a.ts)}</div>
                     </div>
                 </div>`).join('');
         }
@@ -183,7 +201,7 @@ document.getElementById('ctTicketForm')?.addEventListener('submit', async e => {
     if (!desc)   { showMsg(msgEl, 'error', 'Por favor añade una descripción.'); return; }
 
     showMsg(msgEl, 'loading', 'Creando ticket…');
-    btn.disabled = true;
+    if (btn) btn.disabled = true;
 
     try {
         const ref = await addDoc(collection(db, 'tickets'), {
@@ -201,41 +219,36 @@ document.getElementById('ctTicketForm')?.addEventListener('submit', async e => {
 
         showMsg(msgEl, 'success', `¡Ticket #${ref.id.slice(-8).toUpperCase()} creado! Volviendo…`);
         e.target.reset();
-        document.getElementById('ctCharCount').textContent = '0';
+        const charCount = document.getElementById('ctCharCount');
+        if (charCount) charCount.textContent = '0';
 
         setTimeout(() => {
-            // Volver a lista
             document.getElementById('secNuevoTicket').style.display = 'none';
             document.getElementById('secMisTickets').style.display  = 'block';
             document.querySelectorAll('.ct-nav-btn').forEach(b => {
                 b.classList.toggle('active', b.id === 'navMisTickets' || b.id === 'mNavMisTickets');
             });
-            msgEl.style.display = 'none';
-            btn.disabled = false;
+            if (msgEl) msgEl.style.display = 'none';
+            if (btn) btn.disabled = false;
         }, 1800);
     } catch (err) {
         console.error(err);
         showMsg(msgEl, 'error', 'Error al crear el ticket. Inténtalo de nuevo.');
-        btn.disabled = false;
+        if (btn) btn.disabled = false;
     }
 });
 
-// ── Filtrado y búsqueda (expuesto globalmente para el HTML) ────────
-window.filterClienteTickets = function(status) {
-    currentFilter = status;
-    renderTickets();
-};
-window.searchClienteTickets = function(term) {
-    currentSearch = term;
-    renderTickets();
-};
+// ── Filtrado y búsqueda ────────────────────────────────────────────
+window.filterClienteTickets = function(status) { currentFilter = status; renderTickets(); };
+window.searchClienteTickets = function(term)   { currentSearch = term;   renderTickets(); };
 
 // ── Helpers ───────────────────────────────────────────────────────
 function _set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 function esc(s = '') { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function timeAgo(ts) {
     if (!ts) return '—';
-    const d    = ts.toDate?.() ?? new Date(ts);
+    const d = typeof ts === 'string' ? new Date(ts) : (ts.toDate?.() ?? new Date(ts));
+    if (isNaN(d)) return '—';
     const diff = Math.floor((Date.now() - d.getTime()) / 1000);
     if (diff < 60)    return 'ahora mismo';
     if (diff < 3600)  return Math.floor(diff / 60) + ' min atrás';

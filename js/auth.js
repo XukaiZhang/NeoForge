@@ -1,4 +1,4 @@
-import { auth } from './config.js';
+import { auth, db } from './config.js';
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
@@ -9,41 +9,46 @@ import {
     signOut,
     updateProfile
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import {
+    doc, setDoc, getDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 // ── Session guardian ───────────────────────────────────────────────
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     const path    = window.location.pathname;
     const isLogin = path.includes('login.html') || path.includes('index.html') ||
                     path === '/' || path.endsWith('/');
 
     if (!user && !isLogin) { window.location.replace('login.html'); return; }
-    if (user  &&  isLogin) { window.location.replace('dashboard.html'); return; }
+
+    if (user && isLogin) {
+        const rol = await getUserRole(user.uid);
+        window.location.replace(rol === 'cliente' ? 'mis-tickets.html' : 'dashboard.html');
+        return;
+    }
 
     if (user) {
-        // Fill user name/email everywhere
+        const display = user.displayName || user.email.split('@')[0];
+        const initial = display.charAt(0).toUpperCase();
         const emailEl  = document.getElementById('userEmail');
         const avatarEl = document.getElementById('userAvatarInitial');
         const nameEl   = document.getElementById('userName');
-
-        const display = user.displayName || user.email.split('@')[0];
-        const initial = display.charAt(0).toUpperCase();
-
         if (emailEl)  emailEl.textContent  = user.email;
         if (nameEl)   nameEl.textContent   = display;
         if (avatarEl) avatarEl.textContent = initial;
     }
 });
 
-// ── Google Sign In / Register (shared handler) ────────────────────
+// ── Google Sign In / Register ─────────────────────────────────────
 async function googleSignIn(msgElId) {
     const msgEl = document.getElementById(msgElId);
     showAlert(msgEl, 'loading', 'Abriendo Google…');
     try {
-        await signInWithPopup(auth, googleProvider);
-        // onAuthStateChanged handles redirect
+        const cred = await signInWithPopup(auth, googleProvider);
+        await ensureUserDoc(cred.user, 'cliente');
     } catch (err) {
         if (err.code !== 'auth/popup-closed-by-user') {
             showAlert(msgEl, 'error', getFriendlyError(err.code));
@@ -95,8 +100,8 @@ document.getElementById('registerForm')?.addEventListener('submit', async (e) =>
 
     try {
         const cred = await createUserWithEmailAndPassword(auth, email, password);
-        // Set display name from email prefix
         await updateProfile(cred.user, { displayName: email.split('@')[0] });
+        await ensureUserDoc(cred.user, 'cliente');
         showAlert(msgEl, 'success', '¡Cuenta creada! Redirigiendo…');
     } catch (err) {
         showAlert(msgEl, 'error', getFriendlyError(err.code));
@@ -126,9 +131,41 @@ document.getElementById('btnSendReset')?.addEventListener('click', async () => {
 
 // ── Logout ─────────────────────────────────────────────────────────
 document.getElementById('btnLogout')?.addEventListener('click', async () => {
+    sessionStorage.removeItem('nf_role');
     await signOut(auth);
     window.location.replace('login.html');
 });
+
+// ── Create Firestore user doc if missing ───────────────────────────
+async function ensureUserDoc(user, defaultRol = 'cliente') {
+    try {
+        const ref  = doc(db, 'usuarios', user.uid);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) {
+            await setDoc(ref, {
+                uid:    user.uid,
+                email:  user.email,
+                nombre: user.displayName || user.email.split('@')[0],
+                rol:    defaultRol,
+                creado: serverTimestamp(),
+            });
+        }
+    } catch (err) {
+        console.warn('ensureUserDoc:', err);
+    }
+}
+
+// ── Role lookup ────────────────────────────────────────────────────
+async function getUserRole(uid) {
+    const cached = sessionStorage.getItem('nf_role');
+    if (cached) return cached;
+    try {
+        const snap = await getDoc(doc(db, 'usuarios', uid));
+        const rol  = snap.exists() ? (snap.data().rol ?? 'cliente') : 'cliente';
+        sessionStorage.setItem('nf_role', rol);
+        return rol;
+    } catch { return 'cliente'; }
+}
 
 // ── Helpers ───────────────────────────────────────────────────────
 export function showAlert(el, type, text) {
@@ -140,21 +177,22 @@ export function showAlert(el, type, text) {
         success: { bg: 'var(--green-faint)',  border: 'rgba(34,197,94,0.25)',   color: 'var(--green)' },
         loading: { bg: 'var(--accent-faint)', border: 'rgba(99,102,241,0.25)', color: 'var(--accent-light)' },
     }[type] || {};
-    el.style.cssText += `background:${s.bg};border:1px solid ${s.border};color:${s.color};`;
+    el.style.cssText += `background:${s.bg};border:1px solid ${s.border};color:${s.color};padding:10px 14px;border-radius:var(--radius-sm);font-size:0.79rem;font-family:var(--font-mono);`;
 }
 
 export function getFriendlyError(code) {
     const map = {
-        'auth/user-not-found':        'No se encontró ninguna cuenta con este correo.',
-        'auth/wrong-password':        'Contraseña incorrecta. Por favor inténtalo de nuevo.',
-        'auth/invalid-email':         'Por favor introduce un correo electrónico válido.',
-        'auth/too-many-requests':     'Demasiados intentos. Por favor inténtalo más tarde.',
-        'auth/email-already-in-use':  'Este correo ya está registrado. Inicia sesión.',
-        'auth/weak-password':         'La contraseña debe tener al menos 6 caracteres.',
-        'auth/invalid-credential':    'Correo o contraseña incorrectos.',
-        'auth/popup-blocked':         'El popup fue bloqueado. Permite popups e inténtalo.',
-        'auth/network-request-failed':'Error de red. Comprueba tu conexión.',
+        'auth/user-not-found':         'No se encontró ninguna cuenta con este correo.',
+        'auth/wrong-password':         'Contraseña incorrecta. Por favor inténtalo de nuevo.',
+        'auth/invalid-email':          'Por favor introduce un correo electrónico válido.',
+        'auth/too-many-requests':      'Demasiados intentos. Por favor inténtalo más tarde.',
+        'auth/email-already-in-use':   'Este correo ya está registrado. Inicia sesión.',
+        'auth/weak-password':          'La contraseña debe tener al menos 6 caracteres.',
+        'auth/invalid-credential':     'Correo o contraseña incorrectos.',
+        'auth/popup-blocked':          'El popup fue bloqueado. Permite popups e inténtalo.',
+        'auth/network-request-failed': 'Error de red. Comprueba tu conexión.',
         'auth/cancelled-popup-request':'Inicio de sesión cancelado.',
+        'auth/requires-recent-login':  'Por seguridad, cierra sesión y vuelve a entrar.',
     };
     return map[code] ?? 'Ocurrió un error inesperado. Por favor inténtalo de nuevo.';
 }

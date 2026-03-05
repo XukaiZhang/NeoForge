@@ -35,6 +35,8 @@
                 <a href="new-ticket.html" class="nav-item nav-item-cta active"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
             </nav>
 
+            <div class="sidebar-shortcut-hint"><kbd>N</kbd> Nuevo ticket &nbsp;·&nbsp; <kbd>B</kbd> Buscar</div>
+
             <div class="sidebar-bottom">
                 <div class="user-card">
                     <div class="user-avatar"><i class="bi bi-person-fill"></i></div>
@@ -90,7 +92,7 @@
                         <!-- Subject -->
                         <div class="form-section">
                             <label class="form-label" for="titulo">
-                                Subject <span class="required">*</span>
+                                Asunto <span class="required">*</span>
                             </label>
                             <input
                                 type="text"
@@ -106,13 +108,13 @@
                         <!-- Description -->
                         <div class="form-section">
                             <label class="form-label" for="descripcion">
-                                Description <span class="required">*</span>
+                                Descripción <span class="required">*</span>
                             </label>
                             <textarea
                                 id="descripcion"
                                 class="form-input form-textarea"
                                 rows="7"
-                                placeholder="Describe the issue in detail:&#10;• What happened?&#10;• Steps to reproduce&#10;• Expected vs actual behavior&#10;• Any relevant error messages"
+                                placeholder="Describe el incidente en detalle:&#10;• ¿Qué ocurrió?&#10;• Pasos para reproducirlo&#10;• Comportamiento esperado vs real&#10;• Mensajes de error relevantes"
                                 required
                             ></textarea>
                         </div>
@@ -134,10 +136,10 @@
                                 <label class="form-label" for="prioridad">Prioridad</label>
                                 <div class="select-wrapper">
                                     <select id="prioridad" class="form-input form-select">
-                                        <option value="P3">P3 — Low</option>
-                                        <option value="P2">P2 — Medium</option>
-                                        <option value="P1">P1 — High</option>
-                                        <option value="P0">P0 — Critical</option>
+                                        <option value="P3">P3 — Baja</option>
+                                        <option value="P2">P2 — Media</option>
+                                        <option value="P1">P1 — Alta</option>
+                                        <option value="P0">P0 — Crítica</option>
                                     </select>
                                 </div>
                             </div>
@@ -162,29 +164,29 @@
                                 <button type="button" class="prio-btn" data-value="P3">
                                     <span class="prio-dot p3"></span>
                                     <div>
-                                        <strong>P3 — Low</strong>
-                                        <small>Minor issue, no urgency</small>
+                                        <strong>P3 — Baja</strong>
+                                        <small>Problema menor, sin urgencia</small>
                                     </div>
                                 </button>
                                 <button type="button" class="prio-btn" data-value="P2">
                                     <span class="prio-dot p2"></span>
                                     <div>
-                                        <strong>P2 — Medium</strong>
-                                        <small>Affects workflow, workaround available</small>
+                                        <strong>P2 — Media</strong>
+                                        <small>Afecta el trabajo, hay solución temporal</small>
                                     </div>
                                 </button>
                                 <button type="button" class="prio-btn" data-value="P1">
                                     <span class="prio-dot p1"></span>
                                     <div>
-                                        <strong>P1 — High</strong>
-                                        <small>Significant impact, no workaround</small>
+                                        <strong>P1 — Alta</strong>
+                                        <small>Impacto significativo, sin solución temporal</small>
                                     </div>
                                 </button>
                                 <button type="button" class="prio-btn" data-value="P0">
                                     <span class="prio-dot p0"></span>
                                     <div>
-                                        <strong>P0 — Critical</strong>
-                                        <small>Service down, immediate action needed</small>
+                                        <strong>P0 — Crítica</strong>
+                                        <small>Servicio caído, acción inmediata requerida</small>
                                     </div>
                                 </button>
                             </div>
@@ -197,7 +199,7 @@
                         <div class="form-actions">
                             <a href="dashboard.html" class="btn-cancel">
                                 <i class="bi bi-x"></i>
-                                Cancel
+                                Cancelar
                             </a>
                             <button type="submit" class="btn-submit" id="submitBtn">
                                 <i class="bi bi-send-fill"></i>

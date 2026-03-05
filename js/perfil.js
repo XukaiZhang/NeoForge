@@ -19,18 +19,15 @@ onAuthStateChanged(auth, async user => {
     const display = user.displayName || user.email.split('@')[0];
     const initial = display.charAt(0).toUpperCase();
 
-    // Identity card
-    _set('perfilAvatar',      initial);
-    _set('perfilNombre',      display);
+    _set('perfilAvatar',       initial);
+    _set('perfilNombre',       display);
     _set('perfilEmailDisplay', user.email);
 
-    // Form defaults
     const pfNombre = document.getElementById('pfNombre');
     const pfEmail  = document.getElementById('pfEmail');
     if (pfNombre) pfNombre.value = display;
     if (pfEmail)  pfEmail.value  = user.email;
 
-    // Firestore user doc
     try {
         const snap = await getDoc(doc(db, 'usuarios', user.uid));
         if (snap.exists()) {
@@ -42,24 +39,27 @@ onAuthStateChanged(auth, async user => {
         }
     } catch {}
 
-    // Stats: tickets assigned & resolved
     try {
-        const open = await getDocs(query(collection(db, 'tickets'), where('assignedEmail', '==', user.email), where('status', 'in', ['open', 'in-progress'])));
-        const resolved = await getDocs(query(collection(db, 'tickets'), where('assignedEmail', '==', user.email), where('status', 'in', ['resolved', 'closed'])));
+        const [open, resolved] = await Promise.all([
+            getDocs(query(collection(db, 'tickets'), where('assignedEmail', '==', user.email), where('status', 'in', ['open', 'in-progress']))),
+            getDocs(query(collection(db, 'tickets'), where('assignedEmail', '==', user.email), where('status', 'in', ['resolved', 'closed']))),
+        ]);
         _set('pidTicketsAbiertos', open.size);
         _set('pidResueltos',       resolved.size);
     } catch {}
 
-    // Stats: articles authored
     try {
         const arts = await getDocs(query(collection(db, 'articulos'), where('autor', '==', display)));
         _set('pidArticulos', arts.size);
     } catch {}
 
-    // Recent activity
-    loadActivity(user.email);
+    // FIX: top-level await bug — moved inside onAuthStateChanged callback
+    try {
+        const navSnap = await getDocs(query(collection(db, 'tickets'), where('status', '==', 'open')));
+        _set('navTicketCount', navSnap.size);
+    } catch {}
 
-    // Notifications preferences from localStorage
+    loadActivity(user.email);
     loadNotifPrefs();
 });
 
@@ -103,27 +103,23 @@ document.getElementById('formDatos')?.addEventListener('submit', async e => {
     const dept     = document.getElementById('pfDepartamento')?.value;
 
     if (!nombre) { showMsg(statusEl, 'error', 'El nombre no puede estar vacío.'); return; }
-    showMsg(statusEl, 'loading', 'Guardando…'); btn.disabled = true;
+    showMsg(statusEl, 'loading', 'Guardando…');
+    if (btn) btn.disabled = true;
 
     try {
-        // Update Firebase Auth display name
         await updateProfile(currentUser, { displayName: nombre });
-        // Update Firestore user doc
         await updateDoc(doc(db, 'usuarios', currentUser.uid), {
             nombre, departamento: dept, updatedAt: serverTimestamp()
         });
-
-        // Update UI
-        _set('perfilNombre', nombre);
-        _set('perfilAvatar', nombre.charAt(0).toUpperCase());
+        _set('perfilNombre',      nombre);
+        _set('perfilAvatar',      nombre.charAt(0).toUpperCase());
         _set('userAvatarInitial', nombre.charAt(0).toUpperCase());
-        _set('userEmail', currentUser.email);
-
+        _set('userEmail',         currentUser.email);
         showMsg(statusEl, 'success', '¡Perfil actualizado correctamente!');
-    } catch (err) {
+    } catch {
         showMsg(statusEl, 'error', 'Error al guardar. Inténtalo de nuevo.');
     } finally {
-        btn.disabled = false;
+        if (btn) btn.disabled = false;
     }
 });
 
@@ -136,12 +132,13 @@ document.getElementById('formPassword')?.addEventListener('submit', async e => {
     const nueva     = document.getElementById('pfPassNueva')?.value;
     const confirmar = document.getElementById('pfPassConfirm')?.value;
 
-    if (!actual)          { showMsg(statusEl, 'error', 'Introduce tu contraseña actual.'); return; }
-    if (!nueva)           { showMsg(statusEl, 'error', 'Introduce la nueva contraseña.'); return; }
-    if (nueva.length < 6) { showMsg(statusEl, 'error', 'La contraseña debe tener al menos 6 caracteres.'); return; }
-    if (nueva !== confirmar){ showMsg(statusEl, 'error', 'Las contraseñas no coinciden.'); return; }
+    if (!actual)             { showMsg(statusEl, 'error', 'Introduce tu contraseña actual.'); return; }
+    if (!nueva)              { showMsg(statusEl, 'error', 'Introduce la nueva contraseña.'); return; }
+    if (nueva.length < 6)    { showMsg(statusEl, 'error', 'La contraseña debe tener al menos 6 caracteres.'); return; }
+    if (nueva !== confirmar) { showMsg(statusEl, 'error', 'Las contraseñas no coinciden.'); return; }
 
-    showMsg(statusEl, 'loading', 'Verificando contraseña actual…'); btn.disabled = true;
+    showMsg(statusEl, 'loading', 'Verificando contraseña actual…');
+    if (btn) btn.disabled = true;
 
     try {
         const credential = EmailAuthProvider.credential(currentUser.email, actual);
@@ -151,13 +148,14 @@ document.getElementById('formPassword')?.addEventListener('submit', async e => {
         document.getElementById('formPassword').reset();
     } catch (err) {
         const msgs = {
-            'auth/wrong-password':   'La contraseña actual es incorrecta.',
-            'auth/too-many-requests':'Demasiados intentos. Espera un momento.',
-            'auth/requires-recent-login':'Cierra sesión y vuelve a entrar para cambiar la contraseña.',
+            'auth/wrong-password':        'La contraseña actual es incorrecta.',
+            'auth/invalid-credential':    'La contraseña actual es incorrecta.',
+            'auth/too-many-requests':     'Demasiados intentos. Espera un momento.',
+            'auth/requires-recent-login': 'Cierra sesión y vuelve a entrar para cambiar la contraseña.',
         };
         showMsg(statusEl, 'error', msgs[err.code] || 'Error al cambiar contraseña. Inténtalo de nuevo.');
     } finally {
-        btn.disabled = false;
+        if (btn) btn.disabled = false;
     }
 });
 
@@ -178,16 +176,11 @@ document.getElementById('btnGuardarNotifs')?.addEventListener('click', () => {
     });
     localStorage.setItem('nf_notif_prefs', JSON.stringify(prefs));
     const btn = document.getElementById('btnGuardarNotifs');
+    if (!btn) return;
     const orig = btn.innerHTML;
     btn.innerHTML = '<i class="bi bi-check-lg"></i> ¡Guardado!';
     setTimeout(() => { btn.innerHTML = orig; }, 1800);
 });
-
-// ── Nav badge (open tickets count) ────────────────────────────────
-try {
-    const snap = await getDocs(query(collection(db, 'tickets'), where('status', '==', 'open')));
-    _set('navTicketCount', snap.size);
-} catch {}
 
 // ── Helpers ───────────────────────────────────────────────────────
 function _set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }

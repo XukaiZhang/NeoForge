@@ -6,12 +6,12 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import './auth.js';
 
-let allArticulos   = [];
-let currentCat     = '';
-let currentSearch  = '';
-let currentSort    = 'reciente';
-let currentUser    = null;
-let viewingId      = null;
+let allArticulos  = [];
+let currentCat    = '';
+let currentSearch = '';
+let currentSort   = 'reciente';
+let currentUser   = null;
+let viewingId     = null;
 
 // ── Auth ──────────────────────────────────────────────────────────
 onAuthStateChanged(auth, user => { currentUser = user; });
@@ -26,23 +26,19 @@ onSnapshot(query(collection(db, 'articulos'), orderBy('createdAt', 'desc')), sna
 });
 
 function updateNavBadge() {
-    // Also update open ticket count in nav badge if possible
     const el = document.getElementById('navTicketCount');
     if (!el) return;
-    import('./config.js').then(({ db }) => {
-        import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js").then(({ collection, query, where, getDocs }) => {
-            getDocs(query(collection(db, 'tickets'), where('status', '==', 'open'))).then(s => { el.textContent = s.size; });
-        });
+    import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js").then(({ getDocs, query: q, where, collection: col }) => {
+        getDocs(q(col(db, 'tickets'), where('status', '==', 'open'))).then(s => { el.textContent = s.size; }).catch(() => {});
     });
 }
 
 // ── Stats ─────────────────────────────────────────────────────────
 function renderStats() {
-    const total   = allArticulos.length;
-    const vistas  = allArticulos.reduce((s, a) => s + (a.vistas || 0), 0);
-    const utiles  = allArticulos.reduce((s, a) => s + (a.votosPositivos || 0), 0);
-    const cats    = new Set(allArticulos.map(a => a.categoria || 'General')).size;
-
+    const total  = allArticulos.length;
+    const vistas = allArticulos.reduce((s, a) => s + (a.vistas || 0), 0);
+    const utiles = allArticulos.reduce((s, a) => s + (a.votosPositivos || 0), 0);
+    const cats   = new Set(allArticulos.map(a => a.categoria || 'General')).size;
     _set('statTotalArticulos', total);
     _set('statVistas',         vistas);
     _set('statUtiles',         utiles);
@@ -51,7 +47,7 @@ function renderStats() {
 
 // ── Categories ────────────────────────────────────────────────────
 function renderCats() {
-    const catList = document.getElementById('catList');
+    const catList  = document.getElementById('catList');
     const tagsList = document.getElementById('tagsList');
     if (!catList) return;
 
@@ -64,24 +60,36 @@ function renderCats() {
     });
 
     const total = allArticulos.length;
-    document.getElementById('catAllCount').textContent = total;
+    const allCountEl = document.getElementById('catAllCount');
+    if (allCountEl) allCountEl.textContent = total;
 
-    // Remove existing dynamic buttons (keep 'Todas')
     catList.querySelectorAll('.kbase-cat-btn[data-cat]:not([data-cat=""])').forEach(b => b.remove());
     Object.entries(catCounts).sort((a, b) => b[1] - a[1]).forEach(([cat, n]) => {
         const btn = document.createElement('button');
-        btn.className = 'kbase-cat-btn' + (currentCat === cat ? ' active' : '');
+        btn.className   = 'kbase-cat-btn' + (currentCat === cat ? ' active' : '');
         btn.dataset.cat = cat;
-        btn.innerHTML = `<i class="bi bi-folder"></i> ${esc(cat)} <span class="kbase-cat-count">${n}</span>`;
+        btn.innerHTML   = `<i class="bi bi-folder"></i> ${esc(cat)} <span class="kbase-cat-count">${n}</span>`;
         catList.appendChild(btn);
     });
 
-    // Tags
+    // FIX: category click via event delegation — not missing inline onclick
+    catList.addEventListener('click', e => {
+        const btn = e.target.closest('.kbase-cat-btn');
+        if (!btn) return;
+        const cat = btn.dataset.cat ?? '';
+        filterByCategory(cat);
+        catList.querySelectorAll('.kbase-cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+
     if (tagsList) {
         tagsList.innerHTML = Object.entries(tagCounts)
             .sort((a, b) => b[1] - a[1]).slice(0, 12)
-            .map(([t]) => `<span class="kbase-tag" onclick="filterByTag('${esc(t)}')">${esc(t)}</span>`)
+            .map(([t]) => `<span class="kbase-tag" data-tag="${esc(t)}">${esc(t)}</span>`)
             .join('');
+        tagsList.querySelectorAll('.kbase-tag').forEach(tag => {
+            tag.addEventListener('click', () => filterByTag(tag.dataset.tag));
+        });
     }
 }
 
@@ -92,11 +100,7 @@ function renderArticulos() {
     if (!list) return;
 
     let filtered = allArticulos;
-
-    // Category filter
     if (currentCat) filtered = filtered.filter(a => (a.categoria || 'General') === currentCat);
-
-    // Search
     if (currentSearch.trim()) {
         const s = currentSearch.toLowerCase();
         filtered = filtered.filter(a =>
@@ -105,16 +109,15 @@ function renderArticulos() {
             (a.etiquetas || []).some(t => t.toLowerCase().includes(s))
         );
     }
-
-    // Sort
     if (currentSort === 'vistas') filtered = [...filtered].sort((a, b) => (b.vistas || 0) - (a.vistas || 0));
     else if (currentSort === 'util') filtered = [...filtered].sort((a, b) => (b.votosPositivos || 0) - (a.votosPositivos || 0));
 
-    document.getElementById('articulosCount').textContent = filtered.length;
+    const countEl = document.getElementById('articulosCount');
+    if (countEl) countEl.textContent = filtered.length;
 
     if (filtered.length === 0) {
         list.innerHTML = '';
-        empty.style.display = allArticulos.length === 0 ? 'flex' : 'none';
+        if (empty) empty.style.display = allArticulos.length === 0 ? 'flex' : 'none';
         if (allArticulos.length > 0) {
             list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-tertiary);font-size:0.84rem;">
                 <i class="bi bi-search" style="font-size:1.4rem;display:block;margin-bottom:8px;"></i>
@@ -122,11 +125,11 @@ function renderArticulos() {
         }
         return;
     }
-    empty.style.display = 'none';
+    if (empty) empty.style.display = 'none';
 
     list.innerHTML = filtered.map(a => {
         const excerpt = (a.contenido || '').replace(/[#*`_]/g, '').slice(0, 140) + '…';
-        const tags = (a.etiquetas || []).slice(0, 4).map(t => `<span class="art-tag">${esc(t)}</span>`).join('');
+        const tags    = (a.etiquetas || []).slice(0, 4).map(t => `<span class="art-tag">${esc(t)}</span>`).join('');
         const visBadge = a.visibilidad === 'agentes'
             ? '<span class="art-vis-badge art-vis-badge--agentes">Solo agentes</span>'
             : '<span class="art-vis-badge art-vis-badge--todos">Público</span>';
@@ -134,7 +137,7 @@ function renderArticulos() {
             ? a.createdAt.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
             : '—';
         return `
-        <div class="art-card" onclick="openArticulo('${a.id}')">
+        <div class="art-card" data-art-id="${a.id}">
             <div class="art-card-body">
                 <div class="art-card-cat">${esc(a.categoria || 'General')}</div>
                 <div class="art-card-title">${esc(a.titulo || '—')}</div>
@@ -150,9 +153,14 @@ function renderArticulos() {
             <div class="art-card-right">${visBadge}<i class="bi bi-chevron-right art-card-arrow"></i></div>
         </div>`;
     }).join('');
+
+    // FIX: event delegation for article cards
+    list.querySelectorAll('.art-card').forEach(card => {
+        card.addEventListener('click', () => openArticulo(card.dataset.artId));
+    });
 }
 
-// ── Open article (view modal) ─────────────────────────────────────
+// ── Open article ──────────────────────────────────────────────────
 window.openArticulo = async function(id) {
     const a = allArticulos.find(x => x.id === id);
     if (!a) return;
@@ -171,20 +179,14 @@ window.openArticulo = async function(id) {
         <div class="drawer-meta-item"><i class="bi bi-eye"></i>${(a.vistas || 0) + 1} vistas</div>
         <div class="drawer-meta-item"><i class="bi bi-hand-thumbs-up"></i>${a.votosPositivos || 0} útil</div>`;
 
-    // Render markdown-ish content
     document.getElementById('viewContent').innerHTML = renderMarkdown(a.contenido || '');
-
     document.getElementById('voteUpCount').textContent = a.votosPositivos || 0;
 
-    // Show edit buttons only for agents
     const editRow = document.getElementById('artEditRow');
-    if (editRow && currentUser) {
-        editRow.style.display = 'flex';
-    }
+    if (editRow && currentUser) editRow.style.display = 'flex';
 
     document.getElementById('viewModal').style.display = 'flex';
 
-    // Increment view count
     try {
         await updateDoc(doc(db, 'articulos', id), { vistas: increment(1) });
     } catch {}
@@ -205,24 +207,25 @@ document.getElementById('btnEditArticulo')?.addEventListener('click', () => {
     const a = allArticulos.find(x => x.id === viewingId);
     if (!a) return;
     document.getElementById('viewModal').style.display = 'none';
-    document.getElementById('artEditId').value     = a.id;
-    document.getElementById('artTitulo').value     = a.titulo || '';
-    document.getElementById('artCategoria').value  = a.categoria || 'General';
-    document.getElementById('artEtiquetas').value  = (a.etiquetas || []).join(', ');
-    document.getElementById('artContenido').value  = a.contenido || '';
-    document.querySelector(`input[name="artVisibilidad"][value="${a.visibilidad || 'todos'}"]`).checked = true;
+    document.getElementById('artEditId').value    = a.id;
+    document.getElementById('artTitulo').value    = a.titulo || '';
+    document.getElementById('artCategoria').value = a.categoria || 'General';
+    document.getElementById('artEtiquetas').value = (a.etiquetas || []).join(', ');
+    document.getElementById('artContenido').value = a.contenido || '';
+    const visEl = document.querySelector(`input[name="artVisibilidad"][value="${a.visibilidad || 'todos'}"]`);
+    if (visEl) visEl.checked = true;
     document.getElementById('articuloModal').style.display = 'flex';
-    document.getElementById('artModalTitle').textContent  = 'Editar artículo';
-    document.getElementById('artSubmitLabel').textContent = 'Guardar cambios';
+    document.getElementById('artModalTitle').textContent   = 'Editar artículo';
+    document.getElementById('artSubmitLabel').textContent  = 'Guardar cambios';
 });
 
 document.getElementById('btnDeleteArticulo')?.addEventListener('click', async () => {
     if (!viewingId) return;
-    if (!confirm('¿Eliminar este artículo permanentemente?')) return;
+    if (!confirm('¿Eliminar este artículo permanentemente? Esta acción no se puede deshacer.')) return;
     try {
         await deleteDoc(doc(db, 'articulos', viewingId));
         document.getElementById('viewModal').style.display = 'none';
-    } catch (e) { alert('Error al eliminar.'); }
+    } catch { alert('Error al eliminar.'); }
 });
 
 // ── Create / Update article ───────────────────────────────────────
@@ -264,49 +267,53 @@ document.getElementById('articuloForm')?.addEventListener('submit', async e => {
             statusEl.style.display = 'none';
             btn.disabled = false;
         }, 1200);
-    } catch (err) {
+    } catch {
         showMsg(statusEl, 'error', 'Error al guardar. Inténtalo de nuevo.');
         btn.disabled = false;
     }
 });
 
 // ── Filters ───────────────────────────────────────────────────────
-window.filterByCategory = function(cat) {
-    currentCat = cat;
-    renderArticulos();
-};
-window.filterByTag = function(tag) {
-    document.getElementById('kbaseSearch').value = tag;
+function filterByCategory(cat) { currentCat = cat; renderArticulos(); }
+function filterByTag(tag) {
+    const inp = document.getElementById('kbaseSearch');
+    if (inp) inp.value = tag;
     currentSearch = tag;
     renderArticulos();
-};
+}
+window.filterByCategory = filterByCategory;
+window.filterByTag      = filterByTag;
 
-document.getElementById('kbaseSearch')?.addEventListener('input', e => {
-    currentSearch = e.target.value;
-    renderArticulos();
-});
-document.getElementById('kbaseSort')?.addEventListener('change', e => {
-    currentSort = e.target.value;
-    renderArticulos();
-});
+document.getElementById('kbaseSearch')?.addEventListener('input', e => { currentSearch = e.target.value; renderArticulos(); });
+document.getElementById('kbaseSort')?.addEventListener('change',  e => { currentSort   = e.target.value; renderArticulos(); });
 
-// ── Markdown renderer (simple) ────────────────────────────────────
+// ── Markdown renderer ─────────────────────────────────────────────
+// FIX: escape HTML first, then apply markdown — prevents XSS and malformed tags
 function renderMarkdown(md) {
-    return md
-        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
-        .replace(/^## (.+)$/gm,  '<h2>$1</h2>')
-        .replace(/^# (.+)$/gm,   '<h2>$1</h2>')
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g,    '<em>$1</em>')
-        .replace(/`(.+?)`/g,      '<code>$1</code>')
-        .replace(/^- (.+)$/gm,   '<li>$1</li>')
-        .replace(/(<li>.*<\/li>(\n|$))+/g, s => `<ul>${s}</ul>`)
-        .replace(/\n{2,}/g,       '</p><p>')
-        .replace(/^(?!<[h|u|l])/gm, '')
-        .split('\n').filter(Boolean)
-        .map(line => line.startsWith('<') ? line : `<p>${line}</p>`)
-        .join('\n');
+    const escaped = md
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+    const lines = escaped.split('\n');
+    const out   = [];
+    let inUl    = false;
+
+    for (const raw of lines) {
+        let line = raw
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g,     '<em>$1</em>')
+            .replace(/`(.+?)`/g,       '<code>$1</code>');
+
+        if (/^### /.test(line)) { if (inUl) { out.push('</ul>'); inUl = false; } out.push(`<h3>${line.slice(4)}</h3>`); }
+        else if (/^## /.test(line))  { if (inUl) { out.push('</ul>'); inUl = false; } out.push(`<h2>${line.slice(3)}</h2>`); }
+        else if (/^# /.test(line))   { if (inUl) { out.push('</ul>'); inUl = false; } out.push(`<h2>${line.slice(2)}</h2>`); }
+        else if (/^- /.test(line))   { if (!inUl) { out.push('<ul>'); inUl = true; } out.push(`<li>${line.slice(2)}</li>`); }
+        else if (line.trim() === '') { if (inUl) { out.push('</ul>'); inUl = false; } }
+        else                         { if (inUl) { out.push('</ul>'); inUl = false; } out.push(`<p>${line}</p>`); }
+    }
+    if (inUl) out.push('</ul>');
+    return out.join('\n');
 }
 
 // ── Helpers ───────────────────────────────────────────────────────

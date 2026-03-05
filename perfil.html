@@ -31,6 +31,7 @@
                 <a href="perfil.html" class="nav-item active"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
                 <a href="new-ticket.html" class="nav-item nav-item-cta"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
             </nav>
+            <div class="sidebar-shortcut-hint"><kbd>N</kbd> Nuevo ticket &nbsp;·&nbsp; <kbd>B</kbd> Buscar</div>
             <div class="sidebar-bottom">
                 <div class="user-card">
                     <div class="user-avatar"><span id="userAvatarInitial"><i class="bi bi-person-fill"></i></span></div>
@@ -115,12 +116,14 @@
                                     <div class="pf-field">
                                         <label for="pfNombre">Nombre para mostrar</label>
                                         <div class="input-wrapper">
+                                            <i class="bi bi-person input-icon-bi"></i>
                                             <input type="text" id="pfNombre" placeholder="Tu nombre completo">
                                         </div>
                                     </div>
                                     <div class="pf-field">
                                         <label for="pfDepartamento">Departamento</label>
                                         <div class="input-wrapper">
+                                            <i class="bi bi-building input-icon-bi"></i>
                                             <select id="pfDepartamento">
                                                 <option value="">Sin asignar</option>
                                                 <option value="DevOps">DevOps</option>
@@ -133,6 +136,7 @@
                                 <div class="pf-field">
                                     <label for="pfEmail">Correo electrónico</label>
                                     <div class="input-wrapper">
+                                        <i class="bi bi-envelope input-icon-bi"></i>
                                         <input type="email" id="pfEmail" placeholder="—" readonly style="opacity:0.6;cursor:not-allowed">
                                     </div>
                                     <span class="pf-hint"><i class="bi bi-info-circle"></i> El correo no se puede cambiar desde aquí.</span>

@@ -46,13 +46,13 @@
                 <div class="drawer-comment-actions">
                     <select id="drawerStatusChange" class="filter-select">
                         <option value="">Cambiar estado…</option>
-                        <option value="open">Open</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
+                        <option value="open">Abierto</option>
+                        <option value="in-progress">En proceso</option>
+                        <option value="resolved">Resuelto</option>
+                        <option value="closed">Cerrado</option>
                     </select>
                     <button id="drawerCommentSubmit" class="btn-comment-submit">
-                        <i class="bi bi-send"></i> Post
+                        <i class="bi bi-send"></i> Enviar
                     </button>
                 </div>
             </div>
@@ -76,6 +76,11 @@
                 <a href="perfil.html" class="nav-item"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
                 <a href="new-ticket.html" class="nav-item nav-item-cta"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
             </nav>
+
+            <!-- Keyboard shortcut hint -->
+            <div class="sidebar-shortcut-hint">
+                <kbd>N</kbd> Nuevo ticket &nbsp;·&nbsp; <kbd>B</kbd> Buscar
+            </div>
 
             <div class="sidebar-bottom">
                 <div class="user-card">
@@ -191,9 +196,9 @@
                                 </select>
                                 <select id="filterStatus" class="filter-select">
                                     <option value="">Todos los estados</option>
-                                    <option value="open">Open</option>
-                                    <option value="in-progress">In Progress</option>
-                                    <option value="resolved">Resolved</option>
+                                    <option value="open">Abierto</option>
+                                    <option value="in-progress">En proceso</option>
+                                    <option value="resolved">Resuelto</option>
                                 </select>
                                 <button id="btnClearFilters" class="btn-clear-filters" style="display:none;" title="Limpiar filtros">
                                     <i class="bi bi-x-lg"></i>
@@ -210,15 +215,15 @@
                                             ID <i class="bi bi-arrow-down-up sort-icon"></i>
                                         </th>
                                         <th class="th-sort" data-col="titulo">
-                                            Subject <i class="bi bi-arrow-down-up sort-icon"></i>
+                                            Asunto <i class="bi bi-arrow-down-up sort-icon"></i>
                                         </th>
                                         <th class="th-sort" data-col="prioridad">
-                                            Priority <i class="bi bi-arrow-down-up sort-icon"></i>
+                                            Prioridad <i class="bi bi-arrow-down-up sort-icon"></i>
                                         </th>
                                         <th>Departamento</th>
                                         <th>Operador</th>
                                         <th class="th-sort" data-col="timestamp">
-                                            Created <i class="bi bi-arrow-down-up sort-icon"></i>
+                                            Creado <i class="bi bi-arrow-down-up sort-icon"></i>
                                         </th>
                                         <th>Estado</th>
                                         <th></th>
@@ -232,7 +237,7 @@
                                 <h3>No se encontraron tickets</h3>
                                 <p id="emptyStateMsg">Ningún ticket coincide con los filtros actuales.</p>
                                 <a href="new-ticket.html" class="btn-empty-action">
-                                    <i class="bi bi-plus-lg"></i> Create First Ticket
+                                    <i class="bi bi-plus-lg"></i> Crear primer ticket
                                 </a>
                             </div>
                         </div>
@@ -265,7 +270,7 @@
                             <svg class="mini-donut" viewBox="0 0 80 80" id="miniDonutSvg"></svg>
                             <div class="mini-donut-center">
                                 <span id="miniDonutTotal">0</span>
-                                <small>open</small>
+                                <small>tickets</small>
                             </div>
                         </div>
                         <div class="mini-legend" id="miniLegend"></div>
@@ -338,33 +343,35 @@
         const drawerOverlay = document.getElementById('drawerOverlay');
         const drawerClose   = document.getElementById('drawerClose');
 
+        const STATUS_LABELS = { open:'Abierto', 'in-progress':'En proceso', resolved:'Resuelto', closed:'Cerrado' };
+
         window.openDrawer = function(ticket) {
             document.getElementById('drawerTicketId').textContent    = '#' + ticket.id.slice(-6).toUpperCase();
             document.getElementById('drawerTicketTitle').textContent = ticket.titulo || '—';
             document.getElementById('drawerDesc').textContent        = ticket.descripcion || 'Sin descripción.';
 
+            const status = ticket.status || 'open';
             document.getElementById('drawerMeta').innerHTML = `
                 <span class="prio-tag prio-${ticket.prioridad}">${ticket.prioridad}</span>
-                <span class="dept-badge">${esc(ticket.depto)}</span>
-                <span class="status-badge status-${(ticket.status||'open').replace(' ','-')}">${ticket.status||'open'}</span>
+                <span class="dept-badge">${esc(ticket.depto || '—')}</span>
+                <span class="status-badge status-${status.replace(' ','-')}">${STATUS_LABELS[status] || status}</span>
+                ${ticket.assignedEmail ? `<span class="drawer-meta-item"><i class="bi bi-person-check"></i>${esc(ticket.assignedEmail)}</span>` : ''}
             `;
 
             const activities = ticket.activity || [];
             const feedEl = document.getElementById('drawerActivity');
             if (activities.length === 0) {
-                feedEl.innerHTML = '<div class="activity-item activity-system"><i class="bi bi-circle-fill"></i><div><strong>Ticket opened</strong><small>' + timeAgo(ticket.timestamp) + '</small></div></div>';
+                feedEl.innerHTML = '<div class="activity-item activity-system"><i class="bi bi-circle-fill"></i><div><strong>Ticket abierto</strong><small>' + timeAgo(ticket.timestamp) + '</small></div></div>';
             } else {
                 feedEl.innerHTML = activities.map(a => `
                     <div class="activity-item">
-                        <div class="activity-avatar">${a.author.charAt(0).toUpperCase()}</div>
-                        <div><strong>${esc(a.author)}</strong><br><span>${esc(a.text)}</span><small>${timeAgo(a.ts)}</small></div>
+                        <div class="activity-avatar">${(a.author||'?').charAt(0).toUpperCase()}</div>
+                        <div><strong>${esc(a.author||'Sistema')}</strong><br><span>${esc(a.text||'')}</span><small>${timeAgo(a.ts||a.timestamp)}</small></div>
                     </div>
                 `).join('');
             }
 
-            // Store current ticket id for comment submit
             drawer.dataset.ticketId = ticket.id;
-
             drawer.classList.add('open');
             drawerOverlay.classList.add('visible');
         };
@@ -376,6 +383,23 @@
 
         drawerClose?.addEventListener('click',   closeDrawer);
         drawerOverlay?.addEventListener('click', closeDrawer);
+
+        // ── Keyboard shortcuts ─────────────────────────────────────
+        document.addEventListener('keydown', e => {
+            // Skip if typing in an input
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+
+            if (e.key === 'n' || e.key === 'N') {
+                window.location.href = 'new-ticket.html';
+            }
+            if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                document.getElementById('ticketSearch')?.focus();
+            }
+            if (e.key === 'Escape') {
+                closeDrawer();
+            }
+        });
 
         // ── Topbar search button ───────────────────────────────────
         document.getElementById('topbarSearch')?.addEventListener('click', () => {
@@ -406,12 +430,13 @@
             return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         }
         function timeAgo(ts) {
-            if (!ts) return 'Hace tiempo';
-            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            if (!ts) return '—';
+            const d = typeof ts === 'string' ? new Date(ts) : (ts.toDate?.() ?? new Date(ts));
+            if (isNaN(d)) return '—';
             const diff = Math.floor((Date.now() - d.getTime()) / 1000);
-            if (diff < 60)   return 'Ahora mismo';
-            if (diff < 3600) return Math.floor(diff/60) + ' min atrás';
-            if (diff < 86400)return Math.floor(diff/3600) + ' h atrás';
+            if (diff < 60)    return 'Ahora mismo';
+            if (diff < 3600)  return Math.floor(diff/60) + ' min atrás';
+            if (diff < 86400) return Math.floor(diff/3600) + ' h atrás';
             return Math.floor(diff/86400) + ' d atrás';
         }
         window.esc     = esc;

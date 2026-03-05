@@ -48,41 +48,23 @@
     font-family: var(--font-display);
     font-weight: 800;
     font-size: 1.8rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
 }
 .perfil-avatar-badge {
-    position: absolute;
-    bottom: -2px; right: -6px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.6rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    padding: 2px 6px;
-    border-radius: 999px;
+    position: absolute; bottom: -2px; right: -6px;
+    background: var(--accent); color: #fff;
+    font-size: 0.6rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    padding: 2px 6px; border-radius: 999px;
     border: 1.5px solid var(--bg-surface);
 }
 .perfil-id-info { display: flex; flex-direction: column; gap: 3px; }
-.perfil-nombre {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-}
-.perfil-email {
-    font-size: 0.76rem;
-    color: var(--text-tertiary);
-    font-family: var(--font-mono);
-}
+.perfil-nombre  { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+.perfil-email   { font-size: 0.76rem; color: var(--text-tertiary); font-family: var(--font-mono); }
 .perfil-id-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    width: 100%;
-    border-top: 1px solid var(--border-subtle);
-    padding-top: 14px;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 8px; width: 100%;
+    border-top: 1px solid var(--border-subtle); padding-top: 14px;
 }
 .pid-stat { text-align: center; }
 .pid-stat-val { font-size: 1.2rem; font-weight: 700; font-family: var(--font-display); color: var(--text-primary); line-height: 1; margin-bottom: 3px; }
@@ -97,41 +79,23 @@
 }
 .perfil-card-header {
     padding: 11px 16px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 0.75rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--text-secondary);
     border-bottom: 1px solid var(--border-subtle);
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: flex; align-items: center; gap: 6px;
 }
 .perfil-card-header i { color: var(--accent-light); }
-.perfil-activity {
-    padding: 10px 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
+.perfil-activity { padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
 .pact-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 8px;
-    border-radius: var(--radius-sm);
-    font-size: 0.76rem;
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 8px; border-radius: var(--radius-sm); font-size: 0.76rem;
 }
 .pact-item:hover { background: var(--bg-hover); }
-.pact-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    margin-top: 3px;
-}
+.pact-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
 .pact-info { flex: 1; min-width: 0; }
-.pact-text  { color: var(--text-secondary); line-height: 1.4; }
-.pact-time  { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-tertiary); margin-top: 2px; }
+.pact-text { color: var(--text-secondary); line-height: 1.4; }
+.pact-time { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-tertiary); margin-top: 2px; }
 
 /* ── Section cards (accordion) ─────────────────────────────────── */
 .perfil-section-card {
@@ -141,30 +105,16 @@
     overflow: hidden;
 }
 .perfil-section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 18px 20px;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.13s;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding: 18px 20px;
+    cursor: pointer; user-select: none; transition: background 0.13s;
 }
 .perfil-section-header:hover { background: var(--bg-hover); }
-.psh-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
-.psh-icon {
-    font-size: 1.1rem;
-    color: var(--accent-light);
-    flex-shrink: 0;
-}
+.psh-left { display: flex; align-items: center; gap: 14px; }
+.psh-icon { font-size: 1.1rem; color: var(--accent-light); flex-shrink: 0; }
 .psh-left h3 { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin: 0 0 2px; }
 .psh-left p  { font-size: 0.74rem; color: var(--text-tertiary); margin: 0; }
-.psh-toggle { color: var(--text-tertiary); font-size: 0.85rem; transition: transform 0.2s; flex-shrink: 0; }
-
+.psh-toggle  { color: var(--text-tertiary); font-size: 0.85rem; transition: transform 0.2s; flex-shrink: 0; }
 .perfil-section-body {
     padding: 0 20px 20px;
     border-top: 1px solid var(--border-subtle);
@@ -176,49 +126,84 @@
 }
 
 /* ── Form fields ───────────────────────────────────────────────── */
-.pf-field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 16px;
-}
-.pf-field label {
-    font-size: 0.79rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-}
-.pf-field-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-}
+.pf-field { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; }
+.pf-field label { font-size: 0.79rem; font-weight: 600; color: var(--text-secondary); }
+.pf-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .pf-hint {
-    font-size: 0.7rem;
-    color: var(--text-tertiary);
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin-top: 3px;
+    font-size: 0.7rem; color: var(--text-tertiary);
+    display: flex; align-items: center; gap: 5px; margin-top: 3px;
 }
-.pf-actions {
-    margin-top: 20px;
-    display: flex;
-    justify-content: flex-end;
-}
-/* Reuse input-wrapper from main.css but make inputs work here */
+.pf-actions { margin-top: 20px; display: flex; justify-content: flex-end; }
+
+/* ── input-wrapper overrides for perfil ───────────────────────── */
+/* inputs inside .perfil-section-body get icon padding */
 .perfil-section-body .input-wrapper input,
+.perfil-section-body .input-wrapper textarea {
+    padding-left: 40px;
+}
+/* select inside input-wrapper in perfil — already handled by main.css
+   but we ensure the correct padding accounting for left icon */
 .perfil-section-body .input-wrapper select {
-    padding-left: 36px;
+    padding-left: 40px;
+    padding-right: 36px;
+}
+
+/* ── Standalone form inputs (no icon wrapper) in perfil ─────────
+   These match .pf-field inputs that don't use .input-wrapper     */
+.pf-field input:not(.input-wrapper input),
+.pf-field textarea:not(.input-wrapper textarea) {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.87rem;
+    padding: 11px 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+.pf-field input:not(.input-wrapper input):focus,
+.pf-field textarea:not(.input-wrapper textarea):focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-faint);
+}
+
+/* Standalone select in perfil (no input-wrapper) */
+.pf-field select:not(.input-wrapper select),
+.pf-field .select-wrapper select {
+    width: 100%;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 0.87rem;
+    padding: 11px 36px 11px 14px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23555c70' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+.pf-field select:not(.input-wrapper select):focus,
+.pf-field .select-wrapper select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-faint);
+}
+.pf-field select option, .pf-field .select-wrapper select option {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
 }
 
 /* ── Notifications ─────────────────────────────────────────────── */
 .notif-list { display: flex; flex-direction: column; gap: 0; margin-top: 16px; }
 .notif-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 14px 0;
     border-bottom: 1px solid var(--border-subtle);
 }
 .notif-row:last-child { border-bottom: none; }
@@ -229,21 +214,15 @@
 .pf-toggle { position: relative; display: inline-block; width: 40px; height: 22px; cursor: pointer; flex-shrink: 0; }
 .pf-toggle input { display: none; }
 .pf-toggle-track {
-    position: absolute;
-    inset: 0;
-    background: var(--bg-hover);
-    border: 1px solid var(--border-default);
-    border-radius: 999px;
-    transition: all 0.2s;
+    position: absolute; inset: 0;
+    background: var(--bg-hover); border: 1px solid var(--border-default);
+    border-radius: 999px; transition: all 0.2s;
 }
 .pf-toggle-track::after {
     content: '';
-    position: absolute;
-    width: 16px; height: 16px;
-    border-radius: 50%;
-    background: var(--text-tertiary);
-    top: 2px; left: 2px;
-    transition: transform 0.2s, background 0.2s;
+    position: absolute; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--text-tertiary);
+    top: 2px; left: 2px; transition: transform 0.2s, background 0.2s;
 }
 .pf-toggle input:checked + .pf-toggle-track { background: var(--accent-faint); border-color: var(--accent); }
 .pf-toggle input:checked + .pf-toggle-track::after { transform: translateX(18px); background: var(--accent-light); }
@@ -252,118 +231,65 @@
 .apariencia-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 16px; }
 .theme-options { display: flex; gap: 10px; }
 .theme-opt {
-    flex: 1;
-    background: none;
-    border: 2px solid var(--border-default);
-    border-radius: var(--radius-sm);
-    padding: 10px;
-    cursor: pointer;
-    text-align: center;
-    font-size: 0.78rem;
-    color: var(--text-secondary);
+    flex: 1; background: none;
+    border: 2px solid var(--border-default); border-radius: var(--radius-sm);
+    padding: 10px; cursor: pointer; text-align: center;
+    font-size: 0.78rem; color: var(--text-secondary);
+    font-family: var(--font-sans);
     transition: all 0.15s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
 }
-.theme-opt:hover { border-color: var(--border-strong); }
+.theme-opt:hover { border-color: var(--border-strong); color: var(--text-primary); }
 .theme-opt.active { border-color: var(--accent); color: var(--accent-light); }
-.theme-preview {
-    width: 100%; height: 40px;
-    border-radius: 4px;
-    border: 1px solid var(--border-subtle);
-}
+.theme-preview { width: 100%; height: 40px; border-radius: 4px; border: 1px solid var(--border-subtle); }
 .theme-preview--dark  { background: linear-gradient(135deg, #0f1117 50%, #1a1d2e 100%); }
 .theme-preview--light { background: linear-gradient(135deg, #f8fafc 50%, #e2e8f0 100%); }
 .density-options { display: flex; gap: 4px; }
 .density-opt {
-    flex: 1;
-    padding: 8px 6px;
-    background: var(--bg-hover);
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm);
-    font-size: 0.76rem;
-    color: var(--text-tertiary);
-    cursor: pointer;
-    transition: all 0.14s;
-    text-align: center;
+    flex: 1; padding: 8px 6px;
+    background: var(--bg-hover); border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm); font-size: 0.76rem; color: var(--text-tertiary);
+    font-family: var(--font-sans);
+    cursor: pointer; transition: all 0.14s; text-align: center;
 }
 .density-opt:hover { color: var(--text-primary); border-color: var(--border-strong); }
 .density-opt.active { background: var(--accent-faint); border-color: var(--accent); color: var(--accent-light); }
 .apariencia-info {
     margin-top: 14px;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    font-size: 0.74rem;
-    color: var(--text-tertiary);
-    padding: 10px 14px;
-    background: var(--bg-hover);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-subtle);
+    display: flex; align-items: center; gap: 7px;
+    font-size: 0.74rem; color: var(--text-tertiary);
+    padding: 10px 14px; background: var(--bg-hover);
+    border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);
 }
 
 /* ── Danger zone ───────────────────────────────────────────────── */
 .perfil-danger-zone {
     background: var(--bg-surface);
-    border: 1px solid rgba(239,68,68,0.2);
-    border-radius: var(--radius-md);
-    overflow: hidden;
+    border: 1px solid rgba(239,68,68,0.2); border-radius: var(--radius-md); overflow: hidden;
 }
 .danger-header {
     padding: 13px 20px;
-    font-size: 0.76rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--red);
-    border-bottom: 1px solid rgba(239,68,68,0.15);
-    display: flex;
-    align-items: center;
-    gap: 7px;
+    font-size: 0.76rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--red); border-bottom: 1px solid rgba(239,68,68,0.15);
+    display: flex; align-items: center; gap: 7px;
     background: rgba(239,68,68,0.04);
 }
 .danger-body { padding: 4px 0; }
-.danger-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 20px;
-}
+.danger-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; }
 .danger-row--sep { border-top: 1px solid rgba(239,68,68,0.1); }
 .danger-label { font-size: 0.84rem; font-weight: 500; color: var(--text-primary); margin-bottom: 2px; }
 .danger-desc  { font-size: 0.74rem; color: var(--text-tertiary); }
 .danger-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    background: none;
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-sm);
-    font-size: 0.8rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.14s;
-    white-space: nowrap;
-    flex-shrink: 0;
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 14px; background: none;
+    border: 1px solid var(--border-default); border-radius: var(--radius-sm);
+    font-size: 0.8rem; font-family: var(--font-sans);
+    color: var(--text-secondary); cursor: pointer;
+    transition: all 0.14s; white-space: nowrap; flex-shrink: 0;
 }
 .danger-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
 .danger-btn--red  { border-color: rgba(239,68,68,0.3); color: var(--red); }
 .danger-btn--red:hover { background: rgba(239,68,68,0.08); border-color: var(--red); }
-
-/* input-icon-bi for this page */
-.input-icon-bi {
-    position: absolute;
-    left: 13px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--text-tertiary);
-    font-size: 0.85rem;
-    pointer-events: none;
-}
 
 /* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
@@ -386,3 +312,60 @@
     .danger-row { flex-direction: column; align-items: flex-start; gap: 10px; }
     .danger-btn { width: 100%; justify-content: center; }
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   PERFIL — Button & select fixes
+   ══════════════════════════════════════════════════════════════ */
+
+/* input-wrapper select: ensure arrow and correct bg */
+.perfil-section-body .input-wrapper select {
+    background-color: var(--bg-elevated);
+    color: var(--text-primary);
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23555c70' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+}
+.perfil-section-body .input-wrapper select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-faint);
+    outline: none;
+}
+
+/* Section body padding */
+.perfil-section-body {
+    padding: 16px 20px 20px;
+}
+
+/* Actions row */
+.pf-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Notification toggle rows */
+.notif-row {
+    align-items: center;
+}
+
+/* Danger buttons consistent sizing */
+.danger-btn {
+    min-width: 140px;
+    justify-content: center;
+}
+
+/* Theme & density buttons: explicit dark background to avoid white UA default */
+.theme-opt,
+.density-opt {
+    background-color: var(--bg-hover);
+    color: var(--text-secondary);
+}
+.theme-opt:hover  { background-color: var(--bg-elevated); color: var(--text-primary); }
+.density-opt:hover { background-color: var(--bg-elevated); color: var(--text-primary); }
+.theme-opt.active   { background-color: var(--accent-faint); color: var(--accent-light); border-color: var(--accent); }
+.density-opt.active { background-color: var(--accent-faint); color: var(--accent-light); border-color: var(--accent); }

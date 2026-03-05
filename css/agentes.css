@@ -208,20 +208,6 @@
 .ad-ticket-meta  { font-size: 0.69rem; color: var(--text-tertiary); font-family: var(--font-mono); }
 .ad-assign-wrap  { display: flex; gap: 8px; align-items: center; }
 
-.filter-select{
-    padding: 6px 10px;
-    font-size: 0.78rem;
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    background: var(--bg-surface);
-    color: var(--text-primary);
-    cursor: pointer;
-}
-
-.stats-row {
-    margin-bottom: 20px;
-}
-
 /* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 1024px) {
     .agentes-grid { grid-template-columns: 1fr 240px; }
