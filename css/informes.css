@@ -46,7 +46,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 16px;
-    padding: 0 24px 32px;
+    padding: 20px 28px 32px;
 }
 
 /* ── Chart card ────────────────────────────────────────────────── */
@@ -230,7 +230,7 @@
     .inf-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 768px) {
-    .inf-grid { grid-template-columns: 1fr; padding: 12px 14px 24px; gap: 12px; }
+    .inf-grid { grid-template-columns: 1fr; padding: 16px 16px 24px; gap: 12px; }
     .inf-card { padding: 16px; }
     .inf-card--wide { grid-column: 1; }
     .inf-period-selector { display: none; }

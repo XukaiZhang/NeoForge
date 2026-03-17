@@ -3,7 +3,7 @@
    ════════════════════════════════════════════════════════════════ */
 
 /* ── Search bar ────────────────────────────────────────────────── */
-.kbase-search-wrap { padding: 0 24px 20px; }
+.kbase-search-wrap { padding: 20px 28px 20px; }
 .kbase-search-inner { position: relative; max-width: 640px; margin: 0 auto; }
 .kbase-search-icon {
     position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
@@ -31,7 +31,7 @@
 /* ── Grid layout ───────────────────────────────────────────────── */
 .kbase-grid {
     display: grid; grid-template-columns: 220px 1fr;
-    gap: 20px; padding: 0 24px 32px; align-items: start;
+    gap: 20px; padding: 0 28px 32px; align-items: start;
 }
 
 /* ── Categorías sidebar ────────────────────────────────────────── */
@@ -233,13 +233,13 @@
 
 /* ── Responsive ────────────────────────────────────────────────── */
 @media (max-width: 900px) {
-    .kbase-grid { grid-template-columns: 1fr; padding: 0 14px 24px; }
+    .kbase-grid { grid-template-columns: 1fr; padding: 0 16px 24px; }
     .kbase-cats { position: static; display: grid; grid-template-columns: 1fr 1fr; }
     .kbase-cats-header { grid-column: 1 / -1; }
     .kbase-cats-list { flex-direction: row; flex-wrap: wrap; }
 }
 @media (max-width: 600px) {
-    .kbase-search-wrap { padding: 0 12px 16px; }
+    .kbase-search-wrap { padding: 16px 16px 16px; }
     .kbase-grid { padding: 0 12px 20px; gap: 12px; }
     .kbase-search-inner .search-kbd { display: none; }
     .art-card { grid-template-columns: 1fr; }

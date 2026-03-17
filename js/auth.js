@@ -16,30 +16,83 @@ import {
 const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
+// Páginas exclusivas de agentes (cliente NO puede acceder)
+const AGENT_PAGES = [
+    'dashboard.html', 'agentes.html', 'informes.html',
+    'perfil.html'
+];
+const ADMIN_PAGES = ['admin.html'];
+// Páginas exclusivas de clientes
+const CLIENT_PAGES = ['mis-tickets.html', 'new-ticket.html'];
+
 // ── Session guardian ───────────────────────────────────────────────
 onAuthStateChanged(auth, async (user) => {
     const path    = window.location.pathname;
-    const isLogin = path.includes('login.html') || path.includes('index.html') ||
-                    path === '/' || path.endsWith('/');
+    const page    = path.split('/').pop() || 'index.html';
+    const isLogin = page === 'login.html' || page === 'login-agente.html' || page === 'index.html' || page === '';
 
-    if (!user && !isLogin) { window.location.replace('login.html'); return; }
-
-    if (user && isLogin) {
-        const rol = await getUserRole(user.uid);
-        window.location.replace(rol === 'cliente' ? 'mis-tickets.html' : 'dashboard.html');
+    // No autenticado → login según tipo de página
+    if (!user && !isLogin) {
+        const isAgentPage = AGENT_PAGES.some(p => page.endsWith(p)) || ADMIN_PAGES.some(p => page.endsWith(p));
+        window.location.replace(isAgentPage ? 'login-agente.html' : 'login.html');
         return;
     }
 
-    if (user) {
-        const display = user.displayName || user.email.split('@')[0];
-        const initial = display.charAt(0).toUpperCase();
-        const emailEl  = document.getElementById('userEmail');
-        const avatarEl = document.getElementById('userAvatarInitial');
-        const nameEl   = document.getElementById('userName');
-        if (emailEl)  emailEl.textContent  = user.email;
-        if (nameEl)   nameEl.textContent   = display;
-        if (avatarEl) avatarEl.textContent = initial;
+    // Autenticado en login → redirigir según rol
+    if (user && isLogin) {
+        const rol = await getUserRole(user.uid);
+        window.location.replace(rol === 'agente' || rol === 'admin' ? 'dashboard.html' : 'mis-tickets.html');
+        return;
     }
+
+    if (!user) return;
+
+    // Obtener rol
+    const rol = await getUserRole(user.uid);
+
+    // Cliente intentando acceder a página de agente → redirigir
+    if (rol === 'cliente' && AGENT_PAGES.some(p => page.endsWith(p))) {
+        window.location.replace('mis-tickets.html');
+        return;
+    }
+
+    // Agente en página exclusiva de cliente → redirigir al dashboard
+    if (rol !== 'cliente' && CLIENT_PAGES.some(p => page.endsWith(p))) {
+        window.location.replace('dashboard.html');
+        return;
+    }
+
+    // No-admin intentando acceder a admin.html → redirigir
+    if (rol !== 'admin' && ADMIN_PAGES.some(p => page.endsWith(p))) {
+        window.location.replace('dashboard.html');
+        return;
+    }
+
+    // Mostrar enlace Admin en sidebar si el usuario es admin
+    if (rol === 'admin') {
+        const nav = document.querySelector('.sidebar-nav');
+        if (nav && !document.querySelector('.nav-item-admin')) {
+            const adminLink = document.createElement('a');
+            adminLink.href      = 'admin.html';
+            adminLink.className = 'nav-item nav-item-admin' +
+                (page.endsWith('admin.html') ? ' active' : '');
+            adminLink.innerHTML = '<i class="bi bi-shield-lock-fill"></i><span>Admin</span>';
+            nav.appendChild(adminLink);
+        }
+    }
+
+    // Rellenar UI con datos del usuario
+    const display = user.displayName || user.email.split('@')[0];
+    const initial = display.charAt(0).toUpperCase();
+    const emailEl  = document.getElementById('userEmail');
+    const avatarEl = document.getElementById('userAvatarInitial');
+    const nameEl   = document.getElementById('userName');
+    const roleEl   = document.getElementById('userRole');
+    if (emailEl)  emailEl.textContent  = user.email;
+    if (nameEl)   nameEl.textContent   = display;
+    if (avatarEl) avatarEl.textContent = initial;
+    if (roleEl)   roleEl.textContent   = rol === 'agente' ? 'Agente de soporte' :
+                                         rol === 'admin'  ? 'Administrador'     : 'Cliente';
 });
 
 // ── Google Sign In / Register ─────────────────────────────────────
@@ -133,7 +186,7 @@ document.getElementById('btnSendReset')?.addEventListener('click', async () => {
 document.getElementById('btnLogout')?.addEventListener('click', async () => {
     sessionStorage.removeItem('nf_role');
     await signOut(auth);
-    window.location.replace('login.html');
+    window.location.replace('login-agente.html');
 });
 
 // ── Create Firestore user doc if missing ───────────────────────────
@@ -155,8 +208,8 @@ async function ensureUserDoc(user, defaultRol = 'cliente') {
     }
 }
 
-// ── Role lookup ────────────────────────────────────────────────────
-async function getUserRole(uid) {
+// ── Role lookup with cache ─────────────────────────────────────────
+export async function getUserRole(uid) {
     const cached = sessionStorage.getItem('nf_role');
     if (cached) return cached;
     try {

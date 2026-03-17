@@ -1,7 +1,7 @@
 import { db, auth } from './config.js';
 import {
     collection, onSnapshot, query, orderBy,
-    doc, deleteDoc, updateDoc, arrayUnion, serverTimestamp
+    doc, deleteDoc, updateDoc, arrayUnion, serverTimestamp, Timestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import './auth.js';
 
@@ -24,7 +24,7 @@ const ticketsBody    = document.getElementById('ticketsBody');
 const searchInput    = document.getElementById('ticketSearch');
 const filterPrio     = document.getElementById('filterPrio');
 const filterDept     = document.getElementById('filterDept');
-const filterStatus   = document.getElementById('filterStatus');
+const filterStatus   = null; // removed — resolved section handles this
 const emptyState     = document.getElementById('emptyState');
 const emptyMsg       = document.getElementById('emptyStateMsg');
 const filterChips    = document.getElementById('filterChips');
@@ -45,19 +45,19 @@ onSnapshot(q, (snapshot) => {
     buildActivityFeed(allTickets);
     currentPage = 1;
     applyAndRender();
+    renderResolvedPanel();
 });
 
 // ── Filter & sort triggers ─────────────────────────────────────────
 searchInput?.addEventListener('input',   () => { currentPage = 1; applyAndRender(); });
 filterPrio?.addEventListener('change',   () => { currentPage = 1; applyAndRender(); syncFilterChips(); syncStatCards(); });
 filterDept?.addEventListener('change',   () => { currentPage = 1; applyAndRender(); syncFilterChips(); });
-filterStatus?.addEventListener('change', () => { currentPage = 1; applyAndRender(); syncFilterChips(); });
+// filterStatus removed — resolved tickets have their own section
 
 clearBtn?.addEventListener('click', () => {
-    if (filterPrio)   filterPrio.value   = '';
-    if (filterDept)   filterDept.value   = '';
-    if (filterStatus) filterStatus.value = '';
-    if (searchInput)  searchInput.value  = '';
+    if (filterPrio)   filterPrio.value  = '';
+    if (filterDept)   filterDept.value  = '';
+    if (searchInput)  searchInput.value = '';
     document.querySelectorAll('.stat-card-clickable').forEach(c => c.classList.remove('stat-active'));
     currentPage = 1;
     applyAndRender();
@@ -97,7 +97,14 @@ document.getElementById('drawerCommentSubmit')?.addEventListener('click', async 
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Enviando…'; }
 
     const updates = {};
-    if (newStatus) updates.status = newStatus;
+    if (newStatus) {
+        updates.status = newStatus;
+        // Save who resolved/closed and when, for stats
+        if (newStatus === 'resolved' || newStatus === 'closed') {
+            updates.resolvedBy = auth.currentUser?.email ?? 'Desconocido';
+            updates.resolvedAt = serverTimestamp();
+        }
+    }
     if (text) {
         updates.activity = arrayUnion({
             text,
@@ -111,6 +118,16 @@ document.getElementById('drawerCommentSubmit')?.addEventListener('click', async 
         await updateDoc(doc(db, 'tickets', ticketId), updates);
         if (input)     input.value     = '';
         if (statusSel) statusSel.value = '';
+        // Refresh drawer with updated ticket data from live state
+        const fresh = allTickets.find(t => t.id === ticketId);
+        if (fresh && window.openDrawer) {
+            const patched = { ...fresh };
+            if (newStatus) patched.status = newStatus;
+            if (text && Array.isArray(patched.activity)) {
+                patched.activity = [...patched.activity, { text, type:'note', author: auth.currentUser?.email ?? '?', ts: new Date().toISOString() }];
+            }
+            window.openDrawer(patched);
+        }
     } catch (e) {
         console.error('Error al actualizar el ticket:', e);
         alert('Error al enviar. Inténtalo de nuevo.');
@@ -130,20 +147,21 @@ function applyAndRender() {
 
 function applyFilters(tickets) {
     const search = searchInput?.value.toLowerCase().trim() ?? '';
-    const prio   = filterPrio?.value   ?? '';
-    const dept   = filterDept?.value   ?? '';
-    const status = filterStatus?.value ?? '';
+    const prio   = filterPrio?.value ?? '';
+    const dept   = filterDept?.value ?? '';
 
+    // Main table: only active tickets (open + in-progress)
     return tickets.filter(t => {
+        const status = t.status || 'open';
+        if (status === 'resolved' || status === 'closed') return false;
         const matchSearch = !search ||
             (t.titulo   || '').toLowerCase().includes(search) ||
             (t.operator || '').toLowerCase().includes(search) ||
             t.id.slice(-6).toLowerCase().includes(search)     ||
             (t.depto    || '').toLowerCase().includes(search);
         return matchSearch &&
-            (!prio   || t.prioridad === prio)  &&
-            (!dept   || t.depto    === dept)   &&
-            (!status || (t.status || 'open') === status);
+            (!prio || t.prioridad === prio) &&
+            (!dept || t.depto    === dept);
     });
 }
 
@@ -227,14 +245,16 @@ function renderTickets(tickets, totalFiltered) {
 
 // ── Counters ───────────────────────────────────────────────────────
 function updateCounters(tickets) {
+    // Only count open + in-progress tickets in stat cards
+    const active = tickets.filter(t => ['open','in-progress'].includes(t.status || 'open'));
     const c = { P0:0, P1:0, P2:0, P3:0 };
-    tickets.forEach(t => { if (c[t.prioridad] !== undefined) c[t.prioridad]++; });
+    active.forEach(t => { if (c[t.prioridad] !== undefined) c[t.prioridad]++; });
     ['P0','P1','P2','P3'].forEach(p => {
         const el = document.getElementById(`count${p}`);
         if (el) el.textContent = c[p];
     });
     const nav = document.getElementById('navTicketCount');
-    if (nav) nav.textContent = tickets.filter(t => (t.status || 'open') === 'open').length;
+    if (nav) nav.textContent = active.filter(t => (t.status || 'open') === 'open').length;
 }
 
 // ── Mini donut ─────────────────────────────────────────────────────
@@ -309,9 +329,8 @@ function buildActivityFeed(tickets) {
 function syncFilterChips() {
     if (!filterChips) return;
     const chips = [];
-    if (filterPrio?.value)   chips.push({ label: filterPrio.value,   el: filterPrio });
-    if (filterDept?.value)   chips.push({ label: filterDept.value,   el: filterDept });
-    if (filterStatus?.value) chips.push({ label: STATUS_LABELS[filterStatus.value] || filterStatus.value, el: filterStatus });
+    if (filterPrio?.value) chips.push({ label: filterPrio.value, el: filterPrio });
+    if (filterDept?.value) chips.push({ label: filterDept.value, el: filterDept });
 
     filterChips.innerHTML = chips.map((c, i) => `<span class="filter-chip" data-chip="${i}">${esc(c.label)} ×</span>`).join('');
     filterChips.querySelectorAll('.filter-chip').forEach((chip, i) => {
@@ -365,3 +384,101 @@ function timeAgo(ts) {
 window.openDrawer = window.openDrawer || (() => {});
 window.timeAgo    = timeAgo;
 window.esc        = esc;
+
+// ── RESOLVED / CLOSED PANEL ────────────────────────────────────────
+let resolvedPage   = 1;
+let resolvedSearch = '';
+const RES_PAGE_SIZE = 10;
+
+function renderResolvedPanel() {
+    const body      = document.getElementById('resolvedTicketsBody');
+    const empty     = document.getElementById('resolvedEmpty');
+    const countBadge= document.getElementById('resolvedCount');
+    const info      = document.getElementById('resolvedPaginationInfo');
+    const prevBtn   = document.getElementById('btnResPrev');
+    const nextBtn   = document.getElementById('btnResNext');
+    const indicator = document.getElementById('resolvedPageIndicator');
+    if (!body) return;
+
+    let resolved = allTickets.filter(t => t.status === 'resolved' || t.status === 'closed');
+
+    if (countBadge) countBadge.textContent = resolved.length;
+
+    if (resolvedSearch.trim()) {
+        const s = resolvedSearch.toLowerCase();
+        resolved = resolved.filter(t =>
+            (t.titulo || '').toLowerCase().includes(s) ||
+            t.id.slice(-6).toLowerCase().includes(s)   ||
+            (t.resolvedBy || t.assignedEmail || '').toLowerCase().includes(s)
+        );
+    }
+
+    // Sort by resolvedAt desc, fallback to timestamp
+    resolved.sort((a, b) => {
+        const ta = a.resolvedAt?.seconds ?? a.timestamp?.seconds ?? 0;
+        const tb = b.resolvedAt?.seconds ?? b.timestamp?.seconds ?? 0;
+        return tb - ta;
+    });
+
+    const totalPages = Math.max(1, Math.ceil(resolved.length / RES_PAGE_SIZE));
+    resolvedPage = Math.min(resolvedPage, totalPages);
+    const start  = (resolvedPage - 1) * RES_PAGE_SIZE;
+    const page   = resolved.slice(start, start + RES_PAGE_SIZE);
+
+    if (info)      info.textContent = `Mostrando ${resolved.length === 0 ? 0 : start+1}–${Math.min(start+RES_PAGE_SIZE, resolved.length)} de ${resolved.length}`;
+    if (indicator) indicator.textContent = `${resolvedPage} / ${totalPages}`;
+    if (prevBtn)   prevBtn.disabled = resolvedPage <= 1;
+    if (nextBtn)   nextBtn.disabled = resolvedPage >= totalPages;
+
+    if (resolved.length === 0) {
+        body.innerHTML = '';
+        if (empty) empty.style.display = 'flex';
+        return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    body.innerHTML = page.map(t => {
+        const status    = t.status || 'resolved';
+        const statusLbl = STATUS_LABELS[status] || status;
+        const resolver  = t.resolvedBy || t.assignedEmail || '—';
+        const dateField = t.resolvedAt || t.timestamp;
+        const dateStr   = dateField?.toDate
+            ? dateField.toDate().toLocaleDateString('es-ES', { day:'2-digit', month:'short', year:'2-digit' })
+            : '—';
+        return `
+        <tr class="fade-in resolved-row" onclick="openDrawer(${JSON.stringify(t).replace(/"/g,'&quot;')})">
+            <td><span class="ticket-id">#${t.id.slice(-6).toUpperCase()}</span></td>
+            <td><div class="ticket-subject" title="${esc(t.titulo)}">${esc(t.titulo)}</div></td>
+            <td><span class="prio-tag prio-${t.prioridad}">${t.prioridad}</span></td>
+            <td><span class="dept-badge">${esc(t.depto || '—')}</span></td>
+            <td><span class="ticket-operator">${esc(shortEmail(resolver))}</span></td>
+            <td style="font-size:0.74rem;color:var(--text-tertiary);font-family:var(--font-mono);white-space:nowrap;">${dateStr}</td>
+            <td><span class="status-badge status-${status}">${statusLbl}</span></td>
+            <td onclick="event.stopPropagation()">
+                <button class="btn-row-delete" onclick="purgeTicket('${t.id}')"><i class="bi bi-trash"></i></button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+// Toggle resolved panel open/close
+let resolvedOpen = true;
+document.getElementById('resolvedToggle')?.addEventListener('click', e => {
+    if (e.target.closest('#resolvedSearch')) return; // don't toggle when clicking search
+    resolvedOpen = !resolvedOpen;
+    const body    = document.getElementById('resolvedBody');
+    const chevron = document.getElementById('resolvedChevron');
+    if (body)    body.style.display    = resolvedOpen ? 'block' : 'none';
+    if (chevron) chevron.style.transform = resolvedOpen ? 'rotate(0deg)' : 'rotate(-90deg)';
+});
+
+// Resolved search
+document.getElementById('resolvedSearch')?.addEventListener('input', e => {
+    resolvedSearch = e.target.value;
+    resolvedPage   = 1;
+    renderResolvedPanel();
+});
+
+// Resolved pagination
+document.getElementById('btnResPrev')?.addEventListener('click', () => { resolvedPage--; renderResolvedPanel(); });
+document.getElementById('btnResNext')?.addEventListener('click', () => { resolvedPage++; renderResolvedPanel(); });

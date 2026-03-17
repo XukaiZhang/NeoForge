@@ -109,6 +109,14 @@
       <div class="ct-form-layout">
         <!-- Formulario -->
         <div class="ct-form-card">
+          <div class="ct-form-card-header">
+            <div class="ct-form-card-icon"><i class="bi bi-ticket-perforated-fill"></i></div>
+            <div>
+              <h2>Nueva solicitud de soporte</h2>
+              <p>Rellena los campos y te responderemos lo antes posible</p>
+            </div>
+          </div>
+          <div class="ct-form-body">
           <div id="ctFormStatus" class="status-alert" style="display:none;"></div>
           <form id="ctTicketForm" novalidate>
             <div class="ct-field">
@@ -143,6 +151,7 @@
               <button type="submit" class="ct-btn-enviar" id="ctBtnEnviar"><i class="bi bi-send-fill"></i> Enviar solicitud</button>
             </div>
           </form>
+          </div><!-- /ct-form-body -->
         </div>
 
         <!-- Info lateral -->
@@ -191,7 +200,6 @@
   </div>
 
   <script type="module" src="js/mis-tickets.js"></script>
-  <script type="module" src="js/auth.js"></script>
   <script>
     function showSec(sec) {
       document.getElementById('secMisTickets').style.display  = sec==='mis' ? 'block' : 'none';

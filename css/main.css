@@ -163,6 +163,16 @@ body {
 }
 .nav-item-cta:hover { background: var(--accent); color: #fff !important; }
 
+/* ── Admin nav item ─────────────────────────────────────────────── */
+.nav-item-admin {
+    color: #c084fc !important;
+    background: rgba(168,85,247,0.08);
+    border: 1px solid rgba(168,85,247,0.15);
+    margin-top: 4px;
+}
+.nav-item-admin:hover  { background: rgba(168,85,247,0.15) !important; color: #d8b4fe !important; }
+.nav-item-admin.active { background: rgba(168,85,247,0.18) !important; border-color: rgba(168,85,247,0.35); }
+
 /* ── Sidebar shortcut hint — visible on all pages ───────────── */
 .sidebar-shortcut-hint {
     padding: 8px 18px 4px;

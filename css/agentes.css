@@ -7,7 +7,7 @@
     display: grid;
     grid-template-columns: 1fr 280px;
     gap: 20px;
-    padding: 0 24px 32px;
+    padding: 20px 28px 32px;
 }
 .agentes-main { min-width: 0; }
 .agentes-side  { display: flex; flex-direction: column; gap: 14px; position: sticky; top: 20px; max-height: calc(100vh - 80px); overflow-y: auto; }
@@ -215,7 +215,7 @@
 @media (max-width: 768px) {
     .agentes-grid {
         grid-template-columns: 1fr;
-        padding: 12px 14px 24px;
+        padding: 16px 16px 24px;
         gap: 12px;
     }
     .agentes-side {

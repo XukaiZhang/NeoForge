@@ -7,7 +7,7 @@ import {
     onAuthStateChanged, updateProfile,
     EmailAuthProvider, reauthenticateWithCredential, updatePassword
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import './auth.js';
+import { getUserRole } from './auth.js';
 
 let currentUser = null;
 
@@ -22,6 +22,8 @@ onAuthStateChanged(auth, async user => {
     _set('perfilAvatar',       initial);
     _set('perfilNombre',       display);
     _set('perfilEmailDisplay', user.email);
+    _set('userEmail',          user.email);
+    _set('userAvatarInitial',  initial);
 
     const pfNombre = document.getElementById('pfNombre');
     const pfEmail  = document.getElementById('pfEmail');
@@ -32,10 +34,23 @@ onAuthStateChanged(auth, async user => {
         const snap = await getDoc(doc(db, 'usuarios', user.uid));
         if (snap.exists()) {
             const data = snap.data();
+            const rol  = data.rol ?? 'cliente';
+
             const rolBadge = document.getElementById('perfilRolBadge');
-            if (rolBadge) rolBadge.textContent = data.rol === 'agente' ? 'Agente' : 'Cliente';
+            const roleEl   = document.getElementById('userRole');
+            const rolLabel = rol === 'admin'  ? 'Admin'  :
+                             rol === 'agente' ? 'Agente' : 'Cliente';
+            if (rolBadge) rolBadge.textContent = rolLabel;
+            if (roleEl)   roleEl.textContent   = rolLabel;
+
             const pfDept = document.getElementById('pfDepartamento');
             if (pfDept && data.departamento) pfDept.value = data.departamento;
+
+            // Ocultar campos solo de agente si es cliente
+            if (rol === 'cliente') {
+                const deptRow = document.getElementById('pfDepartamento')?.closest('.pf-field');
+                if (deptRow) deptRow.style.display = 'none';
+            }
         }
     } catch {}
 
@@ -53,7 +68,6 @@ onAuthStateChanged(auth, async user => {
         _set('pidArticulos', arts.size);
     } catch {}
 
-    // FIX: top-level await bug — moved inside onAuthStateChanged callback
     try {
         const navSnap = await getDocs(query(collection(db, 'tickets'), where('status', '==', 'open')));
         _set('navTicketCount', navSnap.size);

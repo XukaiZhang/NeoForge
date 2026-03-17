@@ -1,9 +1,10 @@
 import { db, auth } from './config.js';
 import {
-    collection, query, where, orderBy, onSnapshot,
+    collection, query, where, onSnapshot,
     addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import './auth.js';
 
 let allTickets    = [];
 let currentFilter = '';
@@ -19,28 +20,34 @@ onAuthStateChanged(auth, user => {
     if (avatarEl) avatarEl.textContent = display.charAt(0).toUpperCase();
     if (emailEl)  emailEl.textContent  = user.email;
 
-    // FIX: primary query by ownerUid; fallback to ownerEmail for legacy tickets
+    // Sin orderBy para evitar necesitar índice compuesto en Firestore
+    // Ordenamos en memoria después de recibir los datos
     const q = query(
         collection(db, 'tickets'),
-        where('ownerUid', '==', user.uid),
-        orderBy('timestamp', 'desc')
+        where('ownerUid', '==', user.uid)
     );
 
     onSnapshot(q, snap => {
-        allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        allTickets = snap.docs
+            .map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (b.timestamp?.seconds ?? 0) - (a.timestamp?.seconds ?? 0));
         updateStats();
         renderTickets();
     }, err => {
-        console.warn('ownerUid query failed, falling back to ownerEmail:', err.message);
+        // Fallback por email para tickets legacy
+        console.warn('ownerUid query failed, fallback ownerEmail:', err.message);
         const q2 = query(
             collection(db, 'tickets'),
-            where('ownerEmail', '==', user.email),
-            orderBy('timestamp', 'desc')
+            where('ownerEmail', '==', user.email)
         );
         onSnapshot(q2, snap => {
-            allTickets = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            allTickets = snap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (b.timestamp?.seconds ?? 0) - (a.timestamp?.seconds ?? 0));
             updateStats();
             renderTickets();
+        }, err2 => {
+            console.error('Both queries failed:', err2);
         });
     });
 });
@@ -81,8 +88,8 @@ function renderTickets() {
 
     if (filtered.length === 0) {
         list.innerHTML = `
-            <div style="text-align:center;padding:40px;color:var(--text-tertiary);font-size:0.84rem;">
-                <i class="bi bi-search" style="font-size:1.4rem;display:block;margin-bottom:8px;opacity:0.4"></i>
+            <div class="ct-no-results">
+                <i class="bi bi-search"></i>
                 No se encontraron tickets con ese filtro.
             </div>`;
         return;
@@ -108,7 +115,8 @@ function renderTickets() {
                 </div>
             </div>
             <div class="ct-ticket-right">
-                <span class="status-badge status-${status}" style="background:${statusConf.bg};color:${statusConf.color};border:1px solid ${statusConf.border};font-size:0.72rem;padding:3px 9px">
+                <span class="ct-status-pill" style="background:${statusConf.bg};color:${statusConf.color};border:1px solid ${statusConf.border}">
+                    <span class="ct-status-dot" style="background:${statusConf.color}"></span>
                     ${statusConf.label}
                 </span>
                 <i class="bi bi-chevron-right ct-ticket-arrow"></i>
@@ -116,24 +124,23 @@ function renderTickets() {
         </div>`;
     }).join('');
 
-    // FIX: attach click handlers via event delegation instead of inline onclick with JSON
     list.querySelectorAll('.ct-ticket-card').forEach(card => {
         card.addEventListener('click', () => {
             const t = allTickets.find(x => x.id === card.dataset.id);
-            if (t) window.openTicketDetail(t);
+            if (t) openTicketDetail(t);
         });
     });
 }
 
 const STATUS_CONFIG = {
-    'open':        { label: 'Abierto',    bg: 'rgba(59,130,246,0.1)',  color: '#60a5fa', border: 'rgba(59,130,246,0.25)' },
-    'in-progress': { label: 'En proceso', bg: 'rgba(234,179,8,0.1)',   color: '#fbbf24', border: 'rgba(234,179,8,0.25)' },
-    'resolved':    { label: 'Resuelto',   bg: 'rgba(34,197,94,0.1)',   color: '#4ade80', border: 'rgba(34,197,94,0.25)' },
-    'closed':      { label: 'Cerrado',    bg: 'rgba(148,163,184,0.1)', color: '#94a3b8', border: 'rgba(148,163,184,0.25)' },
+    'open':        { label: 'Abierto',    bg: 'rgba(59,130,246,0.12)',  color: '#60a5fa', border: 'rgba(59,130,246,0.25)' },
+    'in-progress': { label: 'En proceso', bg: 'rgba(234,179,8,0.12)',   color: '#fbbf24', border: 'rgba(234,179,8,0.25)' },
+    'resolved':    { label: 'Resuelto',   bg: 'rgba(34,197,94,0.12)',   color: '#4ade80', border: 'rgba(34,197,94,0.25)' },
+    'closed':      { label: 'Cerrado',    bg: 'rgba(148,163,184,0.1)',  color: '#94a3b8', border: 'rgba(148,163,184,0.25)' },
 };
 
 // ── Detalle ticket ─────────────────────────────────────────────────
-window.openTicketDetail = function(t) {
+function openTicketDetail(t) {
     const modal = document.getElementById('ctDetailModal');
     if (!modal) return;
 
@@ -147,13 +154,13 @@ window.openTicketDetail = function(t) {
         : '—';
 
     document.getElementById('ctdMeta').innerHTML = `
-        <div class="drawer-meta-item"><i class="bi bi-circle-fill" style="color:${sc.color};font-size:0.4rem"></i> ${sc.label}</div>
-        <div class="drawer-meta-item"><i class="bi bi-flag"></i> ${esc(t.prioridad || 'P3')}</div>
-        <div class="drawer-meta-item"><i class="bi bi-building"></i> ${esc(t.depto || '—')}</div>
-        <div class="drawer-meta-item"><i class="bi bi-calendar3"></i> ${date}</div>
+        <div class="drawer-meta-item"><span class="ct-status-dot" style="background:${sc.color}"></span>${sc.label}</div>
+        <div class="drawer-meta-item"><i class="bi bi-flag"></i>${esc(t.prioridad || 'P3')}</div>
+        <div class="drawer-meta-item"><i class="bi bi-building"></i>${esc(t.depto || '—')}</div>
+        <div class="drawer-meta-item"><i class="bi bi-calendar3"></i>${date}</div>
         ${t.assignedEmail
-            ? `<div class="drawer-meta-item"><i class="bi bi-person-check"></i> ${esc(t.assignedEmail)}</div>`
-            : '<div class="drawer-meta-item" style="color:var(--text-tertiary)"><i class="bi bi-person-dash"></i> Sin asignar</div>'}
+            ? `<div class="drawer-meta-item"><i class="bi bi-person-check" style="color:var(--green)"></i>${esc(t.assignedEmail)}</div>`
+            : '<div class="drawer-meta-item" style="color:var(--text-tertiary)"><i class="bi bi-person-dash"></i>Sin asignar</div>'}
     `;
 
     document.getElementById('ctdDesc').textContent = t.descripcion || 'Sin descripción.';
@@ -182,7 +189,9 @@ window.openTicketDetail = function(t) {
     }
 
     modal.style.display = 'flex';
-};
+}
+
+window.openTicketDetail = openTicketDetail;
 
 // ── Crear nuevo ticket ─────────────────────────────────────────────
 document.getElementById('ctTicketForm')?.addEventListener('submit', async e => {
@@ -217,10 +226,9 @@ document.getElementById('ctTicketForm')?.addEventListener('submit', async e => {
             activity:    []
         });
 
-        showMsg(msgEl, 'success', `¡Ticket #${ref.id.slice(-8).toUpperCase()} creado! Volviendo…`);
+        showMsg(msgEl, 'success', `✓ Ticket #${ref.id.slice(-8).toUpperCase()} creado correctamente.`);
         e.target.reset();
-        const charCount = document.getElementById('ctCharCount');
-        if (charCount) charCount.textContent = '0';
+        document.getElementById('ctCharCount').textContent = '0';
 
         setTimeout(() => {
             document.getElementById('secNuevoTicket').style.display = 'none';
@@ -230,7 +238,7 @@ document.getElementById('ctTicketForm')?.addEventListener('submit', async e => {
             });
             if (msgEl) msgEl.style.display = 'none';
             if (btn) btn.disabled = false;
-        }, 1800);
+        }, 2000);
     } catch (err) {
         console.error(err);
         showMsg(msgEl, 'error', 'Error al crear el ticket. Inténtalo de nuevo.');
@@ -263,5 +271,5 @@ function showMsg(el, type, text) {
         success: { bg: 'var(--green-faint)',  b: 'rgba(34,197,94,0.25)',   c: 'var(--green)' },
         loading: { bg: 'var(--accent-faint)', b: 'rgba(99,102,241,0.25)', c: 'var(--accent-light)' },
     }[type] || {};
-    Object.assign(el.style, { background:s.bg, border:`1px solid ${s.b}`, color:s.c, borderRadius:'var(--radius-sm)', padding:'10px 14px', fontSize:'0.82rem' });
+    Object.assign(el.style, { background:s.bg, border:`1px solid ${s.b}`, color:s.c, borderRadius:'var(--radius-sm)', padding:'10px 14px', fontSize:'0.84rem', fontFamily:'var(--font-sans)' });
 }

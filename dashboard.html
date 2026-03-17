@@ -72,15 +72,11 @@
                 <a href="dashboard.html" class="nav-item active"><i class="bi bi-ticket-perforated"></i><span>Tickets</span><div class="nav-badge" id="navTicketCount">0</div></a>
                 <a href="agentes.html" class="nav-item"><i class="bi bi-people-fill"></i><span>Equipo</span></a>
                 <a href="informes.html" class="nav-item"><i class="bi bi-bar-chart-line"></i><span>Informes</span></a>
-                <a href="conocimiento.html" class="nav-item"><i class="bi bi-book"></i><span>Conocimiento</span></a>
                 <a href="perfil.html" class="nav-item"><i class="bi bi-person-circle"></i><span>Perfil</span></a>
-                <a href="new-ticket.html" class="nav-item nav-item-cta"><i class="bi bi-plus-circle"></i><span>Nuevo Ticket</span></a>
             </nav>
 
             <!-- Keyboard shortcut hint -->
-            <div class="sidebar-shortcut-hint">
-                <kbd>N</kbd> Nuevo ticket &nbsp;·&nbsp; <kbd>B</kbd> Buscar
-            </div>
+            <div class="sidebar-shortcut-hint"><kbd>B</kbd> Buscar</div>
 
             <div class="sidebar-bottom">
                 <div class="user-card">
@@ -120,10 +116,6 @@
                     <button class="topbar-icon-btn" id="topbarSearch" title="Buscar (B)">
                         <i class="bi bi-search"></i>
                     </button>
-                    <a href="new-ticket.html" class="btn-new-ticket">
-                        <i class="bi bi-plus-lg"></i>
-                        <span>Nuevo Ticket</span>
-                    </a>
                 </div>
             </header>
 
@@ -168,8 +160,9 @@
 
                 <!-- ── Ticket table (main) ── -->
                 <div class="dash-main">
+
+                    <!-- ── Tabla activos ── -->
                     <div class="table-panel">
-                        <!-- Toolbar -->
                         <div class="table-topbar">
                             <div class="search-wrapper">
                                 <i class="bi bi-search"></i>
@@ -178,7 +171,7 @@
                             </div>
                             <div class="table-actions">
                                 <span class="ticket-count" id="ticketCountLabel">
-                                    <span id="ticketCount">0</span> tickets
+                                    <span id="ticketCount">0</span> activos
                                 </span>
                                 <div class="filter-chips" id="filterChips"></div>
                                 <select id="filterPrio" class="filter-select">
@@ -194,68 +187,89 @@
                                     <option value="SecOps">SecOps</option>
                                     <option value="Hardware">Hardware</option>
                                 </select>
-                                <select id="filterStatus" class="filter-select">
-                                    <option value="">Todos los estados</option>
-                                    <option value="open">Abierto</option>
-                                    <option value="in-progress">En proceso</option>
-                                    <option value="resolved">Resuelto</option>
-                                </select>
                                 <button id="btnClearFilters" class="btn-clear-filters" style="display:none;" title="Limpiar filtros">
                                     <i class="bi bi-x-lg"></i>
                                 </button>
                             </div>
                         </div>
-
-                        <!-- Table -->
                         <div class="table-scroll" id="tableScroll">
                             <table class="data-table" id="ticketTable">
                                 <thead>
                                     <tr>
-                                        <th class="th-sort" data-col="id">
-                                            ID <i class="bi bi-arrow-down-up sort-icon"></i>
-                                        </th>
-                                        <th class="th-sort" data-col="titulo">
-                                            Asunto <i class="bi bi-arrow-down-up sort-icon"></i>
-                                        </th>
-                                        <th class="th-sort" data-col="prioridad">
-                                            Prioridad <i class="bi bi-arrow-down-up sort-icon"></i>
-                                        </th>
+                                        <th class="th-sort" data-col="id">ID <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                                        <th class="th-sort" data-col="titulo">Asunto <i class="bi bi-arrow-down-up sort-icon"></i></th>
+                                        <th class="th-sort" data-col="prioridad">Prioridad <i class="bi bi-arrow-down-up sort-icon"></i></th>
                                         <th>Departamento</th>
                                         <th>Operador</th>
-                                        <th class="th-sort" data-col="timestamp">
-                                            Creado <i class="bi bi-arrow-down-up sort-icon"></i>
-                                        </th>
+                                        <th class="th-sort" data-col="timestamp">Creado <i class="bi bi-arrow-down-up sort-icon"></i></th>
                                         <th>Estado</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody id="ticketsBody"></tbody>
                             </table>
-
                             <div class="table-empty" id="emptyState" style="display:none;">
                                 <div class="empty-icon"><i class="bi bi-inbox"></i></div>
-                                <h3>No se encontraron tickets</h3>
-                                <p id="emptyStateMsg">Ningún ticket coincide con los filtros actuales.</p>
-                                <a href="new-ticket.html" class="btn-empty-action">
-                                    <i class="bi bi-plus-lg"></i> Crear primer ticket
-                                </a>
+                                <h3>No se encontraron tickets activos</h3>
+                                <p id="emptyStateMsg">Ningún ticket coincide con los filtros.</p>
                             </div>
                         </div>
-
-                        <!-- Pagination -->
                         <div class="table-footer">
                             <span class="table-footer-info" id="paginationInfo">Mostrando 0–0 de 0</span>
                             <div class="pagination-btns">
-                                <button class="page-btn" id="btnPrevPage" disabled>
-                                    <i class="bi bi-chevron-left"></i>
-                                </button>
+                                <button class="page-btn" id="btnPrevPage" disabled><i class="bi bi-chevron-left"></i></button>
                                 <span class="page-indicator" id="pageIndicator">1</span>
-                                <button class="page-btn" id="btnNextPage" disabled>
-                                    <i class="bi bi-chevron-right"></i>
-                                </button>
+                                <button class="page-btn" id="btnNextPage" disabled><i class="bi bi-chevron-right"></i></button>
                             </div>
                         </div>
                     </div>
+
+                    <!-- ── Tabla resueltos/cerrados ── -->
+                    <div class="table-panel resolved-panel" id="resolvedPanel" style="margin-top:16px;">
+                        <div class="resolved-panel-header" id="resolvedToggle">
+                            <div class="resolved-panel-title">
+                                <i class="bi bi-check2-circle"></i>
+                                Resueltos y cerrados
+                                <span class="resolved-count-badge" id="resolvedCount">0</span>
+                            </div>
+                            <div class="resolved-panel-actions">
+                                <input type="text" id="resolvedSearch" class="resolved-search" placeholder="Buscar…">
+                                <i class="bi bi-chevron-down resolved-chevron" id="resolvedChevron"></i>
+                            </div>
+                        </div>
+                        <div id="resolvedBody" class="resolved-body">
+                            <div class="table-scroll">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Asunto</th>
+                                            <th>Prioridad</th>
+                                            <th>Departamento</th>
+                                            <th>Resuelto por</th>
+                                            <th>Fecha</th>
+                                            <th>Estado</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resolvedTicketsBody"></tbody>
+                                </table>
+                                <div class="table-empty" id="resolvedEmpty" style="display:none;">
+                                    <div class="empty-icon"><i class="bi bi-check2-all"></i></div>
+                                    <h3>Sin tickets resueltos aún</h3>
+                                </div>
+                            </div>
+                            <div class="table-footer">
+                                <span class="table-footer-info" id="resolvedPaginationInfo">Mostrando 0 tickets</span>
+                                <div class="pagination-btns">
+                                    <button class="page-btn" id="btnResPrev" disabled><i class="bi bi-chevron-left"></i></button>
+                                    <span class="page-indicator" id="resolvedPageIndicator">1</span>
+                                    <button class="page-btn" id="btnResNext" disabled><i class="bi bi-chevron-right"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- ── Right sidebar: activity feed ── -->
@@ -389,9 +403,6 @@
             // Skip if typing in an input
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
 
-            if (e.key === 'n' || e.key === 'N') {
-                window.location.href = 'new-ticket.html';
-            }
             if (e.key === 'f' || e.key === 'F') {
                 e.preventDefault();
                 document.getElementById('ticketSearch')?.focus();

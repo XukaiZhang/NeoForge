@@ -13,16 +13,30 @@ let currentSort   = 'reciente';
 let currentUser   = null;
 let viewingId     = null;
 
-// ── Auth ──────────────────────────────────────────────────────────
-onAuthStateChanged(auth, user => { currentUser = user; });
-
-// ── Firestore listener ────────────────────────────────────────────
-onSnapshot(query(collection(db, 'articulos'), orderBy('createdAt', 'desc')), snap => {
-    allArticulos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderStats();
-    renderCats();
-    renderArticulos();
+// ── Auth + Firestore listener ────────────────────────────────────
+// Start listening only after auth is confirmed to avoid renders during redirect
+onAuthStateChanged(auth, user => {
+    if (!user) return;
+    currentUser = user;
     updateNavBadge();
+
+    // Try with orderBy first; if index is missing fall back to unordered
+    const artQuery = query(collection(db, 'articulos'), orderBy('createdAt', 'desc'));
+    onSnapshot(artQuery, snap => {
+        allArticulos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderStats();
+        renderCats();
+        renderArticulos();
+    }, err => {
+        console.warn('articulos orderBy failed, retrying without orderBy:', err.message);
+        onSnapshot(collection(db, 'articulos'), snap => {
+            allArticulos = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0));
+            renderStats();
+            renderCats();
+            renderArticulos();
+        });
+    });
 });
 
 function updateNavBadge() {
