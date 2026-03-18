@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoForge — Administración</title>
+    <title>NeoForge — Administración de usuarios</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="viewport">
 
@@ -81,10 +83,27 @@
                 <div class="stat-card">
                     <div class="stat-icon medium"><i class="bi bi-person-fill"></i></div>
                     <div class="stat-info">
-                        <div class="stat-value" id="statClientes">0</div>
-                        <div class="stat-label">Clientes</div>
+                        <div class="stat-value" id="statEmpleados">0</div>
+                        <div class="stat-label">Empleados</div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Sección departamentos -->
+            <div class="admin-dept-section">
+                <div class="admin-section-header">
+                    <div>
+                        <h2 class="admin-section-title"><i class="bi bi-diagram-3-fill"></i> Departamentos de soporte</h2>
+                        <p class="admin-section-sub">Los departamentos disponibles en los selectores de toda la app</p>
+                    </div>
+                    <button class="btn-new-ticket" id="btnNuevoDept">
+                        <i class="bi bi-plus-lg"></i> Nuevo departamento
+                    </button>
+                </div>
+                <div class="dept-count-row">
+                    <span class="ticket-count"><span id="deptsCount">0</span> departamentos</span>
+                </div>
+                <div id="deptsList" class="depts-list"></div>
             </div>
 
             <!-- Tabla de usuarios -->
@@ -101,7 +120,7 @@
                                 <option value="">Todos los roles</option>
                                 <option value="admin">Admin</option>
                                 <option value="agente">Agente</option>
-                                <option value="cliente">Cliente</option>
+                                <option value="cliente">Empleado</option>
                             </select>
                         </div>
                     </div>
@@ -113,6 +132,7 @@
                                     <th>Usuario</th>
                                     <th>Email</th>
                                     <th>Rol actual</th>
+                                    <th>Departamento</th>
                                     <th>Registrado</th>
                                     <th>Cambiar rol</th>
                                     <th></th>
@@ -133,6 +153,35 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Modal departamento -->
+    <div class="modal-overlay" id="deptModal" style="display:none;">
+        <div class="modal-card" style="max-width:440px">
+            <div class="modal-header">
+                <h3 id="deptModalTitle">Nuevo departamento</h3>
+                <button class="modal-close" id="closeDeptModal"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div id="deptModalMsg" style="display:none;margin-bottom:12px"></div>
+            <form id="deptForm" novalidate style="display:flex;flex-direction:column;gap:14px">
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary)">Nombre <span style="color:var(--red)">*</span></label>
+                    <input type="text" id="deptNombre" placeholder="Ej: DevOps, Soporte, RRHH…" style="background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-sans);font-size:0.87rem;padding:10px 12px;outline:none;width:100%">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary)">Descripción <span style="font-size:0.72rem;font-weight:400;color:var(--text-tertiary)">(opcional)</span></label>
+                    <input type="text" id="deptDesc" placeholder="Ej: Infraestructura y servidores" style="background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-sans);font-size:0.87rem;padding:10px 12px;outline:none;width:100%">
+                </div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary)">Iniciales / Icono <span style="font-size:0.72rem;font-weight:400;color:var(--text-tertiary)">(máx. 3 caracteres)</span></label>
+                    <input type="text" id="deptIcono" placeholder="Ej: DO, IT, HR" maxlength="3" style="background:var(--bg-elevated);border:1px solid var(--border-default);border-radius:var(--radius-sm);color:var(--text-primary);font-family:var(--font-mono);font-size:0.87rem;padding:10px 12px;outline:none;width:100%;text-transform:uppercase">
+                </div>
+                <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:4px">
+                    <button type="button" class="btn-cancel" id="cancelDeptModal">Cancelar</button>
+                    <button type="submit" class="btn-new-ticket"><i class="bi bi-check-lg"></i> Guardar</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <!-- Modal confirmación cambio de rol -->

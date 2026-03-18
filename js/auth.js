@@ -92,7 +92,7 @@ onAuthStateChanged(auth, async (user) => {
     if (nameEl)   nameEl.textContent   = display;
     if (avatarEl) avatarEl.textContent = initial;
     if (roleEl)   roleEl.textContent   = rol === 'agente' ? 'Agente de soporte' :
-                                         rol === 'admin'  ? 'Administrador'     : 'Cliente';
+                                         rol === 'admin'  ? 'Administrador'     : 'Empleado';
 });
 
 // ── Google Sign In / Register ─────────────────────────────────────

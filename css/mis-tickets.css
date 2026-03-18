@@ -759,3 +759,139 @@
     .ct-status-chips { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
     .ct-ticket-card { padding: 13px 14px; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   LIVE STATUS INDICATOR
+   ══════════════════════════════════════════════════════════════ */
+.ct-live-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--yellow);
+    margin-right: 6px;
+    vertical-align: middle;
+    flex-shrink: 0;
+    animation: livePulse 1.8s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(234,179,8,0.4);
+}
+@keyframes livePulse {
+    0%   { box-shadow: 0 0 0 0 rgba(234,179,8,0.45); }
+    70%  { box-shadow: 0 0 0 7px rgba(234,179,8,0); }
+    100% { box-shadow: 0 0 0 0 rgba(234,179,8,0); }
+}
+.ct-ticket-card--active {
+    border-color: rgba(234,179,8,0.3);
+}
+.ct-ticket-card--active:hover {
+    border-color: var(--yellow);
+    background: rgba(234,179,8,0.04);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SETTINGS BUTTON
+   ══════════════════════════════════════════════════════════════ */
+.ct-btn-perfil {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.15s;
+}
+.ct-btn-perfil:hover {
+    background: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PROFILE MODAL
+   ══════════════════════════════════════════════════════════════ */
+.ct-perfil-modal {
+    max-width: 420px;
+    width: 100%;
+}
+.ct-perfil-id {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 0 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 18px;
+}
+.ct-perfil-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.ct-perfil-name {
+    font-size: 0.97rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
+.ct-perfil-email {
+    font-size: 0.76rem;
+    color: var(--text-tertiary);
+    font-family: var(--font-mono);
+}
+.ct-perfil-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    background: var(--bg-elevated);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+}
+.ct-perfil-tab {
+    flex: 1;
+    padding: 7px 12px;
+    background: none;
+    border: none;
+    border-radius: 4px;
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    transition: all 0.14s;
+}
+.ct-perfil-tab:hover { color: var(--text-primary); }
+.ct-perfil-tab.active {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+}
+.ct-perfil-tab-body {
+    animation: fadeSlideUp 0.18s ease both;
+}
+
+/* ── Mis-tickets additional responsive ─────────────────────────── */
+@media (max-width: 400px) {
+    .ct-topbar { padding: 0 10px; gap: 8px; }
+    .ct-main   { padding: 12px 10px 72px; }
+    .ct-stats  { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .ct-stat   { padding: 10px; }
+    .ct-stat-val { font-size: 1.3rem; }
+    .ct-section-head { gap: 8px; }
+    .ct-form-body { padding: 16px; }
+    .ct-perfil-modal { padding: 20px 14px; }
+    .ct-ticket-card { padding: 11px 12px; gap: 10px; }
+    .ct-btn-nuevo { padding: 8px 14px; font-size: 0.8rem; }
+}

@@ -636,3 +636,12 @@
     .tips-list li       { padding: 7px 14px; }
     .contacts-list .contact-row { padding: 8px 14px; }
 }
+@media (max-width: 480px) {
+    .new-ticket-layout { padding: 12px 12px 24px; gap: 12px; }
+    .ticket-form-card  { padding: 14px 14px 18px; }
+    .card-header       { flex-direction: column; gap: 8px; }
+    .form-section      { margin-bottom: 2px; }
+    .form-actions      { flex-direction: column; gap: 8px; }
+    .btn-cancel, .btn-submit { width: 100%; justify-content: center; }
+    .ticket-sidebar    { display: none; } /* hide info sidebar on very small screens */
+}

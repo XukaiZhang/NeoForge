@@ -369,3 +369,15 @@
 .density-opt:hover { background-color: var(--bg-elevated); color: var(--text-primary); }
 .theme-opt.active   { background-color: var(--accent-faint); color: var(--accent-light); border-color: var(--accent); }
 .density-opt.active { background-color: var(--accent-faint); color: var(--accent-light); border-color: var(--accent); }
+
+/* ── Perfil additional responsive ──────────────────────────────── */
+@media (max-width: 400px) {
+    .perfil-layout   { padding: 8px 8px 20px; }
+    .perfil-id-card  { padding: 14px; }
+    .perfil-section-header { padding: 14px 14px; }
+    .perfil-section-body   { padding: 12px 14px 16px; }
+    .pf-field-row    { grid-template-columns: 1fr; }
+    .apariencia-grid { grid-template-columns: 1fr; }
+    .danger-row      { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .danger-btn      { width: 100%; justify-content: center; }
+}

@@ -5,6 +5,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import './auth.js';
+import { swalConfirm, swalToast } from './swal.js';
 
 let allArticulos  = [];
 let currentCat    = '';
@@ -235,11 +236,12 @@ document.getElementById('btnEditArticulo')?.addEventListener('click', () => {
 
 document.getElementById('btnDeleteArticulo')?.addEventListener('click', async () => {
     if (!viewingId) return;
-    if (!confirm('¿Eliminar este artículo permanentemente? Esta acción no se puede deshacer.')) return;
+    const res = await swalConfirm('¿Eliminar artículo?', 'Esta acción no se puede deshacer.', 'Eliminar', true);
+    if (!res?.isConfirmed) return;
     try {
         await deleteDoc(doc(db, 'articulos', viewingId));
         document.getElementById('viewModal').style.display = 'none';
-    } catch { alert('Error al eliminar.'); }
+    } catch { swalToast('Error al eliminar.', 'error'); }
 });
 
 // ── Create / Update article ───────────────────────────────────────

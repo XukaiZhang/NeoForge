@@ -1,5 +1,5 @@
-// auth-cliente.js — Solo para login.html (portal clientes)
-// Los usuarios que entran aquí siempre son 'cliente'
+// auth-cliente.js — Solo para login.html (portal empleados)
+// Los usuarios que entran aquí siempre son 'cliente' (empleado)
 import { auth, db } from './config.js';
 import {
     signInWithEmailAndPassword,

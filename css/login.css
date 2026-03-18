@@ -246,3 +246,13 @@
     .agent-login-card { padding: 28px 18px; }
     .agent-login-header { flex-direction: column; gap: 10px; }
 }
+
+/* ── Login additional responsive ───────────────────────────────── */
+@media (max-width: 400px) {
+    .auth-container  { padding: 8px; }
+    .form-container  { padding: 24px 14px; }
+    .auth-form h2    { font-size: 1.2rem; }
+    .agent-login-card { padding: 24px 14px; }
+    .agent-login-header h2 { font-size: 1.2rem; }
+    .auth-portal-link { font-size: 0.72rem; }
+}

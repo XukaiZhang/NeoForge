@@ -4,6 +4,9 @@ import {
     doc, deleteDoc, updateDoc, arrayUnion, serverTimestamp, Timestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import './auth.js';
+import { watchNewTickets, showToast } from './notifications.js';
+import { swalConfirm, swalToast } from './swal.js';
+import { populateSelect } from './departamentos.js';
 
 // ── State ──────────────────────────────────────────────────────────
 let allTickets  = [];
@@ -18,6 +21,9 @@ const STATUS_LABELS = {
     'resolved':    'Resuelto',
     'closed':      'Cerrado',
 };
+
+// ── Populate dept select ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => populateSelect('filterDept', { includeAll: true }));
 
 // ── DOM refs ───────────────────────────────────────────────────────
 const ticketsBody    = document.getElementById('ticketsBody');
@@ -40,6 +46,7 @@ const q = query(collection(db, 'tickets'), orderBy('timestamp', 'desc'));
 
 onSnapshot(q, (snapshot) => {
     allTickets = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    watchNewTickets(allTickets);
     updateCounters(allTickets);
     buildMiniDonut(allTickets);
     buildActivityFeed(allTickets);
@@ -118,6 +125,9 @@ document.getElementById('drawerCommentSubmit')?.addEventListener('click', async 
         await updateDoc(doc(db, 'tickets', ticketId), updates);
         if (input)     input.value     = '';
         if (statusSel) statusSel.value = '';
+        // Show success toast
+        if (newStatus) showToast(`Estado cambiado a: ${STATUS_LABELS[newStatus] || newStatus}`, 'success');
+        else showToast('Comentario enviado', 'success');
         // Refresh drawer with updated ticket data from live state
         const fresh = allTickets.find(t => t.id === ticketId);
         if (fresh && window.openDrawer) {
@@ -130,7 +140,7 @@ document.getElementById('drawerCommentSubmit')?.addEventListener('click', async 
         }
     } catch (e) {
         console.error('Error al actualizar el ticket:', e);
-        alert('Error al enviar. Inténtalo de nuevo.');
+        swalToast('Error al enviar. Inténtalo de nuevo.', 'error');
     } finally {
         if (submitBtn) { submitBtn.disabled = false; submitBtn.innerHTML = '<i class="bi bi-send"></i> Enviar'; }
     }
@@ -354,7 +364,8 @@ function syncStatCards() {
 
 // ── Delete ─────────────────────────────────────────────────────────
 window.purgeTicket = async (id) => {
-    if (!confirm('¿Eliminar este ticket permanentemente? Esta acción no se puede deshacer.')) return;
+    const res = await swalConfirm('¿Eliminar ticket?', 'Esta acción no se puede deshacer.', 'Eliminar', true);
+    if (!res?.isConfirmed) return;
     try { await deleteDoc(doc(db, 'tickets', id)); }
     catch (e) { alert('Error al eliminar el ticket.'); }
 };

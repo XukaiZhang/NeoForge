@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeoForge — Portal Clientes</title>
+    <title>NeoForge — Portal Empleados</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="auth-gate">
 
@@ -21,10 +23,10 @@
             <div class="form-container sign-in-container">
                 <form id="loginForm" class="auth-form" novalidate>
                     <div class="auth-portal-badge client">
-                        <i class="bi bi-person-fill"></i> Portal Clientes
+                        <i class="bi bi-person-fill"></i> Portal Empleados
                     </div>
                     <h2>Bienvenido</h2>
-                    <p class="form-subtitle">Accede para gestionar tus solicitudes de soporte</p>
+                    <p class="form-subtitle">Accede para gestionar tus solicitudes</p>
 
                     <div id="status-msg-login" class="status-alert" style="display:none;"></div>
 
@@ -77,7 +79,7 @@
             <div class="form-container sign-up-container">
                 <form id="registerForm" class="auth-form" novalidate>
                     <div class="auth-portal-badge client">
-                        <i class="bi bi-person-plus-fill"></i> Registro Clientes
+                        <i class="bi bi-person-plus-fill"></i> Registro Empleados
                     </div>
                     <h2>Crear cuenta</h2>
                     <p class="form-subtitle">Tarda menos de un minuto</p>
@@ -149,7 +151,7 @@
                         <div class="overlay-content">
                             <div class="logo-mark-lg">NF</div>
                             <h3>¿Primera vez?</h3>
-                            <p>Crea tu cuenta de cliente y abre tickets de soporte en segundos.</p>
+                            <p>Crea tu cuenta y abre solicitudes de soporte en segundos.</p>
                             <button class="btn-ghost" id="goRegister">Crear Cuenta</button>
                         </div>
                     </div>

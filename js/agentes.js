@@ -5,8 +5,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import './auth.js';
+import { swalConfirm, swalToast } from './swal.js';
+import { populateSelect } from './departamentos.js';
 
 let allAgentes     = [];
+let allEmpleados   = [];
+let empleadoSearch = '';
 let allTickets     = [];
 let searchTerm     = '';
 let filterDept     = '';
@@ -19,7 +23,9 @@ onAuthStateChanged(auth, async user => {
         const el = document.getElementById('navTicketCount');
         if (el) el.textContent = snap.size;
     } catch {}
+    populateSelect('filterDeptAgente', { includeAll: true });
     subscribeAgentes();
+    subscribeEmpleados();
     subscribeTickets();
 });
 
@@ -39,6 +45,71 @@ function subscribeAgentes() {
             renderAll();
         });
     });
+}
+
+// ── Empleados listener ───────────────────────────────────────────
+function subscribeEmpleados() {
+    const q = query(collection(db, 'usuarios'), where('rol', '==', 'cliente'));
+    onSnapshot(q, snap => {
+        allEmpleados = snap.docs.map(d => ({ uid: d.id, ...d.data() }));
+        renderEmpleados();
+    }, err => {
+        // Fallback sin where
+        onSnapshot(collection(db, 'usuarios'), snap => {
+            allEmpleados = snap.docs
+                .map(d => ({ uid: d.id, ...d.data() }))
+                .filter(u => !u.rol || u.rol === 'cliente');
+            renderEmpleados();
+        });
+    });
+}
+
+// ── Render empleados ──────────────────────────────────────────────
+function renderEmpleados() {
+    const tbody  = document.getElementById('empleadosBody');
+    const empty  = document.getElementById('empleadosEmpty');
+    const countEl= document.getElementById('empleadoCount');
+    if (!tbody) return;
+
+    let filtered = allEmpleados;
+    if (empleadoSearch.trim()) {
+        const s = empleadoSearch.toLowerCase();
+        filtered = filtered.filter(u =>
+            (u.nombre || '').toLowerCase().includes(s) ||
+            (u.email  || '').toLowerCase().includes(s)
+        );
+    }
+
+    if (countEl) countEl.textContent = allEmpleados.length;
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        if (empty) empty.style.display = 'flex';
+        return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    tbody.innerHTML = filtered.map(u => {
+        const nombre  = u.nombre || u.email?.split('@')[0] || '—';
+        const inicial = nombre.charAt(0).toUpperCase();
+        const abiertos= allTickets.filter(t => t.ownerUid === u.uid && ['open','in-progress'].includes(t.status || 'open')).length;
+        const total   = allTickets.filter(t => t.ownerUid === u.uid || t.ownerEmail === u.email).length;
+        return `
+        <tr>
+            <td>
+                <div class="ag-cell-user">
+                    <div class="ag-mini-avatar" style="background:var(--bg-hover);color:var(--text-secondary);border-color:var(--border-default)">${esc(inicial)}</div>
+                    <div>
+                        <div class="ag-name">${esc(nombre)}</div>
+                        <div class="ag-email">${esc(u.email || '—')}</div>
+                    </div>
+                </div>
+            </td>
+            <td style="font-family:var(--font-mono);font-size:0.78rem;color:var(--text-secondary)">${esc(u.email || '—')}</td>
+            <td><span class="ag-num" style="color:${abiertos > 0 ? 'var(--yellow)' : 'var(--text-tertiary)'}">${abiertos}</span></td>
+            <td><span class="ag-num">${total}</span></td>
+        </tr>`;
+    }).join('');
 }
 
 // ── Tickets listener ──────────────────────────────────────────────
@@ -64,6 +135,7 @@ function subscribeTickets() {
 function renderAll() {
     renderStats();
     renderTable();
+    renderEmpleados();
     renderUnassigned();
     renderRanking();
     renderDeptBars();
@@ -308,11 +380,16 @@ document.getElementById('adBtnAssign')?.addEventListener('click', async () => {
         sel.value = '';
     } catch (err) {
         console.error('Error al asignar:', err);
-        alert('Error al asignar el ticket.');
+        swalToast('Error al asignar el ticket.', 'error');
     }
 });
 
 // ── Search & filter ────────────────────────────────────────────────
+document.getElementById('empleadoSearch')?.addEventListener('input', e => {
+    empleadoSearch = e.target.value;
+    renderEmpleados();
+});
+
 document.getElementById('agenteSearch')?.addEventListener('input', e => {
     searchTerm = e.target.value;
     renderTable();

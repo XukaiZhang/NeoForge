@@ -241,3 +241,16 @@
     .inf-card { padding: 14px; }
     .inf-card-header h3 { font-size: 0.84rem; }
 }
+/* ── Informes additional responsive ────────────────────────────── */
+@media (max-width: 640px) {
+    .inf-grid   { grid-template-columns: 1fr; padding: 10px 12px 20px; }
+    .inf-card   { padding: 14px; }
+    .inf-donut-wrap { flex-direction: column; gap: 10px; }
+    .inf-donut-svg-wrap { width: 90px; height: 90px; }
+}
+@media (max-width: 400px) {
+    .inf-grid   { padding: 8px 8px 16px; }
+    .inf-card   { padding: 12px; }
+    .inf-card-header { flex-direction: column; gap: 6px; }
+    .inf-legend { display: none; }
+}

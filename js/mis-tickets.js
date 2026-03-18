@@ -1,10 +1,13 @@
 import { db, auth } from './config.js';
 import {
     collection, query, where, onSnapshot,
-    addDoc, serverTimestamp
+    addDoc, getDocs, updateDoc, doc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { onAuthStateChanged, updateProfile, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import './auth.js';
+import { swalToast } from './swal.js';
+import { populateSelect } from './departamentos.js';
+import { watchTicketStatusChanges, showToast } from './notifications.js';
 
 let allTickets    = [];
 let currentFilter = '';
@@ -19,6 +22,7 @@ onAuthStateChanged(auth, user => {
     const emailEl  = document.getElementById('userEmail');
     if (avatarEl) avatarEl.textContent = display.charAt(0).toUpperCase();
     if (emailEl)  emailEl.textContent  = user.email;
+    populateSelect('ctDepartamento');
 
     // Sin orderBy para evitar necesitar índice compuesto en Firestore
     // Ordenamos en memoria después de recibir los datos
@@ -31,6 +35,7 @@ onAuthStateChanged(auth, user => {
         allTickets = snap.docs
             .map(d => ({ id: d.id, ...d.data() }))
             .sort((a, b) => (b.timestamp?.seconds ?? 0) - (a.timestamp?.seconds ?? 0));
+        watchTicketStatusChanges(allTickets);
         updateStats();
         renderTickets();
     }, err => {
@@ -101,13 +106,16 @@ function renderTickets() {
         const date       = t.timestamp?.toDate?.()
             ? t.timestamp.toDate().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })
             : '—';
+        const isActive = status === 'in-progress';
         return `
-        <div class="ct-ticket-card" data-id="${t.id}">
+        <div class="ct-ticket-card ${isActive ? 'ct-ticket-card--active' : ''}" data-id="${t.id}">
             <div class="ct-ticket-prio">
                 <span class="prio-tag prio-${esc(t.prioridad || 'P3')}">${esc(t.prioridad || 'P3')}</span>
             </div>
             <div class="ct-ticket-body">
-                <div class="ct-ticket-title">${esc(t.titulo || 'Sin asunto')}</div>
+                <div class="ct-ticket-title">
+                    ${isActive ? '<span class="ct-live-dot"></span>' : ''}${esc(t.titulo || 'Sin asunto')}
+                </div>
                 <div class="ct-ticket-meta">
                     <span>#${t.id.slice(-8).toUpperCase()}</span>
                     <span>${esc(t.depto || '—')}</span>
@@ -193,6 +201,30 @@ function openTicketDetail(t) {
 
 window.openTicketDetail = openTicketDetail;
 
+// ── Auto-assign ───────────────────────────────────────────────────
+async function autoAssign(depto) {
+    try {
+        const agSnap = await getDocs(query(collection(db, 'usuarios'), where('rol', 'in', ['agente', 'admin'])));
+        if (agSnap.empty) return null;
+        const agents = agSnap.docs.map(d => ({ uid: d.id, ...d.data() }));
+        const deptAgents = agents.filter(a => a.departamento === depto);
+        const pool = deptAgents.length > 0 ? deptAgents : agents;
+        const ticketSnap = await getDocs(
+            query(collection(db, 'tickets'), where('status', 'in', ['open', 'in-progress']))
+        );
+        const counts = {};
+        pool.forEach(a => { counts[a.email] = 0; });
+        ticketSnap.docs.forEach(d => {
+            const email = d.data().assignedEmail;
+            if (email && counts[email] !== undefined) counts[email]++;
+        });
+        const best = pool.reduce((min, a) =>
+            (counts[a.email] ?? 0) < (counts[min.email] ?? 0) ? a : min
+        , pool[0]);
+        return best?.email ?? null;
+    } catch { return null; }
+}
+
 // ── Crear nuevo ticket ─────────────────────────────────────────────
 document.getElementById('ctTicketForm')?.addEventListener('submit', async e => {
     e.preventDefault();
@@ -213,17 +245,22 @@ document.getElementById('ctTicketForm')?.addEventListener('submit', async e => {
     if (btn) btn.disabled = true;
 
     try {
+        // Auto-asignar al agente con menos carga
+        const assignedEmail = await autoAssign(dept);
+
         const ref = await addDoc(collection(db, 'tickets'), {
-            titulo:      asunto,
-            descripcion: desc,
-            depto:       dept,
-            prioridad:   prio,
-            status:      'open',
-            ownerUid:    user.uid,
-            ownerEmail:  user.email,
-            operator:    user.email,
-            timestamp:   serverTimestamp(),
-            activity:    []
+            titulo:        asunto,
+            descripcion:   desc,
+            depto:         dept,
+            prioridad:     prio,
+            status:        'open',
+            ownerUid:      user.uid,
+            ownerEmail:    user.email,
+            operator:      user.email,
+            assignee:      assignedEmail || null,
+            assignedEmail: assignedEmail || null,
+            timestamp:     serverTimestamp(),
+            activity:      []
         });
 
         showMsg(msgEl, 'success', `✓ Ticket #${ref.id.slice(-8).toUpperCase()} creado correctamente.`);
@@ -273,3 +310,94 @@ function showMsg(el, type, text) {
     }[type] || {};
     Object.assign(el.style, { background:s.bg, border:`1px solid ${s.b}`, color:s.c, borderRadius:'var(--radius-sm)', padding:'10px 14px', fontSize:'0.84rem', fontFamily:'var(--font-sans)' });
 }
+
+// ── Perfil del cliente ────────────────────────────────────────────
+window.initPerfilModal = function() {
+    const user = auth.currentUser;
+    if (!user) return;
+    const display = user.displayName || user.email.split('@')[0];
+    const initial = display.charAt(0).toUpperCase();
+
+    const avatarEl = document.getElementById('ctPerfilAvatar');
+    const nameEl   = document.getElementById('ctPerfilName');
+    const emailEl  = document.getElementById('ctPerfilEmail');
+    const nameInp  = document.getElementById('ctPerfilNombreInput');
+    const emailInp = document.getElementById('ctPerfilEmailInput');
+
+    if (avatarEl) avatarEl.textContent = initial;
+    if (nameEl)   nameEl.textContent   = display;
+    if (emailEl)  emailEl.textContent  = user.email;
+    if (nameInp)  nameInp.value        = display;
+    if (emailInp) emailInp.value       = user.email;
+};
+
+// Save profile data
+document.getElementById('ctPerfilDatosForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const user   = auth.currentUser;
+    if (!user) return;
+    const msgEl  = document.getElementById('ctPerfilDatosMsg');
+    const nombre = document.getElementById('ctPerfilNombreInput')?.value.trim();
+    const btn    = e.target.querySelector('button[type="submit"]');
+
+    if (!nombre) { showMsg(msgEl, 'error', 'El nombre no puede estar vacío.'); return; }
+    showMsg(msgEl, 'loading', 'Guardando…');
+    if (btn) btn.disabled = true;
+
+    try {
+        await updateProfile(user, { displayName: nombre });
+        await updateDoc(doc(db, 'usuarios', user.uid), { nombre, updatedAt: serverTimestamp() });
+
+        // Update topbar avatar + email
+        const avatarEl = document.getElementById('ctAvatar');
+        const emailEl  = document.getElementById('userEmail');
+        if (avatarEl) avatarEl.textContent = nombre.charAt(0).toUpperCase();
+        document.getElementById('ctPerfilAvatar').textContent = nombre.charAt(0).toUpperCase();
+        document.getElementById('ctPerfilName').textContent   = nombre;
+
+        showMsg(msgEl, 'success', '¡Perfil actualizado!');
+        showToast('Perfil actualizado correctamente', 'success');
+    } catch {
+        showMsg(msgEl, 'error', 'Error al guardar. Inténtalo de nuevo.');
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+});
+
+// Change password
+document.getElementById('ctPerfilPassForm')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const user      = auth.currentUser;
+    if (!user) return;
+    const msgEl     = document.getElementById('ctPerfilPassMsg');
+    const actual    = document.getElementById('ctPassActual')?.value;
+    const nueva     = document.getElementById('ctPassNueva')?.value;
+    const confirmar = document.getElementById('ctPassConfirm')?.value;
+    const btn       = e.target.querySelector('button[type="submit"]');
+
+    if (!actual)              { showMsg(msgEl, 'error', 'Introduce tu contraseña actual.'); return; }
+    if (!nueva)               { showMsg(msgEl, 'error', 'Introduce la nueva contraseña.'); return; }
+    if (nueva.length < 6)     { showMsg(msgEl, 'error', 'Mínimo 6 caracteres.'); return; }
+    if (nueva !== confirmar)  { showMsg(msgEl, 'error', 'Las contraseñas no coinciden.'); return; }
+
+    showMsg(msgEl, 'loading', 'Verificando…');
+    if (btn) btn.disabled = true;
+
+    try {
+        const cred = EmailAuthProvider.credential(user.email, actual);
+        await reauthenticateWithCredential(user, cred);
+        await updatePassword(user, nueva);
+        showMsg(msgEl, 'success', '¡Contraseña actualizada!');
+        showToast('Contraseña actualizada correctamente', 'success');
+        e.target.reset();
+    } catch (err) {
+        const msgs = {
+            'auth/wrong-password':     'La contraseña actual es incorrecta.',
+            'auth/invalid-credential': 'La contraseña actual es incorrecta.',
+            'auth/too-many-requests':  'Demasiados intentos. Espera un momento.',
+        };
+        showMsg(msgEl, 'error', msgs[err.code] || 'Error al cambiar contraseña.');
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+});

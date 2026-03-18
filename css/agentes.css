@@ -233,3 +233,38 @@
     .agentes-side  { grid-template-columns: 1fr; }
     .ad-info-grid  { grid-template-columns: 1fr; }
 }
+/* ── Agentes additional responsive ─────────────────────────────── */
+@media (max-width: 640px) {
+    .agentes-grid { padding: 10px 12px 20px; }
+    .ag-email { display: none; }
+    .data-table thead th:nth-child(4),
+    .data-table tbody td:nth-child(4) { display: none; }
+    .data-table thead th:nth-child(5),
+    .data-table tbody td:nth-child(5) { display: none; }
+}
+@media (max-width: 400px) {
+    .agentes-grid { padding: 8px 8px 16px; }
+    .agentes-side { grid-template-columns: 1fr; }
+}
+
+/* ── Empleados section ─────────────────────────────────────────── */
+.agentes-empleados-section {
+    padding: 0 28px 32px;
+}
+.empleados-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+.empleados-section-title i { color: var(--text-tertiary); }
+
+@media (max-width: 768px) {
+    .agentes-empleados-section { padding: 0 14px 24px; }
+    .table-topbar .empleados-section-title { font-size: 0.76rem; }
+}
+@media (max-width: 480px) {
+    .agentes-empleados-section { padding: 0 10px 20px; }
+}

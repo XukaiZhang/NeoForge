@@ -8,6 +8,8 @@ import {
     EmailAuthProvider, reauthenticateWithCredential, updatePassword
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getUserRole } from './auth.js';
+import { swalSuccess, swalError, swalToast } from './swal.js';
+import { populateSelect } from './departamentos.js';
 
 let currentUser = null;
 
@@ -39,14 +41,13 @@ onAuthStateChanged(auth, async user => {
             const rolBadge = document.getElementById('perfilRolBadge');
             const roleEl   = document.getElementById('userRole');
             const rolLabel = rol === 'admin'  ? 'Admin'  :
-                             rol === 'agente' ? 'Agente' : 'Cliente';
+                             rol === 'agente' ? 'Agente' : 'Empleado';
             if (rolBadge) rolBadge.textContent = rolLabel;
             if (roleEl)   roleEl.textContent   = rolLabel;
 
-            const pfDept = document.getElementById('pfDepartamento');
-            if (pfDept && data.departamento) pfDept.value = data.departamento;
+            populateSelect('pfDepartamento', { selectedValue: data.departamento || '' });
 
-            // Ocultar campos solo de agente si es cliente
+            // Ocultar campos solo de agente si es empleado
             if (rol === 'cliente') {
                 const deptRow = document.getElementById('pfDepartamento')?.closest('.pf-field');
                 if (deptRow) deptRow.style.display = 'none';
@@ -55,18 +56,30 @@ onAuthStateChanged(auth, async user => {
     } catch {}
 
     try {
-        const [open, resolved] = await Promise.all([
-            getDocs(query(collection(db, 'tickets'), where('assignedEmail', '==', user.email), where('status', 'in', ['open', 'in-progress']))),
-            getDocs(query(collection(db, 'tickets'), where('assignedEmail', '==', user.email), where('status', 'in', ['resolved', 'closed']))),
-        ]);
-        _set('pidTicketsAbiertos', open.size);
-        _set('pidResueltos',       resolved.size);
-    } catch {}
+        // Query all tickets assigned to this agent (no compound index needed)
+        const assignedSnap = await getDocs(
+            query(collection(db, 'tickets'), where('assignedEmail', '==', user.email))
+        );
+        const assignedTickets = assignedSnap.docs.map(d => d.data());
+        const openCount     = assignedTickets.filter(t => ['open','in-progress'].includes(t.status || 'open')).length;
+        const resolvedCount = assignedTickets.filter(t => ['resolved','closed'].includes(t.status)).length;
+        _set('pidTicketsAbiertos', openCount);
+        _set('pidResueltos',       resolvedCount);
 
-    try {
-        const arts = await getDocs(query(collection(db, 'articulos'), where('autor', '==', display)));
-        _set('pidArticulos', arts.size);
-    } catch {}
+        // Also count tickets resolved by this agent (resolvedBy field)
+        const resolvedBySnap = await getDocs(
+            query(collection(db, 'tickets'), where('resolvedBy', '==', user.email))
+        );
+        // Merge: count unique resolved tickets from both sources
+        const resolvedIds = new Set([
+            ...assignedSnap.docs.filter(d => ['resolved','closed'].includes(d.data().status)).map(d => d.id),
+            ...resolvedBySnap.docs.map(d => d.id)
+        ]);
+        _set('pidResueltos', resolvedIds.size);
+
+        // Total: all tickets ever assigned to this agent
+        _set('pidArticulos', assignedSnap.size);
+    } catch (e) { console.warn('Stats error:', e); }
 
     try {
         const navSnap = await getDocs(query(collection(db, 'tickets'), where('status', '==', 'open')));
@@ -82,12 +95,14 @@ async function loadActivity(email) {
     const el = document.getElementById('perfilActivity');
     if (!el) return;
     try {
-        const snap = await getDocs(query(
-            collection(db, 'tickets'),
-            where('assignedEmail', '==', email),
-            orderBy('timestamp', 'desc'),
-            limit(5)
-        ));
+        const allSnap = await getDocs(
+            query(collection(db, 'tickets'), where('assignedEmail', '==', email))
+        );
+        // Sort and limit in memory to avoid composite index requirement
+        const sorted = allSnap.docs
+            .sort((a, b) => (b.data().timestamp?.seconds ?? 0) - (a.data().timestamp?.seconds ?? 0))
+            .slice(0, 5);
+        const snap = { empty: sorted.length === 0, docs: sorted };
         if (snap.empty) { el.innerHTML = '<div class="activity-empty">Sin actividad registrada</div>'; return; }
         el.innerHTML = snap.docs.map(d => {
             const t    = d.data();
