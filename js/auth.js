@@ -185,8 +185,20 @@ document.getElementById('btnSendReset')?.addEventListener('click', async () => {
 // ── Logout ─────────────────────────────────────────────────────────
 document.getElementById('btnLogout')?.addEventListener('click', async () => {
     sessionStorage.removeItem('nf_role');
+    // Leer el rol ANTES de cerrar sesión para saber a qué login redirigir
+    const user = auth.currentUser;
+    let loginDest = 'login.html'; // default: portal empleados
+    if (user) {
+        try {
+            const snap = await getDoc(doc(db, 'usuarios', user.uid));
+            const rol  = snap.exists() ? (snap.data().rol ?? 'cliente') : 'cliente';
+            if (rol === 'agente' || rol === 'admin') {
+                loginDest = 'login-agente.html';
+            }
+        } catch {}
+    }
     await signOut(auth);
-    window.location.replace('login-agente.html');
+    window.location.replace(loginDest);
 });
 
 // ── Create Firestore user doc if missing ───────────────────────────

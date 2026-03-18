@@ -637,6 +637,7 @@ body {
     font-size: 0.79rem; font-family: var(--font-mono);
     background: var(--red-faint); border: 1px solid rgba(239,68,68,0.25);
     color: var(--red); animation: alertIn 0.2s ease;
+    margin-bottom: 12px;
 }
 @keyframes alertIn {
     from { opacity: 0; transform: translateY(-4px); }

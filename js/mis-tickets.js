@@ -3,7 +3,7 @@ import {
     collection, query, where, onSnapshot,
     addDoc, getDocs, updateDoc, doc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-import { onAuthStateChanged, updateProfile, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import { onAuthStateChanged, updateProfile, EmailAuthProvider, reauthenticateWithCredential, updatePassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import './auth.js';
 import { swalToast } from './swal.js';
 import { populateSelect } from './departamentos.js';
@@ -55,6 +55,12 @@ onAuthStateChanged(auth, user => {
             console.error('Both queries failed:', err2);
         });
     });
+});
+
+// ── Logout ────────────────────────────────────────────────────────
+document.getElementById('btnLogout')?.addEventListener('click', async () => {
+    await signOut(auth);
+    window.location.replace('login.html'); // empleados siempre van a login.html
 });
 
 // ── Stats ──────────────────────────────────────────────────────────

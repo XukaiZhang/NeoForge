@@ -124,7 +124,7 @@ function renderUsers() {
                     ? `<span style="font-size:0.75rem;color:var(--text-tertiary)">${esc(dept || '—')}</span>`
                     : rol === 'cliente'
                         ? `<span style="font-size:0.74rem;color:var(--text-tertiary);font-style:italic">—</span>`
-                        : `<select class="dept-select" data-uid="${u.uid}">
+                        : `<select class="dept-select" data-uid="${u.uid}" data-current="${esc(dept)}">
                             <option value="" ${!dept ? 'selected' : ''}>Sin asignar</option>
                             ${deptOptions}
                            </select>`
@@ -142,10 +142,24 @@ function renderUsers() {
                 }
             </td>
             <td>
-                ${isSelf ? '' : `<button class="btn-apply-rol" data-uid="${u.uid}" data-nombre="${esc(nombre)}"><i class="bi bi-check-lg"></i> Aplicar</button>`}
+                ${isSelf ? '' : `<button class="btn-apply-rol" data-uid="${u.uid}" data-nombre="${esc(nombre)}" style="visibility:hidden"><i class="bi bi-check-lg"></i> Aplicar</button>`}
             </td>
         </tr>`;
     }).join('');
+
+    // Show apply button only when something changed
+    tbody.querySelectorAll('.rol-select, .dept-select').forEach(sel => {
+        sel.addEventListener('change', () => {
+            const uid    = sel.dataset.uid;
+            const btn    = tbody.querySelector(`.btn-apply-rol[data-uid="${uid}"]`);
+            const rolSel = tbody.querySelector(`.rol-select[data-uid="${uid}"]`);
+            const dptSel = tbody.querySelector(`.dept-select[data-uid="${uid}"]`);
+            if (!btn) return;
+            const rolChanged  = rolSel  && rolSel.value  !== rolSel.dataset.current;
+            const deptChanged = dptSel  && dptSel.value  !== dptSel.dataset.current;
+            btn.style.visibility = (rolChanged || deptChanged) ? 'visible' : 'hidden';
+        });
+    });
 
     tbody.querySelectorAll('.btn-apply-rol').forEach(btn => {
         btn.addEventListener('click', () => {
